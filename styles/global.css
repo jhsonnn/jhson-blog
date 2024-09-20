@@ -1,0 +1,21 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@import "@/public/fonts/static/pretendard.css";
+
+html,
+body {
+  font-family: "Pretendard", -apple-system, BlinkMacSystemFont, "Malgun Gothic",
+    "맑은 고딕", helvetica, "Apple SD Gothic Neo", sans-serif;
+  word-break: keep-all;
+  word-wrap: normal;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.text-balance {
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  text-wrap: balance;
+}
