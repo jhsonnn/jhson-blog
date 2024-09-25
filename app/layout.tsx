@@ -1,8 +1,9 @@
 import { ReactNode } from "react";
 
 import "@/styles/global.css";
-import Header from "@/public/ui/header";
-import Menu from "@/public/ui/menu";
+import Menu from "@/components/ui/menu";
+import Header from "@/components/ui/header";
+import Profile from "@/components/ui/profile";
 
 export const metadata = {
   title: "jhsonnn | 손지형의 블로그",
@@ -18,14 +19,30 @@ export default function RootLayout({ children }: { children: ReactNode }) {
         <title>{metadata.title}</title>
         <meta name="description" content={metadata.description} />
       </head>
-      <body className="bg-neutral-900 text-white px-20 py-10">
-        <div>
-          <Header />
+      <body className="bg-neutral-900 text-white px-4 lg:px-20 py-10">
+        <div className="container mx-auto">
+          <header>
+            <Header />
+          </header>
         </div>
-        <div className="flex flex-row pt-10">
-          <Menu />
-          <div>{children}</div>
-        </div>
+
+        {/* 메인 레이아웃 */}
+        <main className="container mx-auto flex flex-col lg:flex-row pt-10 space-y-6 lg:space-y-0 lg:space-x-6">
+          {/* 개인 프로필 */}
+          <section className="order-1 lg:order-3 w-full lg:w-1/4">
+            <Profile />
+          </section>
+
+          {/* 메뉴 */}
+          <nav className="order-2 lg:order-1 w-full lg:w-1/4">
+            <Menu />
+          </nav>
+
+          {/* 메인 콘텐츠 */}
+          <section className="order-3 lg:order-2 w-full lg:w-3/4">
+            {children}
+          </section>
+        </main>
       </body>
     </html>
   );
