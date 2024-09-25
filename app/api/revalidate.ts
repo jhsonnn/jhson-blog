@@ -11,13 +11,11 @@ const revalidateHandler = async (req: NextApiRequest, res: NextApiResponse) => {
     await res.revalidate(`/projects`);
     await res.revalidate(`/resume`);
 
-    // 모든 카테고리를 순회하며 확인 (여기서는 projects와 resume만 처리)
     const categories = ["projects", "resume"];
     for (const category of categories) {
-      const items = await fetchNotionDatabase(category);
-      console.log("Fetched items for category:", category, items);
+      // const items = await fetchNotionDatabase(category);
+      // console.log("Fetched items for category:", category, items);
 
-      // 해당 카테고리 페이지만 revalidate (slug는 사용하지 않음)
       await res.revalidate(`/${category}`);
     }
 

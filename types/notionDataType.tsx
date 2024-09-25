@@ -1,176 +1,144 @@
-export type NotionDateProperty = {
-  id: string;
-  type: "date";
-  date: {
-    start: string;
-    end?: string | null;
-    time_zone?: string | null;
-  } | null;
-};
+import {
+  PageObjectResponse,
+  RichTextItemResponse,
+} from "@notionhq/client/build/src/api-endpoints"; // Notion API에서 제공하는 타입 사용
 
-export type NotionMultiSelectProperty = {
-  id: string;
-  type: "multi_select";
-  multi_select: Array<{
-    id: string;
-    name: string;
-    color: string;
-  }>;
-};
-
-export type NotionSelectProperty = {
-  id: string;
-  type: "select";
-  select: {
-    id: string;
-    name: string;
-    color: string;
-  } | null;
-};
-
-export type NotionFile = {
-  name: string;
-  type: "file";
-  file: {
-    url: string;
-    expiry_time: string;
-  };
-};
-
-export type NotionExternalFile = {
-  name: string;
-  type: "external";
-  external: {
-    url: string;
-  };
-};
-
-export type NotionFilesProperty = {
-  id: string;
-  type: "files";
-  files: Array<NotionFile | NotionExternalFile>;
-};
-
-export type NotionRichTextProperty = {
-  id: string;
-  type: "rich_text";
-  rich_text: NotionRichText[];
-};
-
-export type NotionStatusProperty = {
-  id: string;
-  type: "status";
-  status: {
-    id: string;
-    name: string;
-    color: string;
-  };
-};
-
-export type NotionTitleProperty = {
+// title 속성에 대한 타입 가드
+export function isTitleProperty(
+  property: PageObjectResponse["properties"][keyof PageObjectResponse["properties"]]
+): property is {
   id: string;
   type: "title";
-  title: NotionRichText[];
-};
+  title: RichTextItemResponse[];
+} {
+  return property.type === "title" && "title" in property;
+}
 
-export type NotionProperty =
-  | NotionDateProperty
-  | NotionMultiSelectProperty
-  | NotionSelectProperty
-  | NotionFilesProperty
-  | NotionRichTextProperty
-  | NotionStatusProperty
-  | NotionTitleProperty;
+// number 속성에 대한 타입 가드
+export function isNumberProperty(
+  property: PageObjectResponse["properties"][keyof PageObjectResponse["properties"]]
+): property is {
+  id: string;
+  type: "number";
+  number: number | null;
+} {
+  return property.type === "number" && "number" in property;
+}
 
-// export type NotionData = {
+// 페이지 객체에서 사용할 타입 정의 제거 (이미 Notion API에서 제공되므로 중복 정의 제거)
+
+// type User = {
+//   object: "user";
 //   id: string;
-//   created_time: string;
-//   last_edited_time: string;
-//   url: string;
-//   properties: {
-//     last_edited_time?: NotionDateProperty;
-//     thumbnail?: NotionFilesProperty;
-//     tags?: NotionMultiSelectProperty;
-//     category?: NotionSelectProperty;
-//     slug?: NotionRichTextProperty;
-//     status?: NotionStatusProperty;
-//     date?: NotionDateProperty;
-//     title?: NotionTitleProperty;
+// };
+
+// type Parent = {
+//   type: "database_id";
+//   database_id: string;
+// };
+
+// type FileProperty = {
+//   id: string;
+//   type: "files";
+//   files: Array<{ name: string; type: string; url: string }> | [];
+// };
+
+// type MultiSelectOption = {
+//   id: string;
+//   name: string;
+//   color: string;
+// };
+
+// type SelectOption = {
+//   id: string;
+//   name: string;
+//   color: string;
+// };
+
+// type RichText = {
+//   type: "text";
+//   text: {
+//     content: string;
+//     link: string | null;
+//   };
+//   annotations: {
+//     bold: boolean;
+//     italic: boolean;
+//     strikethrough: boolean;
+//     underline: boolean;
+//     code: boolean;
+//     color: string;
+//   };
+//   plain_text: string;
+//   href: string | null;
+// };
+
+// type StatusProperty = {
+//   id: string;
+//   type: "status";
+//   status: {
+//     id: string;
+//     name: string;
+//     color: string;
 //   };
 // };
 
-export type NotionData = {
-  id: string;
-  created_time: string;
-  last_edited_time: string;
-  url: string;
-  properties: {
-    last_edited_time?: NotionDateProperty;
-    thumbnail?: NotionFilesProperty;
-    tags?: NotionMultiSelectProperty;
-    category?: NotionSelectProperty;
-    slug?: NotionRichTextProperty;
-    status?: NotionStatusProperty;
-    date?: NotionDateProperty;
-    title?: NotionTitleProperty;
-  };
-};
+// type DateProperty = {
+//   id: string;
+//   type: "date";
+//   date: {
+//     start: string;
+//     end: string | null;
+//     time_zone: string | null;
+//   };
+// };
 
-// Notion에서 사용하는 Rich Text 타입 정의
-export type NotionRichText = {
-  type: string;
-  text: {
-    content: string;
-    link?: string | null;
-  };
-  annotations: {
-    bold: boolean;
-    italic: boolean;
-    strikethrough: boolean;
-    underline: boolean;
-    code: boolean;
-    color: string;
-  };
-  plain_text: string;
-  href?: string | null;
-};
+// type TitleProperty = {
+//   id: string;
+//   type: "title";
+//   title: RichText[];
+// };
 
-// Title Property 타입 정의
-export type TitlePropertyValue = {
-  id: string;
-  type: "title";
-  title: NotionRichText[];
-};
+// type Properties = {
+//   thumbnailUrl: FileProperty;
+//   last_edited_time: DateProperty;
+//   tags: {
+//     id: string;
+//     type: "multi_select";
+//     multi_select: MultiSelectOption[];
+//   };
+//   category: {
+//     id: string;
+//     type: "select";
+//     select: SelectOption;
+//   };
+//   slug: {
+//     id: string;
+//     type: "rich_text";
+//     rich_text: RichText[];
+//   };
+//   status: StatusProperty;
+//   date: DateProperty;
+//   title: TitleProperty;
+// };
 
-// Rich Text Property 타입 정의
-export type RichTextPropertyValue = {
-  id: string;
-  type: "rich_text";
-  rich_text: NotionRichText[];
-};
-
-// PropertyValueMap은 Notion 페이지의 모든 속성 타입을 정의합니다.
-export type PropertyValueMap = {
-  [property: string]:
-    | TitlePropertyValue
-    | RichTextPropertyValue
-    | { type: "select"; select: { name: string } }
-    | { type: "date"; date: { start: string; end: string | null } }
-    | { type: "multi_select"; multi_select: { name: string }[] }
-    | { type: "files"; files: { name: string; url: string }[] }
-    | { type: "number"; number: number | null };
-};
-
-// Title 속성 타입인지 확인하는 타입 가드 함수
-export const isTitleProperty = (
-  property: any
-): property is NotionTitleProperty => {
-  return property?.type === "title";
-};
-
-// Rich Text 속성 타입인지 확인하는 타입 가드 함수
-export const isRichTextProperty = (
-  property: any
-): property is RichTextPropertyValue => {
-  return property?.type === "rich_text";
-};
+// type PageObjectResponse = {
+//   object: "page";
+//   id: string;
+//   created_time: string;
+//   last_edited_time: string;
+//   created_by: User;
+//   last_edited_by: User;
+//   cover: {
+//     type: "file" | "external";
+//     file?: { url: string };
+//     external?: { url: string };
+//   } | null;
+//   icon: string | null;
+//   parent: Parent;
+//   archived: boolean;
+//   in_trash: boolean;
+//   properties: Properties;
+//   url: string;
+//   public_url: string | null;
+// };

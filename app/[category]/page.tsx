@@ -1,20 +1,16 @@
 import { fetchNotionDatabase } from "@/utils/fetchNotionDatabase";
 import { PageObjectResponse } from "@notionhq/client/build/src/api-endpoints";
-import { isTitleProperty } from "@/types/notionDataType"; // 타입 가드 import
+import { isTitleProperty, isNumberProperty } from "@/types/notionDataType";
 import Link from "next/link";
-import Post from "@/components/ui/Post"; // Post 컴포넌트 import
+import Post from "@/components/ui/Post";
 
-// 타입 정의
-type CategoryPageProps = {
-  items: PageObjectResponse[];
-  category: string;
-};
-
+// 카테고리 페이지 정의
 const CategoryPage = async ({ params }: { params: { category: string } }) => {
   const category = params.category;
 
   try {
-    const items = await fetchNotionDatabase(category);
+    const items: PageObjectResponse[] = await fetchNotionDatabase(category);
+    console.log("Fetched items for", category, JSON.stringify(items, null, 2));
 
     if (!items || items.length === 0) {
       return <div>No items found for this category</div>;
@@ -27,13 +23,19 @@ const CategoryPage = async ({ params }: { params: { category: string } }) => {
           {items.map((item) => {
             const titleProperty = item.properties.title;
 
+            // 속성 타입을 확인하여 안전하게 접근
             let title = "No Title";
             if (isTitleProperty(titleProperty)) {
               title = titleProperty.title?.[0]?.plain_text || "No Title";
+            } else {
+              console.warn(
+                "Title property not found or invalid for item",
+                item
+              );
             }
 
-            const slug = `/${category}/${item.id}`; // 각 아이템의 slug 생성
-            const date = item.created_time; // Notion 아이템의 생성 시간
+            const slug = `/${category}/${item.id}`;
+            const date = item.created_time;
 
             // cover 속성에서 external 또는 file 타입 처리
             let thumbnailUrl = "/default-thumbnail.jpg"; // 기본 썸네일 이미지
@@ -74,7 +76,6 @@ export const generateStaticParams = async () => {
     category,
   }));
 
-  // 경로가 올바르게 생성되는지 확인
   console.log("Generated paths:", paths);
 
   return paths;
