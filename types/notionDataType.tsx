@@ -25,6 +25,20 @@ export function isNumberProperty(
   return property.type === "number" && "number" in property;
 }
 
+// Files Property 타입 가드
+export function isFilesProperty(
+  property: PageObjectResponse["properties"][keyof PageObjectResponse["properties"]]
+): property is {
+  id: string;
+  type: "files";
+  files: Array<
+    | { file: { url: string; expiry_time: string }; name: string; type: "file" }
+    | { external: { url: string }; name: string; type: "external" }
+  >;
+} {
+  return property.type === "files";
+}
+
 // 페이지 객체에서 사용할 타입 정의 제거 (이미 Notion API에서 제공되므로 중복 정의 제거)
 
 // type User = {

@@ -1,5 +1,8 @@
 import { Client } from "@notionhq/client";
-import { PageObjectResponse } from "@notionhq/client/build/src/api-endpoints";
+import {
+  PageObjectResponse,
+  PartialPageObjectResponse,
+} from "@notionhq/client/build/src/api-endpoints";
 
 const notion = new Client({ auth: process.env.NOTION_API_KEY });
 
@@ -25,13 +28,15 @@ async function fetchWithExponentialBackoff(
   }
 }
 
+// 타입 가드: PageObjectResponse 타입인지 확인하는 함수
+function isPageObjectResponse(page: any): page is PageObjectResponse {
+  return page.object === "page" && "properties" in page;
+}
+
 export const fetchNotionDatabase = async (
   category: string
-): Promise<PageObjectResponse[]> => {
+): Promise<{ slug: string; post: PageObjectResponse }[]> => {
   const fetchFunction = async () => {
-    // console.log("Notion API Key:", process.env.NOTION_API_KEY);
-    // console.log("Notion Database ID:", process.env.NOTION_DATABASE_ID);
-
     const response = await notion.databases.query({
       database_id: process.env.NOTION_DATABASE_ID!,
       filter: {
@@ -40,8 +45,25 @@ export const fetchNotionDatabase = async (
       },
     });
 
-    console.log(`Fetched items for ${category}:`, response);
-    return response.results as PageObjectResponse[];
+    console.log(
+      `Fetched items for ${category}:`,
+      JSON.stringify(response, null, 2)
+    );
+
+    return response.results
+      .filter(isPageObjectResponse)
+      .map((page: PageObjectResponse) => {
+        const slugProperty = page.properties.slug;
+        const slug =
+          slugProperty?.type === "rich_text"
+            ? slugProperty.rich_text[0]?.plain_text || "default-slug"
+            : "default-slug";
+
+        return {
+          slug,
+          post: page,
+        };
+      });
   };
 
   // Exponential Backoff 적용하여 API 호출
