@@ -1,7 +1,13 @@
 import { fetchNotionDatabase } from "@/utils/fetchNotionDatabase";
 import { useQueryClient } from "react-query";
 
-const PostCategoryMenu = ({ onCategorySelect }) => {
+interface PostCategoryMenuProps {
+  onCategorySelect: (category: string) => void;
+}
+
+const PostCategoryMenu: React.FC<PostCategoryMenuProps> = ({
+  onCategorySelect,
+}) => {
   const categories = ["projects", "resume"];
   const queryClient = useQueryClient();
 
