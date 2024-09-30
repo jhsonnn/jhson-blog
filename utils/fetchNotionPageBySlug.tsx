@@ -1,12 +1,7 @@
-// import React from "react";
+import React from "react";
 
-// export const fetchNotionPageBySlug = async (slug: string) => {
+const fetchNotionPageBySlug = () => {
+  return <div></div>;
+};
 
-//     const response = await fetch()
-//   try {
-
-//   } catch (error) {
-//     console.error("fetch Notion Page By Slug error!");
-//   }
-//   return <div></div>;
-// };
+export default fetchNotionPageBySlug;

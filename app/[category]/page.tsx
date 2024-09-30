@@ -108,6 +108,7 @@ import { PageObjectResponse } from "@notionhq/client/build/src/api-endpoints";
 import { isTitleProperty, isFilesProperty } from "@/types/notionDataType";
 import Link from "next/link";
 import Post from "@/components/ui/Post";
+import PostCategoryMenu from "@/components/ui/PostCategoryMenu";
 
 const CategoryPage = async ({ params }: { params: { category: string } }) => {
   const category = params.category;
@@ -125,6 +126,7 @@ const CategoryPage = async ({ params }: { params: { category: string } }) => {
 
     return (
       <div>
+        {/* <PostCategoryMenu /> */}
         <h1>{category.charAt(0).toUpperCase() + category.slice(1)} Items</h1>
         <ul>
           {items.map(({ slug, post }) => {
