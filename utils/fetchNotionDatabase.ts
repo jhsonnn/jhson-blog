@@ -16,6 +16,7 @@ async function fetchWithExponentialBackoff(
     return await fetchFunction();
   } catch (error: any) {
     if (retries === 0 || error.status !== 429) {
+      console.error("최대 재시도 횟수에 도달했거나 다른 오류 발생:", error);
       throw error;
     }
     console.log(`Rate limit hit. Retrying in ${delay}ms...`);
