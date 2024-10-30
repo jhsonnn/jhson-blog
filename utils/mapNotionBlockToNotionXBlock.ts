@@ -1,5 +1,3 @@
-// utils/mapNotionBlockToNotionXBlock.ts
-
 import { Block } from 'notion-types'; // react-notion-x Block 타입
 import { NotionBlock } from '@/types/notionDataType'; // Notion API 블록 타입
 

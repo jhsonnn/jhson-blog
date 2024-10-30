@@ -2,6 +2,10 @@
 @tailwind components;
 @tailwind utilities;
 
+@import "react-notion-x/src/styles.css";
+@import "prismjs/themes/prism-tomorrow.css";
+@import "katex/dist/katex.min.css";
+
 @import "@/public/fonts/static/pretendard.css";
 
 html,
@@ -18,4 +22,21 @@ body {
   word-wrap: break-word;
   overflow-wrap: break-word;
   text-wrap: balance;
+}
+
+.notion-container {
+  padding: 2rem;
+}
+
+/* global.css */
+.prose .column-list {
+  display: flex;
+  flex-wrap: wrap;
+  flex-direction: row;
+  gap: 1rem;
+}
+
+.prose .column {
+  flex: 1;
+  min-width: 50%; /* 컬럼이 두 줄로 배치되도록 설정 */
 }

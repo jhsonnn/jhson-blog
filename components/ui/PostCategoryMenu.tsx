@@ -1,4 +1,4 @@
-import { fetchNotionDatabase } from "@/utils/fetchNotionDatabase";
+import { fetchNotionDatabaseByCategory } from "@/utils/fetchNotionDatabase";
 import { useQueryClient } from "react-query";
 
 interface PostCategoryMenuProps {
@@ -19,7 +19,7 @@ const PostCategoryMenu: React.FC<PostCategoryMenuProps> = ({
           onClick={() => {
             // 미리 캐싱된 데이터가 있는지 확인하고 없으면 새로 로드
             queryClient.prefetchQuery(["notionData", category], () =>
-              fetchNotionDatabase(category)
+              fetchNotionDatabaseByCategory(category)
             );
             onCategorySelect(category);
           }}

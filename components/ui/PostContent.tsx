@@ -59,3 +59,24 @@ export default async function PostContent({ pageId }: { pageId: string }) {
     </div>
   );
 }
+
+
+// import { ExtendedRecordMap } from "notion-types";
+// import dynamic from "next/dynamic";
+
+// // NotionRenderer를 동적 import합니다.
+// const NotionRenderer = dynamic(() =>
+//   import("react-notion-x").then((mod) => mod.NotionRenderer)
+// );
+
+// interface PostContentProps {
+//   recordMap: ExtendedRecordMap;
+// }
+
+// export default function PostContent({ recordMap }: PostContentProps) {
+//   return (
+//     <div className="notion-container">
+//       <NotionRenderer recordMap={recordMap} fullPage={true} darkMode={true} />
+//     </div>
+//   );
+// }

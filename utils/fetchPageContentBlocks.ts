@@ -1,28 +1,3 @@
-// import { Client } from "@notionhq/client";
-
-// const notion = new Client({ auth: process.env.NOTION_API_KEY });
-
-// export async function fetchPageContentBlocks(pageId: string) {
-//   const blocks = [];
-//   let cursor: string | undefined;
-
-//   while (true) {
-//     const { results, next_cursor } = await notion.blocks.children.list({
-//       block_id: pageId,
-//       start_cursor: cursor,
-//     });
-
-//     blocks.push(...results);
-
-//     if (!next_cursor) break;
-//     cursor = next_cursor;
-//   }
-
-//   console.log("Fetched Blocks:", blocks);
-//   return blocks;
-// }
-
-
 import { Client } from "@notionhq/client";
 
 const notion = new Client({ auth: process.env.NOTION_API_KEY });

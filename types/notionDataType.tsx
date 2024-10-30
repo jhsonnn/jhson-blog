@@ -244,6 +244,8 @@ export interface NotionBlock {
 
 import {
   PageObjectResponse,
+  PartialDatabaseObjectResponse,
+  PartialPageObjectResponse,
   RichTextItemResponse,
 } from "@notionhq/client/build/src/api-endpoints";
 
@@ -261,6 +263,11 @@ function isPropertyOfType<T extends Property>(
   return property?.type === type;
 }
 
+export function isFullPageObjectResponse(
+  value: PageObjectResponse | PartialPageObjectResponse | PartialDatabaseObjectResponse | DatabaseObjectResponse
+): value is PageObjectResponse {
+  return "properties" in value;
+}
 
 // Title property 타입 가드
 export function isTitleProperty(

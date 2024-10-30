@@ -35,12 +35,12 @@
 // };
 
 
-import { Client } from '@notionhq/client';
+// import { Client } from '@notionhq/client';
 
-/**
- * Notion 클라이언트 생성
- * 환경 변수에서 API 키를 가져와 초기화합니다.
- */
-export const notion = new Client({
-  auth: process.env.NOTION_API_KEY, // 환경 변수에서 API 키를 가져옴
-});
+// /**
+//  * Notion 클라이언트 생성
+//  * 환경 변수에서 API 키를 가져와 초기화합니다.
+//  */
+// export const notion = new Client({
+//   auth: process.env.NOTION_API_KEY, // 환경 변수에서 API 키를 가져옴
+// });

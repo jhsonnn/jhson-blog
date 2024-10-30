@@ -1,5 +1,4 @@
 import { NextApiRequest, NextApiResponse } from "next";
-import { fetchNotionDatabase } from "@/utils/fetchNotionDatabase"; // 노션 API로 데이터베이스 가져오는 함수
 
 const revalidateHandler = async (req: NextApiRequest, res: NextApiResponse) => {
   if (req.query.secret !== process.env.MY_TOKEN) {
