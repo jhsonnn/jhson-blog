@@ -13,6 +13,10 @@ const nextConfig = {
     NOTION_API_KEY: process.env.NOTION_API_KEY,
     NOTION_DATABASE_ID: process.env.NOTION_DATABASE_ID,
   },
+  webpack: (config) => {
+    config.resolve.alias['react-lazy-images'] = false; // alias로 제거
+    return config;
+  },
 };
 
 module.exports = nextConfig;

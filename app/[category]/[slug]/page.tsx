@@ -1,77 +1,68 @@
-import { fetchNotionPageBySlug } from "@/utils/fetchNotionPageBySlug";
-import { fetchPageContentBlocks } from "@/utils/fetchPageContentBlocks";
-import { isTitleProperty } from "@/types/notionDataType";
-import { notFound } from "next/navigation";
+import PostContent from "@/components/ui/PostContent";
+import { isRichTextProperty } from "@/types/notionDataType";
+import { fetchNotionDatabaseByCategory } from "@/utils/fetchNotionDatabase";
 import { PageObjectResponse } from "@notionhq/client/build/src/api-endpoints";
 
-// 블록 필터링해서 특정 타입 또는 ID의 블록만 렌더링
-const renderFilteredBlocks = (blocks: any[]) => {
-  // 원하는 블록 타입이나 ID에 맞는 데이터만 필터링
-  const filteredBlocks = blocks.filter((block) => {
-    return block.type === "paragraph" || block.type === "heading_2";
-  });
-
-  return filteredBlocks.map((block) => (
-    <div key={block.id}>{renderBlock(block)}</div>
-  ));
-};
-
-const renderBlock = (block: any) => {
-  switch (block.type) {
-    case "paragraph":
-      return <p>{block.paragraph.rich_text[0]?.plain_text}</p>;
-    case "heading_1":
-      return <h1>{block.heading_1.rich_text[0]?.plain_text}</h1>;
-    case "heading_2":
-      return <h2>{block.heading_2.rich_text[0]?.plain_text}</h2>;
-    default:
-      return <div>Unsupported block type</div>;
-  }
-};
-
-const PostPage = async ({
-  params,
-}: {
+interface PageProps {
   params: { category: string; slug: string };
-}) => {
+}
+
+export async function generateStaticParams() {
+  const categories = ["projects", "resume", "profile"]; // 카테고리 목록
+  const paths: Array<{ category: string; slug: string }> = [];
+
+  for (const category of categories) {
+    const items = await fetchNotionDatabaseByCategory(category);
+    const categoryPaths = items
+      .map((item) => {
+        const slugProperty = item.post.properties?.slug;
+        if (isRichTextProperty(slugProperty)) {
+          return {
+            category,
+            slug: slugProperty.rich_text[0]?.plain_text.toLowerCase(),
+          };
+        }
+        return null; // 슬러그가 없는 경우 null 반환
+      })
+      .filter((path): path is { category: string; slug: string } => path !== null); // null 필터링
+
+    paths.push(...categoryPaths); // 경로 추가
+  }
+
+  // console.log("Generated paths:", paths); // 경로 확인 로그
+  return paths;
+}
+
+
+export default async function ContentPage({ params }: PageProps) {
   const { category, slug } = params;
 
-  try {
-    console.log(`Fetching post for category: ${category} with slug: ${slug}`);
-
-    // slug로 페이지 메타데이터 가져오기
-    const post = await fetchNotionPageBySlug(slug);
-    if (!post || !("properties" in post)) {
-      return notFound();
-    }
-
-    // 페이지 블록 가져오기
-    const pageId = post.id;
-    const blocks = await fetchPageContentBlocks(pageId);
-    console.log("Fetched page blocks:", blocks);
-
-    // 제목 설정
-    const titleProperty = post.properties?.title;
-    let title = "No Title";
-    if (isTitleProperty(titleProperty)) {
-      title = titleProperty.title?.[0]?.plain_text || "No Title";
-    }
-
+  const items = await fetchNotionDatabaseByCategory(category);
+   // 전체 데이터 구조 출력
+   console.log("Fetched Items:???", JSON.stringify(items, null, 2)); // 전체 데이터 구조 확인
+  
+  // slug와 일치하는 페이지 데이터 찾기
+  const pageData = items.find((item) => {
+    const slugProperty = item.post.properties?.slug;
     return (
-      <div>
-        <h1>{title}</h1>
-        {/* 필터링된 블록 데이터를 렌더링 */}
-        <div>{renderFilteredBlocks(blocks)}</div>
-      </div>
+      slugProperty?.type === "rich_text" &&
+      slugProperty.rich_text[0]?.plain_text === slug
     );
-  } catch (error: any) {
-    console.error(
-      "Error fetching Notion page or blocks:",
-      error.message,
-      error.stack
-    );
-    return <div>Error loading post: {error.message}</div>;
-  }
-};
+  });
 
-export default PostPage;
+  if (!pageData) {
+    console.error(`Page not found for slug: ${slug}`);
+    return <div>Page not found for slug: {slug}</div>;
+  }
+
+   // 선택된 페이지의 상세 데이터 구조 확인
+   console.log("Page Data:???", JSON.stringify(pageData, null, 2)); // pageData 확인
+   const pageId = pageData.post.id;
+   if (!pageId) {
+     console.error("Page ID is undefined or invalid"); // 페이지 ID가 없는 경우 처리
+     return <div>Error: Invalid Page ID</div>;
+   }
+
+  // return <PostContent slug={slug} pageData={pageData.post} />;
+  return <PostContent pageId={pageId} />;
+}
