@@ -243,7 +243,9 @@ export interface NotionBlock {
 
 
 import {
+  BlockObjectResponse,
   PageObjectResponse,
+  PartialBlockObjectResponse,
   PartialDatabaseObjectResponse,
   PartialPageObjectResponse,
   RichTextItemResponse,
@@ -321,3 +323,17 @@ export function isRichTextProperty(
   return isPropertyOfType(property, "rich_text");
 }
 
+
+// 블록이 완전한 BlockObjectResponse인지 확인
+export function isFullBlockResponse(
+  block: BlockObjectResponse | PartialBlockObjectResponse
+): block is BlockObjectResponse {
+  return 'type' in block && 'id' in block;
+}
+
+// block이 children을 포함하는지 확인
+export function hasChildren(
+  block: BlockObjectResponse
+): block is BlockObjectResponse & { children: BlockObjectResponse[] } {
+  return 'children' in block;
+}
