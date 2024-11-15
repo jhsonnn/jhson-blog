@@ -1,6 +1,11 @@
 {
   "compilerOptions": {
-    "lib": ["dom", "dom.iterable", "esnext"],
+    "types": ["@testing-library/jest-dom", "@testing-library/react"],
+    "lib": [
+      "dom",
+      "dom.iterable",
+      "esnext"
+    ],
     "allowJs": true,
     "skipLibCheck": true,
     "strict": true,
@@ -17,19 +22,42 @@
     "incremental": true,
     "plugins": [
       {
-        "name": "next",
+        "name": "next"
       }
     ],
     "paths": {
-      "@/*": ["./*"],
-      "@/app/*": ["./app/*"],
-      "@/components/*": ["./components/*"],
-      "@/utils/*": ["./utils/*"],
-      "@/styles/*": ["./styles/*"],
-      "@/public/*": ["./public/*"],
-      "@/lib/*": ["./lib/*"]
-    }
+      "@/*": [
+        "./*"
+      ],
+      "@/app/*": [
+        "./app/*"
+      ],
+      "@/components/*": [
+        "./components/*"
+      ],
+      "@/utils/*": [
+        "./utils/*"
+      ],
+      "@/styles/*": [
+        "./styles/*"
+      ],
+      "@/public/*": [
+        "./public/*"
+      ],
+      "@/lib/*": [
+        "./lib/*"
+      ]
+    },
+    "target": "ES2017"
   },
-  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"],
-  "exclude": ["node_modules"]
+  "include": [
+    "next-env.d.ts",
+    "**/*.ts",
+    "**/*.tsx",
+    ".next/types/**/*.ts",
+    "jest.setup.ts"
+  ],
+  "exclude": [
+    "node_modules"
+  ]
 }

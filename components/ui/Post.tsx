@@ -1,41 +1,60 @@
-"use client";
+'use client';
 
-import Image from "next/image";
-import { useState } from "react";
+import Image from 'next/image';
+import { useState } from 'react';
 
 type PostProps = {
   title: string;
   slug: string;
   date: string;
   thumbnailUrl: string;
+  category: string;
 };
 
-const Post: React.FC<PostProps> = ({ title, slug, date, thumbnailUrl }) => {
+const Post: React.FC<PostProps> = ({
+  title,
+  slug,
+  date,
+  thumbnailUrl,
+  category,
+}) => {
   const [isLoaded, setIsLoaded] = useState(false);
 
-  // console.log("Post Props:", { title, slug, date, thumbnailUrl });
+  // 날짜 형식 변환
+  const formattedDate = new Date(date).toLocaleDateString('ko-KR', {
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
+  });
 
   return (
-    <div className="max-w-sm mx-auto bg-white rounded-xl shadow-md overflow-hidden md:max-w-2xl my-4 transition-transform duration-500 hover:scale-105 hover:shadow-lg">
-      <div className="p-6">
-        <h2 className="block mt-1 text-lg leading-tight font-semibold text-gray-900 animate-fade-in">
-          {title}
-        </h2>
-        <div className="relative w-full h-48">
+    <div className="min-w-full min-h-full max-w-xl mx-auto bg-white rounded-2xl shadow-xl overflow-hidden transition-transform duration-500 hover:scale-105 hover:shadow-lg mb-6">
+      <div className="">
+        {/* 이미지 */}
+        <div className="relative w-full h-64">
           <Image
             src={thumbnailUrl}
             alt={title}
-            width={500}
-            height={300}
+            fill
+            style={{ objectFit: 'cover', objectPosition: 'center' }}
             className={`transition-opacity duration-700 ${
-              isLoaded ? "opacity-100" : "opacity-0"
+              isLoaded ? 'opacity-100' : 'opacity-0'
             }`}
             onLoadingComplete={() => setIsLoaded(true)}
+            onError={() => setIsLoaded(false)}
           />
         </div>
-        <p className="text-gray-400 mt-2 animate-fade-in-delayed">
-          Published on: {date}
-        </p>
+
+        {/* 텍스트 */}
+        <div className="p-6">
+          <h2 className="text-xl font-semibold text-gray-900 mb-2">{title}</h2>
+          <p className="text-gray-500 mt-2 mb-2">{formattedDate}</p>
+          <div className="flex flex-wrap gap-2">
+            <span className="bg-gray-300 text-gray-500 text-xs font-medium px-2 py-1 rounded">
+              {category}
+            </span>
+          </div>
+        </div>
       </div>
     </div>
   );

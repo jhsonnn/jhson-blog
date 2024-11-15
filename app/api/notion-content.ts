@@ -1,4 +1,3 @@
-// /pages/api/notion-content.ts
 import { NextApiRequest, NextApiResponse } from "next";
 import { NotionAPI } from "notion-client";
 

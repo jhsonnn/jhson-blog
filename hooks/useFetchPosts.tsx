@@ -1,8 +1,12 @@
-import { useQuery } from "react-query";
-import { fetchNotionDatabaseByCategory } from "@/utils/fetchNotionDatabase";
+import { useQuery } from 'react-query';
+import { fetchNotionDatabaseByCategory } from '@/lib/notion/fetchNotionDatabase';
 
 export const useFetchPosts = (category: string) => {
-  return useQuery(["posts", category], () => fetchNotionDatabaseByCategory(category), {
-    staleTime: 1000 * 60 * 5, // 5 minutes
-  });
+  return useQuery(
+    ['posts', category],
+    () => fetchNotionDatabaseByCategory(category),
+    {
+      staleTime: 1000 * 60 * 5,
+    }
+  );
 };

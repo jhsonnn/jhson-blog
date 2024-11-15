@@ -244,6 +244,7 @@ export interface NotionBlock {
 
 import {
   BlockObjectResponse,
+  DatabaseObjectResponse,
   PageObjectResponse,
   PartialBlockObjectResponse,
   PartialDatabaseObjectResponse,
@@ -265,8 +266,9 @@ function isPropertyOfType<T extends Property>(
   return property?.type === type;
 }
 
+
 export function isFullPageObjectResponse(
-  value: PageObjectResponse | PartialPageObjectResponse | PartialDatabaseObjectResponse | DatabaseObjectResponse
+  value: PageObjectResponse | PartialPageObjectResponse | PartialDatabaseObjectResponse
 ): value is PageObjectResponse {
   return "properties" in value;
 }
@@ -307,11 +309,20 @@ export function isFilesProperty(
   return isPropertyOfType(property, "files");
 }
 
-// 타입 가드: PageObjectResponse인지 확인하는 함수
-export function isPageObjectResponse(value: any): value is PageObjectResponse {
-  return value?.object === "page" && "properties" in value;
+// PageObjectResponse 타입가드
+export function isPageObjectResponse(
+  value:
+    | PageObjectResponse
+    | PartialPageObjectResponse
+    | PartialDatabaseObjectResponse
+    | DatabaseObjectResponse
+): value is PageObjectResponse {
+  return (
+    value.object === "page" &&
+    "properties" in value &&
+    "parent" in value
+  );
 }
-
 // Rich text property 타입 가드
 export function isRichTextProperty(
   property: Property | undefined
@@ -324,6 +335,27 @@ export function isRichTextProperty(
 }
 
 
+// 타입 가드: 블록이 'BlockObjectResponse' 타입인지 확인
+// function isFullBlockResponse(
+//   block: BlockObjectResponse | PartialBlockObjectResponse
+// ): block is BlockObjectResponse {
+//   return block.object === "block";
+// }
+
+// 타입 가드: 블록이 'paragraph' 타입인지 확인
+export function isParagraphBlock(
+  block: BlockObjectResponse
+): block is BlockObjectResponse & { type: "paragraph" } {
+  return block.type === "paragraph";
+}
+
+// 타입 가드: 블록이 'heading_1' 타입인지 확인
+export function isHeading1Block(
+  block: BlockObjectResponse
+): block is BlockObjectResponse & { type: "heading_1" } {
+  return block.type === "heading_1";
+}
+
 // 블록이 완전한 BlockObjectResponse인지 확인
 export function isFullBlockResponse(
   block: BlockObjectResponse | PartialBlockObjectResponse
@@ -331,9 +363,33 @@ export function isFullBlockResponse(
   return 'type' in block && 'id' in block;
 }
 
+// 
+
 // block이 children을 포함하는지 확인
 export function hasChildren(
   block: BlockObjectResponse
 ): block is BlockObjectResponse & { children: BlockObjectResponse[] } {
   return 'children' in block;
+}
+
+
+
+// NotionPageItem 타입
+export interface NotionPageItem {
+  slug: string;
+  post: {
+    id: string;
+    properties: {
+      title?: { type: "title"; title: RichTextItemResponse[]; id: string };
+      thumbnailUrl?: {
+        type: "files";
+        files: (
+          | { type: "file"; file: { url: string; expiry_time: string }; name: string }
+          | { type: "external"; external: { url: string }; name: string }
+        )[];
+        id: string;
+      };
+    };
+    created_time: string;
+  };
 }
