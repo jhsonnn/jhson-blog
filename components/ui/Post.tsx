@@ -11,13 +11,7 @@ type PostProps = {
   category: string;
 };
 
-const Post: React.FC<PostProps> = ({
-  title,
-  slug,
-  date,
-  thumbnailUrl,
-  category,
-}) => {
+const Post: React.FC<PostProps> = ({ title, date, thumbnailUrl, category }) => {
   const [isLoaded, setIsLoaded] = useState(false);
 
   // 날짜 형식 변환
