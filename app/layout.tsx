@@ -59,8 +59,10 @@ export const metadata = {
 };
 
 export default function RootLayout({ children }: { children: ReactNode }) {
+  const isDarkMode = true;
+
   return (
-    <html lang="en">
+    <html lang="en" className={isDarkMode ? 'dark' : ''}>
       <head>
         <meta charSet="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -76,7 +78,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
 
         {/* 메인 레이아웃 */}
         <main className="container mx-auto flex flex-col lg:flex-row pt-10 space-y-7 lg:space-y-0">
-          <section className="w-full order-3 lg-order-2 lg:w-7/10 lg:p-10 md:p-0 rounded-2xl lg:mr-6 md:mx-0">
+          <section className="w-full order-3 lg-order-2 lg:w-7/10 lg:px-5 lg:mt-0 md:mt-10 rounded-2xl lg:mr-6 md:mx-0">
             {children}
           </section>
           <ConditionalSidebar />

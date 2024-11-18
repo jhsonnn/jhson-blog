@@ -1,31 +1,31 @@
-import { fetchPageContentBlocks } from '@/lib/notion/fetchPageContentBlocks';
-import { fetchVideoUrl } from '@/lib/notion/fetchVideoUrl';
-import {
-  BlockObjectResponse,
-  PartialBlockObjectResponse,
-  PageObjectResponse,
-  DatabaseObjectResponse,
-} from '@notionhq/client/build/src/api-endpoints';
-import { useEffect, useState } from 'react';
-import { isPageObjectResponse } from '@/types/notionDataType';
+// import { fetchPageContentBlocks } from '@/lib/notion/fetchPageContentBlocks';
+// import { fetchVideoUrl } from '@/lib/notion/fetchVideoUrl';
+// import {
+//   BlockObjectResponse,
+//   PartialBlockObjectResponse,
+//   PageObjectResponse,
+//   DatabaseObjectResponse,
+// } from '@notionhq/client/build/src/api-endpoints';
+// import { useEffect, useState } from 'react';
+// import { isPageObjectResponse } from '@/types/notionDataType';
 
-function isFullBlockResponse(
-  block: BlockObjectResponse | PartialBlockObjectResponse
-): block is BlockObjectResponse {
-  return block.object === 'block';
-}
+// function isFullBlockResponse(
+//   block: BlockObjectResponse | PartialBlockObjectResponse
+// ): block is BlockObjectResponse {
+//   return block.object === 'block';
+// }
 
-function isParagraphBlock(
-  block: BlockObjectResponse
-): block is BlockObjectResponse & { type: 'paragraph' } {
-  return block.type === 'paragraph';
-}
+// function isParagraphBlock(
+//   block: BlockObjectResponse
+// ): block is BlockObjectResponse & { type: 'paragraph' } {
+//   return block.type === 'paragraph';
+// }
 
-function isHeading1Block(
-  block: BlockObjectResponse
-): block is BlockObjectResponse & { type: 'heading_1' } {
-  return block.type === 'heading_1';
-}
+// function isHeading1Block(
+//   block: BlockObjectResponse
+// ): block is BlockObjectResponse & { type: 'heading_1' } {
+//   return block.type === 'heading_1';
+// }
 
 // export default function PostContent({
 //   pageData,
@@ -102,6 +102,36 @@ function isHeading1Block(
 //     </div>
 //   );
 // }
+
+import { fetchPageContentBlocks } from '@/lib/notion/fetchPageContentBlocks';
+import { fetchVideoUrl } from '@/lib/notion/fetchVideoUrl';
+import {
+  BlockObjectResponse,
+  PartialBlockObjectResponse,
+  PageObjectResponse,
+  DatabaseObjectResponse,
+} from '@notionhq/client/build/src/api-endpoints';
+import { useEffect, useState } from 'react';
+import { isPageObjectResponse } from '@/types/notionDataType';
+
+function isFullBlockResponse(
+  block: BlockObjectResponse | PartialBlockObjectResponse
+): block is BlockObjectResponse {
+  return block.object === 'block';
+}
+
+function isParagraphBlock(
+  block: BlockObjectResponse
+): block is BlockObjectResponse & { type: 'paragraph' } {
+  return block.type === 'paragraph';
+}
+
+function isHeading1Block(
+  block: BlockObjectResponse
+): block is BlockObjectResponse & { type: 'heading_1' } {
+  return block.type === 'heading_1';
+}
+
 export default function PostContent({
   pageData,
   pageId,
@@ -138,10 +168,7 @@ export default function PostContent({
   }, [pageData, pageId]);
 
   return (
-    <div
-      // Tailwind CSS 조건부 스타일 적용
-      className={`dark:bg-neutral-700 bg-neutral-100 p-6 rounded-lg`}
-    >
+    <div className="dark:bg-neutral-700 bg-neutral-100 p-10 rounded-lg">
       {/* 비디오 렌더링 */}
       {videoUrl ? (
         <video src={videoUrl} controls width="100%" />

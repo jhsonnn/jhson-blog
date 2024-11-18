@@ -65,7 +65,6 @@ const ThemeToggle = () => {
   }, []);
 
   const toggleTheme = () => {
-    setIsDarkMode(!isDarkMode);
     if (!isDarkMode) {
       document.documentElement.classList.add('dark');
       localStorage.setItem('theme', 'dark');
@@ -73,6 +72,7 @@ const ThemeToggle = () => {
       document.documentElement.classList.remove('dark');
       localStorage.setItem('theme', 'light');
     }
+    setIsDarkMode(!isDarkMode);
   };
 
   return (

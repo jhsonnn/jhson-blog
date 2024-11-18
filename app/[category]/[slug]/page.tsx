@@ -103,6 +103,8 @@ export async function generateStaticParams() {
 }
 export default async function ContentPage({ params }: PageProps) {
   const { category, slug } = params;
+
+  //Notion data 비동기로드
   const items = (await fetchNotionDatabaseByCategory(
     category
   )) as NotionPageItem[];
@@ -117,16 +119,16 @@ export default async function ContentPage({ params }: PageProps) {
     const videoUrl = await fetchVideoUrl(slug);
     const blocks = await fetchPageBlocksWithChildren(pageData.post.id);
 
+    // Notion 데이터를 모두 가져온 후 렌더링
+    if (!blocks || blocks.length === 0) {
+      console.error('No blocks data found.');
+      return <div>Loading content...</div>;
+    }
+
+    //서버 데이터 로드 완료 후 클라이언트에 전달
     return (
       <RootLayout>
-        <div
-          // `isPostContent`에 따른 조건부 스타일링
-          className={`${
-            slug === 'post-slug' // 특정 조건에 따라 스타일 적용
-              ? 'bg-neutral-100 dark:bg-neutral-700 p-5 rounded-lg'
-              : 'bg-white'
-          }`}
-        >
+        <div className="bg-neutral-100 dark:bg-neutral-700 px-20 py-5 rounded-lg">
           {/* 비디오 URL이 있는 경우 비디오 렌더링 */}
           {videoUrl && (
             <video src={videoUrl} controls width="100%" className="mb-5" />
