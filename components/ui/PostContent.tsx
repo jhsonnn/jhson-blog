@@ -171,7 +171,7 @@ export default function PostContent({
     <div className="dark:bg-neutral-700 bg-neutral-100 p-10 rounded-lg">
       {/* 비디오 렌더링 */}
       {videoUrl ? (
-        <video src={videoUrl} controls width="100%" />
+        <video src={videoUrl} controls width="100%" className="mt-1" />
       ) : (
         <p>No video available for this post</p>
       )}
