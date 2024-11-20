@@ -399,7 +399,7 @@ export interface NotionPageItem {
         )[];
         id: string;
       };
-      '\\bthumbnailUrl'?: {
+      '\bthumbnailUrl'?: {
         // 백슬래시를 포함한 동적 키 추가
         type: 'files';
         files: (
