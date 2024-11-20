@@ -165,7 +165,6 @@
 
 // types/notionBlock.ts
 
-
 export type NotionBlockType =
   | 'paragraph'
   | 'heading_1'
@@ -188,7 +187,6 @@ export type NotionBlockType =
   | 'table_row'
   | 'unsupported'
   | 'rich_text';
-
 
 export interface NotionUser {
   object: 'user';
@@ -241,7 +239,6 @@ export interface NotionBlock {
   rich_text?: RichText[];
 }
 
-
 import {
   BlockObjectResponse,
   DatabaseObjectResponse,
@@ -250,63 +247,59 @@ import {
   PartialDatabaseObjectResponse,
   PartialPageObjectResponse,
   RichTextItemResponse,
-} from "@notionhq/client/build/src/api-endpoints";
+} from '@notionhq/client/build/src/api-endpoints';
 
 // 타입 가드에 사용할 공통 타입
 type Property =
-  PageObjectResponse["properties"][keyof PageObjectResponse["properties"]];
+  PageObjectResponse['properties'][keyof PageObjectResponse['properties']];
 
 /**
  * 공통 타입 가드 함수: 주어진 property가 특정 type인지 확인합니다.
  */
 function isPropertyOfType<T extends Property>(
   property: Property | undefined,
-  type: T["type"]
+  type: T['type']
 ): property is T {
   return property?.type === type;
 }
 
-
 export function isFullPageObjectResponse(
-  value: PageObjectResponse | PartialPageObjectResponse | PartialDatabaseObjectResponse
+  value:
+    | PageObjectResponse
+    | PartialPageObjectResponse
+    | PartialDatabaseObjectResponse
 ): value is PageObjectResponse {
-  return "properties" in value;
+  return 'properties' in value;
 }
 
 // Title property 타입 가드
-export function isTitleProperty(
-  property: Property | undefined
-): property is {
+export function isTitleProperty(property: Property | undefined): property is {
   id: string;
-  type: "title";
+  type: 'title';
   title: RichTextItemResponse[];
 } {
-  return isPropertyOfType(property, "title");
+  return isPropertyOfType(property, 'title');
 }
 
 // Number property 타입 가드
-export function isNumberProperty(
-  property: Property | undefined
-): property is {
+export function isNumberProperty(property: Property | undefined): property is {
   id: string;
-  type: "number";
+  type: 'number';
   number: number | null;
 } {
-  return isPropertyOfType(property, "number");
+  return isPropertyOfType(property, 'number');
 }
 
 // Files property 타입 가드
-export function isFilesProperty(
-  property: Property | undefined
-): property is {
+export function isFilesProperty(property: Property | undefined): property is {
   id: string;
-  type: "files";
+  type: 'files';
   files: Array<
-    | { file: { url: string; expiry_time: string }; name: string; type: "file" }
-    | { external: { url: string }; name: string; type: "external" }
+    | { file: { url: string; expiry_time: string }; name: string; type: 'file' }
+    | { external: { url: string }; name: string; type: 'external' }
   >;
 } {
-  return isPropertyOfType(property, "files");
+  return isPropertyOfType(property, 'files');
 }
 
 // PageObjectResponse 타입가드
@@ -317,23 +310,18 @@ export function isPageObjectResponse(
     | PartialDatabaseObjectResponse
     | DatabaseObjectResponse
 ): value is PageObjectResponse {
-  return (
-    value.object === "page" &&
-    "properties" in value &&
-    "parent" in value
-  );
+  return value.object === 'page' && 'properties' in value && 'parent' in value;
 }
 // Rich text property 타입 가드
 export function isRichTextProperty(
   property: Property | undefined
 ): property is {
   id: string;
-  type: "rich_text";
+  type: 'rich_text';
   rich_text: RichTextItemResponse[];
 } {
-  return isPropertyOfType(property, "rich_text");
+  return isPropertyOfType(property, 'rich_text');
 }
-
 
 // 타입 가드: 블록이 'BlockObjectResponse' 타입인지 확인
 // function isFullBlockResponse(
@@ -345,15 +333,15 @@ export function isRichTextProperty(
 // 타입 가드: 블록이 'paragraph' 타입인지 확인
 export function isParagraphBlock(
   block: BlockObjectResponse
-): block is BlockObjectResponse & { type: "paragraph" } {
-  return block.type === "paragraph";
+): block is BlockObjectResponse & { type: 'paragraph' } {
+  return block.type === 'paragraph';
 }
 
 // 타입 가드: 블록이 'heading_1' 타입인지 확인
 export function isHeading1Block(
   block: BlockObjectResponse
-): block is BlockObjectResponse & { type: "heading_1" } {
-  return block.type === "heading_1";
+): block is BlockObjectResponse & { type: 'heading_1' } {
+  return block.type === 'heading_1';
 }
 
 // 블록이 완전한 BlockObjectResponse인지 확인
@@ -363,7 +351,7 @@ export function isFullBlockResponse(
   return 'type' in block && 'id' in block;
 }
 
-// 
+//
 
 // block이 children을 포함하는지 확인
 export function hasChildren(
@@ -372,7 +360,25 @@ export function hasChildren(
   return 'children' in block;
 }
 
-
+// // NotionPageItem 타입
+// export interface NotionPageItem {
+//   slug: string;
+//   post: {
+//     id: string;
+//     properties: {
+//       title?: { type: "title"; title: RichTextItemResponse[]; id: string };
+//       thumbnailUrl?: {
+//         type: "files";
+//         files: (
+//           | { type: "file"; file: { url: string; expiry_time: string }; name: string }
+//           | { type: "external"; external: { url: string }; name: string }
+//         )[];
+//         id: string;
+//       };
+//     };
+//     created_time: string;
+//   };
+// }
 
 // NotionPageItem 타입
 export interface NotionPageItem {
@@ -380,12 +386,29 @@ export interface NotionPageItem {
   post: {
     id: string;
     properties: {
-      title?: { type: "title"; title: RichTextItemResponse[]; id: string };
+      title?: { type: 'title'; title: RichTextItemResponse[]; id: string };
       thumbnailUrl?: {
-        type: "files";
+        type: 'files';
         files: (
-          | { type: "file"; file: { url: string; expiry_time: string }; name: string }
-          | { type: "external"; external: { url: string }; name: string }
+          | {
+              type: 'file';
+              file: { url: string; expiry_time: string };
+              name: string;
+            }
+          | { type: 'external'; external: { url: string }; name: string }
+        )[];
+        id: string;
+      };
+      '\\bthumbnailUrl'?: {
+        // 백슬래시를 포함한 동적 키 추가
+        type: 'files';
+        files: (
+          | {
+              type: 'file';
+              file: { url: string; expiry_time: string };
+              name: string;
+            }
+          | { type: 'external'; external: { url: string }; name: string }
         )[];
         id: string;
       };
