@@ -1,6 +1,6 @@
 import { NextApiRequest, NextApiResponse } from "next";
 
-const revalidateHandler = async (req: NextApiRequest, res: NextApiResponse) => {
+const revalidateHandler = async(req: NextApiRequest, res: NextApiResponse) => {
   if (req.query.secret !== process.env.MY_TOKEN) {
     return res.status(401).json({ message: "Invalid token" });
   }

@@ -26,8 +26,9 @@
   "plugins": ["react", "@typescript-eslint"],
   "rules": {
     "react/prop-types": "off", //TypeScript를 사용하는 경우 PropTypes 비활성화
-    "space-before-function-paren": ["error", "never"], // 함수 괄호 앞 공백 금지
-    "indent": ["error", 2],
+    //"space-before-function-paren": ["error", "never"], // 함수 괄호 앞 공백 금지
+    "space-before-function-paren": 0, // 함수 괄호 앞 공백 금지
+    "indent": 0,
     "prefer-rest-params": "error", // arguments 대신 rest parameter 권장
     "react/jsx-uses-react": "error",
     "react/jsx-uses-vars": "error",
