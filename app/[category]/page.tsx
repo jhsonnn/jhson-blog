@@ -34,9 +34,8 @@ export default async function CategoryPage({
 
           let thumbnailUrl = '/default-thumbnail.png';
           //const thumbnailProperty = post.properties?.["\bthumbnailUrl"];
-          const thumbnailProperty = (post.properties as any)?.[
-            '\bthumbnailUrl'
-          ];
+          const thumbnailKey = '\\bthumbnailUrl';
+          const thumbnailProperty = post.properties?.[thumbnailKey];
 
           // isFilesProperty 타입 가드 사용
           if (

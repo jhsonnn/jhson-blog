@@ -171,15 +171,16 @@ import { fetchVideoUrl } from '@/lib/notion/fetchVideoUrl';
 import NotionRenderer from '@/components/NotionRenderer';
 import RootLayout from '@/app/layout';
 import { BlockObjectResponse } from '@notionhq/client/build/src/api-endpoints';
+import { NotionPageItem } from '@/types/notionDataType';
 
 interface PageProps {
   params: { category: string; slug: string };
 }
 
-interface NotionPageItem {
-  slug: string;
-  post: { id: string };
-}
+// interface NotionPageItem {
+//   slug: string;
+//   post: { id: string };
+// }
 
 export async function generateStaticParams() {
   const categories = ['projects', 'resume', 'profile'];
