@@ -32,11 +32,7 @@ const ThemeToggle = () => {
     setIsDarkMode(!isDarkMode);
   };
 
-  return (
-    <button onClick={toggleTheme}>
-      {isDarkMode ? '☀️ 라이트 모드' : '🌙 다크 모드'}
-    </button>
-  );
+  return <button onClick={toggleTheme}>{isDarkMode ? '☀️' : '🌙'}</button>;
 };
 
 export default ThemeToggle;

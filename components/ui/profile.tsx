@@ -2,7 +2,6 @@ import React from 'react';
 
 const Profile = () => {
   return (
-    //    <div className="pb-3 pl-10">
     <div className="mb-3">
       <div className="font-bold text-xl·">Profile</div>
       <div>
