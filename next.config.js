@@ -14,7 +14,12 @@ const nextConfig = {
     NOTION_DATABASE_ID: process.env.NOTION_DATABASE_ID,
   },
   webpack: (config) => {
-    config.resolve.alias['react-lazy-images'] = false; // alias로 제거
+    config.resolve.alias['react-lazy-images'] = false;
+    config.resolve.fallback = {
+      ...config.resolve.fallback,
+      'react-lazy-images': false,
+    };
+
     return config;
   },
 };
