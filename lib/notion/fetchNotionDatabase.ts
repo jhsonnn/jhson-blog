@@ -1,4 +1,4 @@
-import { isPageObjectResponse } from "@/types/notionDataType";
+import { isPageObjectResponse, NotionPageItem } from "@/types/notionDataType";
 import { notion } from "./client";
 import {
   QueryDatabaseResponse,
@@ -27,7 +27,7 @@ function getCache<T>(cache: Map<string, CachedData<T>>, key: string): T | null {
   return cached.data;
 }
 
-const categoryCache = new Map<string, CachedData<any>>();
+const categoryCache = new Map<string, CachedData<NotionPageItem[]>>();
 
 export async function fetchNotionDatabaseByCategory(category: string) {
   const cachedData = getCache(categoryCache, category);
