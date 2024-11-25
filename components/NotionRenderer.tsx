@@ -4,7 +4,11 @@ import {
   PartialBlockObjectResponse,
   RichTextItemResponse,
 } from '@notionhq/client/build/src/api-endpoints';
-import { hasChildren, isFullBlockResponse } from '@/types/notionDataType';
+import {
+  BlockWithChildren,
+  hasChildren,
+  isFullBlockResponse,
+} from '@/types/notionDataType';
 
 interface NotionRendererProps {
   blocks: (BlockObjectResponse | PartialBlockObjectResponse)[];
@@ -22,26 +26,61 @@ const NotionRenderer: React.FC<NotionRendererProps> = ({ blocks }) => (
   </div>
 );
 
+// const renderRichText = (richTextArray: RichTextItemResponse[]) =>
+//   richTextArray.map((richText, index) => {
+//     const { plain_text, href } = richText;
+
+//     if (href) {
+//       return (
+//         <a
+//           key={index}
+//           href={href}
+//           target="_blank"
+//           rel="noopener noreferrer"
+//           className="text-blue-500 hover:underline"
+//         >
+//           {plain_text}
+//         </a>
+//       );
+//     }
+//     return <span key={index}>{plain_text}</span>;
+//   });
+
 const renderRichText = (richTextArray: RichTextItemResponse[]) =>
   richTextArray.map((richText, index) => {
-    const { plain_text, href } = richText;
-    if (href) {
-      return (
-        <a
-          key={index}
-          href={href}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="text-blue-500 hover:underline"
-        >
-          {plain_text}
-        </a>
-      );
-    }
-    return <span key={index}>{plain_text}</span>;
+    const { plain_text, href, annotations } = richText;
+
+    const style: React.CSSProperties = {
+      fontWeight: annotations.bold ? 'bold' : undefined,
+      fontStyle: annotations.italic ? 'italic' : undefined,
+      textDecoration: annotations.underline ? 'underline' : undefined,
+      color: annotations.color !== 'default' ? annotations.color : undefined,
+    };
+
+    return href ? (
+      <a
+        key={index}
+        href={href}
+        target="_blank"
+        rel="noopener noreferrer"
+        style={style}
+        className="hover:underline text-blue-500"
+      >
+        {plain_text}
+      </a>
+    ) : (
+      <span
+        key={index}
+        style={style}
+        className={annotations.bold ? 'font-bold' : ''}
+      >
+        {plain_text}
+      </span>
+    );
   });
 
-const renderBlock = (block: BlockObjectResponse) => {
+//const renderBlock = (block: BlockObjectResponse) => {
+const renderBlock = (block: BlockWithChildren) => {
   switch (block.type) {
     case 'paragraph':
       return (
@@ -52,30 +91,23 @@ const renderBlock = (block: BlockObjectResponse) => {
 
     case 'heading_1':
       return (
-        <h1 className="text-4xl font-bold my-4 mt-10">
+        <h1 className="text-3xl font-bold my-4 mt-10">
           {renderRichText(block.heading_1.rich_text)}
         </h1>
       );
 
     case 'heading_2':
       return (
-        <h2 className="text-3xl font-semibold my-3 mt-10">
+        <h2 className="text-2xl font-semibold my-3 mt-10">
           {renderRichText(block.heading_2.rich_text)}
         </h2>
       );
 
     case 'heading_3':
       return (
-        <h3 className="text-2xl font-medium my-2 mt-10">
+        <h3 className="text-xl font-medium my-2 mt-10">
           {renderRichText(block.heading_3.rich_text)}
         </h3>
-      );
-
-    case 'bulleted_list_item':
-      return (
-        <ul className="list-disc pl-6 my-2">
-          <li>{renderRichText(block.bulleted_list_item.rich_text)}</li>
-        </ul>
       );
 
     case 'column_list':
@@ -103,6 +135,24 @@ const renderBlock = (block: BlockObjectResponse) => {
     case 'divider':
       return <hr className="border-t border-gray-300 my-6" />;
 
+    case 'bulleted_list_item':
+      return (
+        <ul className="list-disc pl-6 my-2">
+          <li>
+            {block.bulleted_list_item.rich_text.map((text, index) => (
+              <span key={index}>{text.plain_text}</span>
+            ))}
+            {/* 하위 children 블록 재귀 렌더링 */}
+            {block.children && block.children.length > 0 && (
+              <ul className="list-disc pl-6 my-2">
+                {block.children.map((childBlock) => (
+                  <li key={childBlock.id}>{renderBlock(childBlock)}</li>
+                ))}
+              </ul>
+            )}
+          </li>
+        </ul>
+      );
     // case "image":
     //   return (
     //     <div >

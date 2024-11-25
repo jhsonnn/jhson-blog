@@ -1,41 +1,54 @@
+import { isFullBlockResponse } from '@/types/notionDataType';
+import { notion } from './client';
+import { BlockObjectResponse } from '@notionhq/client/build/src/api-endpoints';
 
-import { BlockObjectResponse, PartialBlockObjectResponse } from "@notionhq/client/build/src/api-endpoints";
-import { notion } from "./client";
+// BlockWithChildren 타입 정의
+export type BlockWithChildren = BlockObjectResponse & {
+  children?: BlockWithChildren[];
+};
 
-const pageBlocksCache = new Map<string, (BlockObjectResponse | PartialBlockObjectResponse)[]>();
-
-
-// /**
-//  * 특정 페이지의 모든 블록을 가져오는 함수 (페이징 처리 포함)
-//  * @param pageId - 페이지 ID
-//  * @returns 블록의 배열
-//  */
-
-export async function fetchPageContentBlocks(pageId: string): Promise<(BlockObjectResponse | PartialBlockObjectResponse)[]> {
-  if (pageBlocksCache.has(pageId)) {
-    console.log(`Returning cached blocks for page: ${pageId}`);
-    return pageBlocksCache.get(pageId)!;
+export async function fetchPageContentBlocks(
+  pageId: string,
+  depth = 1,
+  maxDepth = 3
+): Promise<BlockWithChildren[]> {
+  if (depth > maxDepth) {
+    console.debug(`Max depth of ${maxDepth} reached for page ${pageId}`);
+    return [];
   }
 
-  const blocks: (BlockObjectResponse | PartialBlockObjectResponse)[] = [];
+  const blocks: BlockWithChildren[] = [];
   let cursor: string | undefined;
 
-  try {
+     try {
     do {
       const { results, next_cursor } = await notion.blocks.children.list({
         block_id: pageId,
         start_cursor: cursor,
       });
 
-      blocks.push(...results);
-      cursor = next_cursor || undefined; // null 값을 undefined로 변환
-    } while (cursor); // cursor가 undefined가 되면 루프 종료
+      for (const block of results) {
+        if (isFullBlockResponse(block)) {
+          const blockWithChildren: BlockWithChildren = { ...block };
 
-    pageBlocksCache.set(pageId, blocks); // 캐시에 저장
-    console.log("Fetched and cached Blocks:", blocks);
+          if (block.has_children) {
+            blockWithChildren.children = await fetchPageContentBlocks(
+              block.id,
+              depth + 1,
+              maxDepth
+            );
+          }
+
+          blocks.push(blockWithChildren);
+        }
+      }
+
+      cursor = next_cursor || undefined;
+    } while (cursor);
+
     return blocks;
   } catch (error) {
-    console.error("Error fetching page blocks:", error);
-    throw new Error("Failed to fetch page blocks");
+    console.error('Error fetching page content blocks:', error);
+    throw new Error('Failed to fetch page content blocks');
   }
 }
