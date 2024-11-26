@@ -272,25 +272,6 @@ export function isFullPageObjectResponse(
   return 'properties' in value;
 }
 
-export function isBlockOfType<T extends BlockObjectResponse['type']>(
-  block: BlockObjectResponse,
-  type: T
-): block is BlockObjectResponse & { type: T } {
-  return block.type === type;
-}
-
-/**
- * BlockWithChildren 타입 정의
- * 기존 BlockObjectResponse에 children 속성을 선택적으로 추가
- */
-// export type BlockWithChildren = BlockObjectResponse & {
-//   children?: BlockObjectResponse[];
-// };
-////////////
-export type BlockWithChildren = BlockObjectResponse & {
-  children?: BlockWithChildren[]; // children을 BlockWithChildren[]으로 설정
-};
-
 // Title property 타입 가드
 export function isTitleProperty(property: Property | undefined): property is {
   id: string;
@@ -342,51 +323,41 @@ export function isRichTextProperty(
   return isPropertyOfType(property, 'rich_text');
 }
 
-export function isFullBlockResponse(
-  block: BlockObjectResponse | PartialBlockObjectResponse
-): block is BlockObjectResponse {
-  return (
-    'type' in block &&
-    'id' in block &&
-    block.object === 'block' &&
-    'has_children' in block
-  );
-}
+// 타입 가드: 블록이 'BlockObjectResponse' 타입인지 확인
+// function isFullBlockResponse(
+//   block: BlockObjectResponse | PartialBlockObjectResponse
+// ): block is BlockObjectResponse {
+//   return block.object === "block";
+// }
 
+// 타입 가드: 블록이 'paragraph' 타입인지 확인
 export function isParagraphBlock(
   block: BlockObjectResponse
 ): block is BlockObjectResponse & { type: 'paragraph' } {
-  return isBlockOfType(block, 'paragraph');
+  return block.type === 'paragraph';
 }
 
+// 타입 가드: 블록이 'heading_1' 타입인지 확인
 export function isHeading1Block(
   block: BlockObjectResponse
 ): block is BlockObjectResponse & { type: 'heading_1' } {
-  return isBlockOfType(block, 'heading_1');
+  return block.type === 'heading_1';
 }
 
-export function isHeading3Block(
-  block: BlockObjectResponse
-): block is BlockObjectResponse & { type: 'heading_3' } {
-  return block.type === 'heading_3';
+// 블록이 완전한 BlockObjectResponse인지 확인
+export function isFullBlockResponse(
+  block: BlockObjectResponse | PartialBlockObjectResponse
+): block is BlockObjectResponse {
+  return 'type' in block && 'id' in block;
 }
 
-export function isBulletedListItemBlock(
-  block: BlockObjectResponse
-): block is BlockObjectResponse & { type: 'bulleted_list_item' } {
-  return block.type === 'bulleted_list_item';
-}
+//
 
-export function isNumberedListItemBlock(
-  block: BlockObjectResponse
-): block is BlockObjectResponse & { type: 'numbered_list_item' } {
-  return block.type === 'numbered_list_item';
-}
-
+// block이 children을 포함하는지 확인
 export function hasChildren(
   block: BlockObjectResponse
 ): block is BlockObjectResponse & { children: BlockObjectResponse[] } {
-  return block.has_children && 'children' in block;
+  return 'children' in block;
 }
 
 // // NotionPageItem 타입
@@ -429,6 +400,7 @@ export interface NotionPageItem {
         id: string;
       };
       '\bthumbnailUrl'?: {
+        // 백슬래시를 포함한 동적 키 추가
         type: 'files';
         files: (
           | {

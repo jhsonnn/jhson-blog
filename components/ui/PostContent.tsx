@@ -2,17 +2,30 @@ import { fetchPageContentBlocks } from '@/lib/notion/fetchPageContentBlocks';
 import { fetchVideoUrl } from '@/lib/notion/fetchVideoUrl';
 import {
   BlockObjectResponse,
+  PartialBlockObjectResponse,
   PageObjectResponse,
   DatabaseObjectResponse,
 } from '@notionhq/client/build/src/api-endpoints';
 import { useEffect, useState } from 'react';
-import {
-  isFullBlockResponse,
-  isHeading1Block,
-  isHeading3Block,
-  isPageObjectResponse,
-  isParagraphBlock,
-} from '@/types/notionDataType';
+import { isPageObjectResponse } from '@/types/notionDataType';
+
+function isFullBlockResponse(
+  block: BlockObjectResponse | PartialBlockObjectResponse
+): block is BlockObjectResponse {
+  return block.object === 'block';
+}
+
+function isParagraphBlock(
+  block: BlockObjectResponse
+): block is BlockObjectResponse & { type: 'paragraph' } {
+  return block.type === 'paragraph';
+}
+
+function isHeading1Block(
+  block: BlockObjectResponse
+): block is BlockObjectResponse & { type: 'heading_1' } {
+  return block.type === 'heading_1';
+}
 
 export default function PostContent({
   pageData,
@@ -71,12 +84,6 @@ export default function PostContent({
             const richText = block.heading_1.rich_text || [];
             const plainText = richText.map((text) => text.plain_text).join('');
             return <h1 key={block.id}>{plainText}</h1>;
-          }
-
-          if (isHeading3Block(block)) {
-            const richText = block.heading_3.rich_text || [];
-            const plainText = richText.map((text) => text.plain_text).join('');
-            return <h3 key={block.id}>{plainText}</h3>;
           }
 
           return <div key={block.id}>Unsupported block type</div>;
