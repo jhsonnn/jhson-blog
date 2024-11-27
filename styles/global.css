@@ -2,20 +2,24 @@
 @tailwind components;
 @tailwind utilities;
 
-@import "react-notion-x/src/styles.css";
-@import "prismjs/themes/prism-tomorrow.css";
-@import "katex/dist/katex.min.css";
+@import 'react-notion-x/src/styles.css';
+@import 'prismjs/themes/prism-tomorrow.css';
+@import 'katex/dist/katex.min.css';
 
-@import "@/public/fonts/static/pretendard.css";
+@import '@/public/fonts/static/pretendard.css';
 
 html,
 body {
-  font-family: "Pretendard", -apple-system, BlinkMacSystemFont, "Malgun Gothic",
-    "맑은 고딕", helvetica, "Apple SD Gothic Neo", sans-serif;
+  font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, 'Malgun Gothic',
+    '맑은 고딕', helvetica, 'Apple SD Gothic Neo', sans-serif;
   word-break: keep-all;
   word-wrap: normal;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 .text-balance {
@@ -29,11 +33,8 @@ body {
   margin-bottom: 1rem;
 }
 
-
 .column-list {
   display: flex;
   flex-wrap: wrap;
   gap: 1rem;
 }
-
-
