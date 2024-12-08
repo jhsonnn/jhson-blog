@@ -8,7 +8,7 @@ import {
   BlockWithChildren,
   hasChildren,
   isFullBlockResponse,
-} from '@/types/notionDataType';
+} from '@/lib/notion/types/notionDataType';
 
 interface NotionRendererProps {
   blocks: (BlockObjectResponse | PartialBlockObjectResponse)[];

@@ -1,5 +1,5 @@
 import { useQuery } from 'react-query';
-import { fetchNotionDatabaseByCategory } from '@/lib/notion/fetchNotionDatabase';
+import { fetchNotionDatabaseByCategory } from '@/lib/notion/api/fetchNotionDatabaseByCategory';
 
 export const useFetchPosts = (category: string) => {
   return useQuery(

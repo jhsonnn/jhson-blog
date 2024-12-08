@@ -247,6 +247,7 @@ import {
   PartialDatabaseObjectResponse,
   PartialPageObjectResponse,
   RichTextItemResponse,
+  TextRichTextItemResponse,
 } from '@notionhq/client/build/src/api-endpoints';
 
 // 타입 가드에 사용할 공통 타입
@@ -389,18 +390,34 @@ export function hasChildren(
   return block.has_children && 'children' in block;
 }
 
-// // NotionPageItem 타입
+// NotionPageItem 타입
 // export interface NotionPageItem {
 //   slug: string;
 //   post: {
 //     id: string;
 //     properties: {
-//       title?: { type: "title"; title: RichTextItemResponse[]; id: string };
+//       title?: { type: 'title'; title: RichTextItemResponse[]; id: string };
 //       thumbnailUrl?: {
-//         type: "files";
+//         type: 'files';
 //         files: (
-//           | { type: "file"; file: { url: string; expiry_time: string }; name: string }
-//           | { type: "external"; external: { url: string }; name: string }
+//           | {
+//               type: 'file';
+//               file: { url: string; expiry_time: string };
+//               name: string;
+//             }
+//           | { type: 'external'; external: { url: string }; name: string }
+//         )[];
+//         id: string;
+//       };
+//       '\bthumbnailUrl'?: {
+//         type: 'files';
+//         files: (
+//           | {
+//               type: 'file';
+//               file: { url: string; expiry_time: string };
+//               name: string;
+//             }
+//           | { type: 'external'; external: { url: string }; name: string }
 //         )[];
 //         id: string;
 //       };
@@ -409,7 +426,7 @@ export function hasChildren(
 //   };
 // }
 
-// NotionPageItem 타입
+//lib/notion/types/notionDataType.ts
 export interface NotionPageItem {
   slug: string;
   post: {
@@ -424,23 +441,135 @@ export interface NotionPageItem {
               file: { url: string; expiry_time: string };
               name: string;
             }
-          | { type: 'external'; external: { url: string }; name: string }
-        )[];
-        id: string;
-      };
-      '\bthumbnailUrl'?: {
-        type: 'files';
-        files: (
           | {
-              type: 'file';
-              file: { url: string; expiry_time: string };
+              type: 'external';
+              external: { url: string };
               name: string;
             }
-          | { type: 'external'; external: { url: string }; name: string }
         )[];
         id: string;
       };
     };
     created_time: string;
   };
+}
+
+export interface SelectProperty {
+  type: 'select';
+  select: {
+    name: string;
+  } | null;
+}
+
+export interface NotionPage {
+  properties: {
+    category?: SelectProperty;
+  };
+}
+
+/**
+ * SelectColor 타입 정의
+ */
+export type SelectColor =
+  | 'default'
+  | 'gray'
+  | 'brown'
+  | 'orange'
+  | 'yellow'
+  | 'green'
+  | 'blue'
+  | 'purple'
+  | 'pink'
+  | 'red';
+
+/**
+ * PartialSelectResponse 타입 정의
+ */
+export type PartialSelectResponse = {
+  id: string;
+  name: string;
+  color: SelectColor;
+};
+
+/**
+ * SelectPropertyResponse 타입 정의
+ */
+export type SelectPropertyResponse = {
+  id: string;
+  type: 'select';
+  select: PartialSelectResponse | null;
+};
+
+// export function isSelectProperty(
+//   property: PageObjectResponse['properties'][string] | undefined
+// ): property is {
+//   id: string;
+//   type: 'select';
+//   select: PartialSelectResponse | null;
+// } {
+//   return property?.type === 'select';
+// }
+
+export function isSelectProperty(
+  property:
+    | PageObjectResponse['properties'][string]
+    | SelectProperty
+    | undefined
+): property is SelectProperty {
+  // property가 select 타입이면 true 반환
+  return property?.type === 'select';
+}
+
+// export function isCategoryProperty(result: PageObjectResponse): boolean {
+//   const categoryProperty = result.properties.category;
+//   return (
+//     categoryProperty &&
+//     categoryProperty.type === 'select' &&
+//     !!categoryProperty.select?.name
+//   );
+// }
+
+export function isCategoryProperty(result: PageObjectResponse): boolean {
+  const categoryProperty = result.properties.category;
+  return isSelectProperty(categoryProperty) && !!categoryProperty.select?.name;
+}
+export interface SelectPropertyWithId {
+  type: 'select';
+  select: PartialSelectResponse | null;
+  id: string;
+}
+
+// 타입 가드: RichTextItemResponse가 TextRichTextItemResponse인지 확인
+export function isTextRichTextItemResponse(
+  item: unknown
+): item is TextRichTextItemResponse {
+  return (
+    typeof item === 'object' &&
+    item !== null &&
+    'type' in item &&
+    item.type === 'text'
+  );
+}
+
+export interface ApiResponse {
+  id: string;
+  slug: string;
+  title: string;
+  created_time: string;
+}
+
+export function isValidPageObject(page: PageObjectResponse): boolean {
+  return (
+    page.properties &&
+    'category' in page.properties &&
+    'title' in page.properties &&
+    'slug' in page.properties
+  );
+}
+
+export interface Post {
+  id: string;
+  title: string;
+  slug: string;
+  created_time: string;
 }

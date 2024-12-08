@@ -1,5 +1,5 @@
-import { fetchPageContentBlocks } from '@/lib/notion/fetchPageContentBlocks';
-import { fetchVideoUrl } from '@/lib/notion/fetchVideoUrl';
+import { fetchPageContentBlocks } from '@/lib/notion/utils/fetchPageContentBlocks';
+import { fetchVideoUrl } from '@/lib/notion/utils/fetchVideoUrl';
 import {
   BlockObjectResponse,
   PartialBlockObjectResponse,
@@ -7,7 +7,7 @@ import {
   DatabaseObjectResponse,
 } from '@notionhq/client/build/src/api-endpoints';
 import { useEffect, useState } from 'react';
-import { isPageObjectResponse } from '@/types/notionDataType';
+import { isPageObjectResponse } from '@/lib/notion/types/notionDataType';
 
 function isFullBlockResponse(
   block: BlockObjectResponse | PartialBlockObjectResponse

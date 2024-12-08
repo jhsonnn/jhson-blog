@@ -1,6 +1,9 @@
 {
   "compilerOptions": {
-    "types": ["@testing-library/jest-dom", "@testing-library/react"],
+    "types": [
+      "@testing-library/jest-dom",
+      "@testing-library/react"
+    ],
     "lib": [
       "dom",
       "dom.iterable",
@@ -54,9 +57,9 @@
     "next-env.d.ts",
     "**/*.ts",
     "**/*.tsx",
-    ".next/types/**/*.ts",
-    "jest.setup.ts"
-  ],
+    "jest.setup.ts",
+    ".next/types/**/*.ts"
+, "notion-api-test.mjs"  ],
   "exclude": [
     "node_modules"
   ]

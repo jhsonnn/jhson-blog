@@ -1,0 +1,71 @@
+
+// //lib/api/fetchPageContentBlocks.ts
+// import { BlockObjectResponse, PartialBlockObjectResponse } from "@notionhq/client/build/src/api-endpoints";
+// import { notion } from "../client";
+
+import { notion } from "../client";
+
+// const pageBlocksCache = new Map<string, (BlockObjectResponse | PartialBlockObjectResponse)[]>();
+
+
+// // /**
+// //  * 특정 페이지의 모든 블록을 가져오는 함수 (페이징 처리 포함)
+// //  * @param pageId - 페이지 ID
+// //  * @returns 블록의 배열
+// //  */
+
+// export async function fetchPageContentBlocks(pageId: string): Promise<(BlockObjectResponse | PartialBlockObjectResponse)[]> {
+//   if (pageBlocksCache.has(pageId)) {
+//     console.log(`Returning cached blocks for page: ${pageId}`);
+//     return pageBlocksCache.get(pageId)!;
+//   }
+
+//   const blocks: (BlockObjectResponse | PartialBlockObjectResponse)[] = [];
+//   let cursor: string | undefined;
+
+//   try {
+//     do {
+//       const { results, next_cursor } = await notion.blocks.children.list({
+//         block_id: pageId,
+//         start_cursor: cursor,
+//         page_size: 20,
+//       });
+
+//       blocks.push(...results);
+//       cursor = next_cursor || undefined; // null 값을 undefined로 변환
+//     } while (cursor); // cursor가 undefined가 되면 루프 종료
+
+//     pageBlocksCache.set(pageId, blocks); // 캐시에 저장
+//     console.log("Fetched and cached Blocks:", blocks);
+//     return blocks;
+//   } catch (error) {
+//     console.error("Error fetching page blocks:", error);
+//     throw new Error("Failed to fetch page blocks");
+//   }
+// }
+
+export async function fetchPageContentBlocks(pageId: string) {
+  try {
+    const blocks = [];
+    let cursor;
+
+    do {
+      const { results, next_cursor } = await notion.blocks.children.list({
+        block_id: pageId,
+        start_cursor: cursor,
+      });
+
+      blocks.push(...results);
+      cursor = next_cursor;
+    } while (cursor);
+
+    if (!blocks.length) {
+      console.warn(`⚠️ No blocks found for page ID: ${pageId}`);
+    }
+
+    return blocks;
+  } catch (error) {
+    console.error('Error fetching page content blocks:', error);
+    throw new Error('Failed to fetch page blocks');
+  }
+}
