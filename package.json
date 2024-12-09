@@ -3,15 +3,15 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-  "dev": "next dev",
-  "build": "next build",
-  "start": "next start",
-  "dev:local": "cross-env NODE_ENV=development next dev",
-  "build:prod": "cross-env NODE_ENV=production next build",
-  "start:prod": "cross-env NODE_ENV=production next start",
-  "lint": "next lint",
-  "test": "jest"
-},
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "dev:local": "cross-env NODE_ENV=development next dev",
+    "build:prod": "cross-env NODE_ENV=production next build",
+    "start:prod": "cross-env NODE_ENV=production next start",
+    "lint": "next lint",
+    "test": "jest"
+  },
   "dependencies": {
     "@notionhq/client": "^2.2.15",
     "@tailwindcss/typography": "^0.5.15",
@@ -23,7 +23,7 @@
     "http-errors": "^2.0.0",
     "katex": "^0.16.11",
     "next": "14.2.7",
-    "next-themes": "^0.4.3",
+    "next-themes": "^0.4.4",
     "notion-client": "^6.16.0",
     "notion-to-md": "^3.1.1",
     "notion-types": "^6.16.0",
