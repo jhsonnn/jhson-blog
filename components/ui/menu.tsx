@@ -823,6 +823,64 @@
 // export default Menu;
 
 ///
+//////////
+//components/ui/menu.tsx
+// 'use client';
+
+// import Link from 'next/link';
+// import { useEffect, useState } from 'react';
+
+// const Menu = () => {
+//   const [categories, setCategories] = useState<string[]>([]);
+//   const [error, setError] = useState<string | null>(null);
+
+//   useEffect(() => {
+//     const loadCategories = async () => {
+//       try {
+//         const response = await fetch('/api/category');
+
+//         if (!response.ok) {
+//           const errorText = await response.text();
+//           throw new Error(`Failed to fetch categories: ${errorText}`);
+//         }
+
+//         const data: string[] = await response.json();
+//         setCategories(data);
+//       } catch (err: unknown) {
+//         const errorMessage =
+//           err instanceof Error ? err.message : 'Unknown error occurred';
+//         console.error('[Menu] Error loading categories:', errorMessage);
+//         setError(errorMessage);
+//       }
+//     };
+
+//     loadCategories();
+//   }, []);
+
+//   if (error) {
+//     return <div>Error: {error}</div>;
+//   }
+
+//   return (
+//     <nav>
+//       <ul className="font-bold flex flex-col sm:flex-row md:flex-row lg:flex-col lg:space-x-0 sm:space-x-4">
+//         {categories.map((category) => (
+//           <li
+//             key={category}
+//             className="hover:text-blue-400 cursor-pointer mb-1"
+//           >
+//             {/* 카테고리 클릭 시 해당 카테고리 동적 라우트로 이동 */}
+//             <Link href={`/${category}`}>{category}</Link>
+//           </li>
+//         ))}
+//       </ul>
+//     </nav>
+//   );
+// };
+
+// export default Menu;
+
+// components/ui/menu.tsx
 'use client';
 
 import Link from 'next/link';
@@ -831,6 +889,7 @@ import { useEffect, useState } from 'react';
 const Menu = () => {
   const [categories, setCategories] = useState<string[]>([]);
   const [error, setError] = useState<string | null>(null);
+  const [loading, setLoading] = useState<boolean>(true);
 
   useEffect(() => {
     const loadCategories = async () => {
@@ -839,21 +898,34 @@ const Menu = () => {
 
         if (!response.ok) {
           const errorText = await response.text();
+          console.error('Failed to fetch categories:', errorText);
           throw new Error(`Failed to fetch categories: ${errorText}`);
         }
 
         const data: string[] = await response.json();
-        setCategories(data);
-      } catch (err: unknown) {
+
+        if (!data || data.length === 0) {
+          setError('No categories available.');
+          setCategories([]);
+        } else {
+          setCategories(data);
+        }
+      } catch (error: unknown) {
         const errorMessage =
-          err instanceof Error ? err.message : 'Unknown error occurred';
-        console.error('[Menu] Error loading categories:', errorMessage);
+          error instanceof Error ? error.message : 'Unknown error occurred';
+        console.error('Error loading categories:', errorMessage);
         setError(errorMessage);
+      } finally {
+        setLoading(false);
       }
     };
 
     loadCategories();
   }, []);
+
+  if (loading) {
+    return <div>Loading categories...</div>;
+  }
 
   if (error) {
     return <div>Error: {error}</div>;
@@ -867,7 +939,6 @@ const Menu = () => {
             key={category}
             className="hover:text-blue-400 cursor-pointer mb-1"
           >
-            {/* 카테고리 클릭 시 해당 카테고리 동적 라우트로 이동 */}
             <Link href={`/${category}`}>{category}</Link>
           </li>
         ))}

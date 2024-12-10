@@ -381,63 +381,281 @@
 //     return <div>Error loading posts. Please try again later.</div>;
 //   }
 // }
-import Post from '@/components/ui/Post';
+// import Post from '@/components/ui/Post';
+// import Link from 'next/link';
+// import { ApiResponse } from '@/lib/notion/types/notionDataType'; // 기존에 정의된 ApiResponse 타입 가져오기
+
+// interface PageProps {
+//   params: { category: string };
+// }
+
+// export default async function CategoryPage({ params }: PageProps) {
+//   const { category } = params;
+
+//   try {
+//     // API URL 설정
+//     const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000';
+//     const response = await fetch(`${apiUrl}/api/post/${category}`, {
+//       cache: 'no-store',
+//     });
+
+//     // 응답 확인
+//     if (!response.ok) {
+//       console.error('Failed to fetch posts:', response.status);
+//       throw new Error('Failed to fetch posts');
+//     }
+
+//     // 데이터 파싱 및 타입 정의
+//     const posts: ApiResponse[] = await response.json();
+
+//     // 데이터가 없을 경우
+//     if (!posts || posts.length === 0) {
+//       return <div>No posts found for category: {category}</div>;
+//     }
+
+//     return (
+//       <div>
+//         <ul>
+//           {posts.map(({ id, slug, title, created_time }) => {
+//             const thumbnailUrl = '/default-thumbnail.png';
+
+//             return (
+//               <li key={id}>
+//                 <Link href={`/${category}/${slug}`}>
+//                   <Post
+//                     title={title}
+//                     slug={slug}
+//                     date={created_time}
+//                     thumbnailUrl={thumbnailUrl}
+//                     category={category}
+//                   />
+//                 </Link>
+//               </li>
+//             );
+//           })}
+//         </ul>
+//       </div>
+//     );
+//   } catch (error) {
+//     console.error('Error loading posts:', error);
+//     return <div>Error loading posts. Please try again later.</div>;
+//   }
+// }
+
+//// 정상작동함
+//app/[category]/page.tsx
+
+// import Post from '@/components/ui/Post';
+// import Link from 'next/link';
+// import { ApiResponse } from '@/lib/notion/types/notionDataType';
+
+// interface PageProps {
+//   params: { category: string };
+// }
+
+// export default async function CategoryPage({ params }: PageProps) {
+//   const { category } = params;
+
+//   try {
+//     const apiUrl =
+//       `${process.env.NEXT_PUBLIC_API_URL}/api/post/${category}`.replace(
+//         /([^:]\/)\/+/g,
+//         '$1'
+//       );
+//     console.log('Fetching posts from:', apiUrl);
+
+//     const response = await fetch(apiUrl, {
+//       cache: 'no-store',
+//     });
+
+//     if (!response.ok) {
+//       console.error(`Failed to fetch posts. Status: ${response.status}`);
+//       throw new Error(`Failed to fetch posts for category: ${category}`);
+//     }
+
+//     const posts: ApiResponse[] = await response.json();
+//     console.log('Received posts:', posts);
+
+//     if (!posts || posts.length === 0) {
+//       return <div>No posts found for category: {category}</div>;
+//     }
+
+//     return (
+//       <div>
+//         <ul>
+//           {posts.map(({ id, slug, title, created_time, thumbnailUrl }) => {
+//             const thumbnail = thumbnailUrl || '/default-thumbnail.png';
+
+//             return (
+//               <li key={id}>
+//                 <Link href={`/${category}/${slug}`}>
+//                   <Post
+//                     title={title}
+//                     slug={slug}
+//                     date={created_time}
+//                     thumbnailUrl={thumbnail}
+//                     category={category}
+//                   />
+//                 </Link>
+//               </li>
+//             );
+//           })}
+//         </ul>
+//       </div>
+//     );
+//   } catch (error) {
+//     console.error('Error loading posts:', error);
+//     return <div>Error loading posts. Please try again later.</div>;
+//   }
+// }
+
+// import Post from '@/components/ui/Post';
+// import Link from 'next/link';
+// import { ApiResponse } from '@/lib/notion/types/notionDataType';
+
+// interface PageProps {
+//   params: { category: string };
+// }
+
+// export default async function CategoryPage({ params }: PageProps) {
+//   const { category } = params;
+
+//   try {
+//     const apiUrl =
+//       `${process.env.NEXT_PUBLIC_API_URL}/api/post/${category}`.replace(
+//         /([^:]\/)\/+/g,
+//         '$1'
+//       );
+//     console.log('Fetching posts from:', apiUrl);
+
+//     const response = await fetch(apiUrl, {
+//       cache: 'no-store',
+//     });
+
+//     if (!response.ok) {
+//       console.error(`Failed to fetch posts. Status: ${response.status}`);
+//       throw new Error(`Failed to fetch posts for category: ${category}`);
+//     }
+
+//     const posts: ApiResponse[] = await response.json();
+//     console.log('Received posts:', posts);
+
+//     if (!posts || posts.length === 0) {
+//       return <div>No posts found for category: {category}</div>;
+//     }
+
+//     return (
+//       <div>
+//         <ul>
+//           {posts.map((post) => {
+//             // Extract thumbnail URL
+//             let thumbnail = '/default-thumbnail.png';
+//             const thumbnailProperty = post.thumbnailUrl;
+
+//             if (thumbnailProperty) {
+//               if (
+//                 thumbnailProperty.type === 'files' &&
+//                 thumbnailProperty.files.length > 0
+//               ) {
+//                 const file = thumbnailProperty.files[0];
+//                 if (file.type === 'file') {
+//                   thumbnail = file.file.url;
+//                 } else if (file.type === 'external') {
+//                   thumbnail = file.external.url;
+//                 }
+//               }
+//             }
+
+//             return (
+//               <li key={post.id}>
+//                 <Link href={`/${category}/${post.slug}`}>
+//                   <Post
+//                     title={post.title || 'Untitled'}
+//                     slug={post.slug}
+//                     date={post.created_time}
+//                     thumbnailUrl={thumbnail}
+//                     category={category}
+//                   />
+//                 </Link>
+//               </li>
+//             );
+//           })}
+//         </ul>
+//       </div>
+//     );
+//   } catch (error) {
+//     console.error('Error loading posts:', error);
+//     return <div>Error loading posts. Please try again later.</div>;
+//   }
+// }
+
+// ///
+// import { NextResponse } from 'next/server';
+// import { fetchNotionDatabaseByCategory } from '@/lib/notion/api/fetchNotionDatabaseByCategory';
+
+// export async function GET(
+//   req: Request,
+//   { params }: { params: { category: string } }
+// ) {
+//   const { category } = params;
+
+//   try {
+//     const posts = await fetchNotionDatabaseByCategory(category);
+
+//     if (posts.length === 0) {
+//       return NextResponse.json({ error: 'No posts found' }, { status: 404 });
+//     }
+
+//     return NextResponse.json(posts);
+//   } catch (error) {
+//     console.error('Error fetching posts:', error);
+//     return NextResponse.json(
+//       { error: 'Failed to fetch posts' },
+//       { status: 500 }
+//     );
+//   }
+// }
+
+import { fetchNotionDatabaseByCategory } from '@/lib/notion/api/fetchNotionDatabaseByCategory';
 import Link from 'next/link';
-import { ApiResponse } from '@/lib/notion/types/notionDataType'; // 기존에 정의된 ApiResponse 타입 가져오기
+import Post from '@/components/ui/Post';
+import { fetchNotionCategories } from '@/lib/notion/fetchNotionCategories';
 
-interface PageProps {
+export default async function CategoryPage({
+  params,
+}: {
   params: { category: string };
-}
-
-export default async function CategoryPage({ params }: PageProps) {
+}) {
   const { category } = params;
 
-  try {
-    // API URL 설정
-    const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000';
-    const response = await fetch(`${apiUrl}/api/post/${category}`, {
-      cache: 'no-store',
-    });
+  const posts = await fetchNotionDatabaseByCategory(category);
 
-    // 응답 확인
-    if (!response.ok) {
-      console.error('Failed to fetch posts:', response.status);
-      throw new Error('Failed to fetch posts');
-    }
-
-    // 데이터 파싱 및 타입 정의
-    const posts: ApiResponse[] = await response.json();
-
-    // 데이터가 없을 경우
-    if (!posts || posts.length === 0) {
-      return <div>No posts found for category: {category}</div>;
-    }
-
-    return (
-      <div>
-        <ul>
-          {posts.map(({ id, slug, title, created_time }) => {
-            const thumbnailUrl = '/default-thumbnail.png';
-
-            return (
-              <li key={id}>
-                <Link href={`/${category}/${slug}`}>
-                  <Post
-                    title={title}
-                    slug={slug}
-                    date={created_time}
-                    thumbnailUrl={thumbnailUrl}
-                    category={category}
-                  />
-                </Link>
-              </li>
-            );
-          })}
-        </ul>
-      </div>
-    );
-  } catch (error) {
-    console.error('Error loading posts:', error);
-    return <div>Error loading posts. Please try again later.</div>;
+  if (posts.length === 0) {
+    return <div>No posts found for category: {category}</div>;
   }
+
+  return (
+    <div>
+      <ul>
+        {posts.map(({ id, slug, title, thumbnailUrl, created_time }) => (
+          <li key={id}>
+            <Link href={`/${category}/${slug}`}>
+              <Post
+                title={title}
+                slug={slug}
+                date={created_time}
+                thumbnailUrl={thumbnailUrl}
+                category={category}
+              />
+            </Link>
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
+}
+
+export async function generateStaticParams() {
+  const categories = await fetchNotionCategories();
+  return categories.map((category) => ({ category }));
 }

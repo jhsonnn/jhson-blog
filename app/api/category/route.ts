@@ -383,21 +383,83 @@
 //   }
 // }
 
+// // app/api/category/route.ts
+// import { NextResponse } from "next/server";
+// import { notion } from "@/lib/notion/client";
+// interface PartialSelectResponse {
+//   name: string;
+//   id: string;
+//   color: string;
+// }
 
+// function isPartialSelectResponse(
+//   select: unknown
+// ): select is PartialSelectResponse {
+//   return (
+//     typeof select === 'object' &&
+//     select !== null &&
+//     'name' in select &&
+//     'id' in select &&
+//     'color' in select
+//   );
+// }
+
+// export async function GET() {
+//   try {
+//     const response = await notion.databases.query({
+//       database_id: process.env.NOTION_DATABASE_ID!,
+//     });
+
+//     console.log('API Response:', response.results);
+
+//     if (!response.results || response.results.length === 0) {
+//       return NextResponse.json({ error: 'No categories found' }, { status: 404 });
+//     }
+
+//     const categories = response.results
+//       .map((page) => {
+//         if ('properties' in page && page.properties?.category) {
+//           const categoryProperty = page.properties.category;
+//           if (
+//             categoryProperty.type === 'select' &&
+//             isPartialSelectResponse(categoryProperty.select)
+//           ) {
+//             return categoryProperty.select.name;
+//           }
+//         }
+//         return null;
+//       })
+//       .filter((category): category is string => Boolean(category)); // null 제거
+
+//     if (!categories.length) {
+//       return NextResponse.json({ error: 'No valid categories found' }, { status: 404 });
+//     }
+
+//     console.log('Categories:', categories);
+//     return NextResponse.json([...new Set(categories)]); // 중복 제거
+//   } catch (error) {
+//     console.error('Error fetching categories:', error);
+//     return NextResponse.json(
+//       { error: 'Failed to fetch categories' },
+//       { status: 500 }
+//     );
+//   }
+// }
+
+////
+//진행중
 import { NextResponse } from "next/server";
-import { notion } from "@/lib/notion/client";
+import { fetchNotionCategories } from "@/lib/notion/fetchNotionCategories";
 
 export async function GET() {
   try {
-    const response = await notion.databases.query({
-      database_id: process.env.NOTION_DATABASE_ID!,
-    });
+    const categories = await fetchNotionCategories();
 
-    const categories = response.results
-      .map((page: any) => page.properties.category?.select?.name)
-      .filter(Boolean);
+    if (categories.length === 0) {
+      return NextResponse.json({ error: "No categories found" }, { status: 404 });
+    }
 
-    return NextResponse.json([...new Set(categories)]);
+    return NextResponse.json(categories);
   } catch (error) {
     console.error("Error fetching categories:", error);
     return NextResponse.json(

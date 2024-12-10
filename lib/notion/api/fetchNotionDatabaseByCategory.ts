@@ -341,151 +341,82 @@
 
 
 // lib/notion/api/fetchNotionDatabaseByCategory.ts
-// import { notion, NOTION_DATABASE_ID } from '../database';
-// import { fetchCategoryOptions } from './fetchCategories';
-// import { NotionPageItem } from '../types/notionDataType';
-// import { PageObjectResponse } from '@notionhq/client/build/src/api-endpoints';
+import { notion } from "@/lib/notion/client";
+import {
+  PageObjectResponse,
+  QueryDatabaseResponse,
+} from "@notionhq/client/build/src/api-endpoints";
 
-// export const fetchNotionDatabaseByCategory = async (
-//   category: string
-// ): Promise<NotionPageItem[]> => {
-//   try {
-//     const validCategories = await fetchCategoryOptions();
-
-//     if (!validCategories.includes(category)) {
-//       console.warn(`Invalid category: ${category}. Must be one of: ${validCategories.join(', ')}`);
-//       return [];
-//     }
-
-//     const queryResponse = await notion.databases.query({
-//       database_id: NOTION_DATABASE_ID,
-//       filter: {
-//         property: 'category',
-//         select: {
-//           equals: category,
-//         },
-//       },
-//     });
-
-//     // PageObjectResponse 타입을 사용하는 안전한 변환
-//     const results = queryResponse.results
-//       .filter((page): page is PageObjectResponse => 'properties' in page)
-//       .map((page) => {
-//         const slug = page.properties.slug?.type === 'rich_text'
-//           ? page.properties.slug.rich_text[0]?.plain_text || ''
-//           : '';
-
-//         return {
-//           slug,
-//           post: page,
-//         } as NotionPageItem;
-//       });
-
-//     console.log('Query Response Results:', results);
-//     return results;
-//   } catch (error) {
-//     console.error('Error querying database by category:', error);
-//     throw error;
-//   }
-// };
-// lib/notion/api/fetchNotionDatabaseByCategory.ts
-// import { notion, NOTION_DATABASE_ID } from '../database';
-// import { isRichTextProperty, NotionPageItem } from '@/lib/notion/types/notionDataType';
-// import { PageObjectResponse } from '@notionhq/client/build/src/api-endpoints';
-
-// export const fetchNotionDatabaseByCategory = async (
-//   category: string
-// ): Promise<NotionPageItem[]> => {
-//   try {
-//     const queryResponse = await notion.databases.query({
-//       database_id: NOTION_DATABASE_ID,
-//       filter: {
-//         property: 'category',
-//         select: {
-//           equals: category,
-//         },
-//       },
-//     });
-
-//     const results = queryResponse.results
-//       .filter((page): page is PageObjectResponse => 'properties' in page)
-//       .map((page) => {
-//         const slug =
-//           page.properties.slug?.type === 'rich_text'
-//             ? page.properties.slug.rich_text[0]?.plain_text || ''
-//             : '';
-
-//         return {
-//           slug,
-//           post: page,
-//         } as NotionPageItem;
-//       });
-
-//     console.log('Query Response Results:', results);
-//     return results;
-//   } catch (error) {
-//     console.error('Error querying database by category:', error);
-//     throw error;
-//   }
-// };
-
-//카테고리별 데이터 조회
-// lib/notion/api/fetchNotionDatabaseByCategory.ts
-
-import { notion } from '../database';
-
-export const fetchNotionDatabaseByCategory = async (category: string) => {
-  console.log("Querying database with category:", category);
-
-// 유효한 category 값을 동적으로 가져오는 함수
-const fetchCategoryOptions = async () => {
-  try {
-    // 데이터베이스 메타 정보 가져오기
-    const databaseInfo = await notion.databases.retrieve({
-      database_id: process.env.NOTION_DATABASE_ID!,
-    });
-
-    // category 속성 가져오기
-    const categoryProperty = databaseInfo.properties["category"];
-    if (categoryProperty?.type === "select") {
-      // select 옵션 이름 배열 반환
-      const options = categoryProperty.select.options.map((option) => option.name);
-      console.log("Available categories:", options);
-      return options;
-    }
-
-    throw new Error("Category property not found or is not a select type");
-  } catch (error) {
-    console.error("Error fetching category options:", error);
-    throw error;
-  }
-  };
-  
-  try {
-    // 유효한 category 옵션 가져오기
-    const validCategories = await fetchCategoryOptions();
-
-    // 유효하지 않은 category 값이면 에러 처리
-    if (!validCategories.includes(category)) {
-      console.warn(`Invalid category: ${category}. Must be one of: ${validCategories.join(", ")}`);
-      return [];
-    }
-
-    // 유효한 category 값으로 데이터베이스 쿼리
-    const queryResponse = await notion.databases.query({
-      database_id: process.env.NOTION_DATABASE_ID!,
-      filter: {
-        property: "category",
-        select: {
-          equals: category
-        },
-      },
-    });
-
-    console.log("Query Response Results:", JSON.stringify(queryResponse.results, null, 2));
-    return queryResponse.results;
-  } catch (error) {
-    console.error("Error querying database:", error);
-    throw error;
-  }
+/**
+ * 파일 객체에 대한 사용자 정의 타입
+ */
+type FileObject = {
+  type: "file";
+  file: { url: string; expiry_time: string };
+  name: string;
 };
+
+type ExternalObject = {
+  type: "external";
+  external: { url: string };
+  name: string;
+};
+
+type FileValue = FileObject | ExternalObject;
+
+/**
+ * 파일이 'file' 타입인지 확인
+ */
+function isFileProperty(file: FileValue): file is FileObject {
+  return file.type === "file";
+}
+
+/**
+ * 파일이 'external' 타입인지 확인
+ */
+function isExternalProperty(file: FileValue): file is ExternalObject {
+  return file.type === "external";
+}
+
+export async function fetchNotionDatabaseByCategory(category: string) {
+  const response: QueryDatabaseResponse = await notion.databases.query({
+    database_id: process.env.NOTION_DATABASE_ID!,
+    filter: {
+      property: "category",
+      select: { equals: category },
+    },
+  });
+
+  return response.results
+    .filter((result): result is PageObjectResponse => "properties" in result)
+    .map((post) => {
+      const properties = post.properties;
+
+      let thumbnailUrl = "/default-thumbnail.png";
+      if (
+        properties.thumbnailUrl?.type === "files" &&
+        properties.thumbnailUrl.files.length > 0
+      ) {
+        const file = properties.thumbnailUrl.files[0] as FileValue;
+        if (isFileProperty(file)) {
+          thumbnailUrl = file.file.url; // 'file' 타입
+        } else if (isExternalProperty(file)) {
+          thumbnailUrl = file.external.url; // 'external' 타입
+        }
+      }
+
+      return {
+        id: post.id,
+        slug:
+          properties.slug?.type === "rich_text"
+            ? properties.slug.rich_text[0]?.plain_text
+            : "no-slug",
+        title:
+          properties.title?.type === "title"
+            ? properties.title.title[0]?.plain_text
+            : "Untitled",
+        created_time: post.created_time,
+        thumbnailUrl,
+      };
+    });
+}

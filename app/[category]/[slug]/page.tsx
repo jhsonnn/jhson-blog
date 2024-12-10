@@ -266,6 +266,62 @@
 
 // app/[category]/[slug]/page.tsx
 
+// import NotionRenderer from '@/components/NotionRenderer';
+// import { ApiResponse } from '@/lib/notion/types/notionDataType';
+// import { BlockObjectResponse } from '@notionhq/client/build/src/api-endpoints';
+
+// interface PageProps {
+//   params: { category: string; slug: string };
+// }
+
+// export default async function ContentPage({ params }: PageProps) {
+//   const { category, slug } = params;
+
+//   try {
+//     const response = await fetch(
+//       `${process.env.NEXT_PUBLIC_API_URL}/api/post/${category}`,
+//       { cache: 'no-store' }
+//     );
+
+//     if (!response.ok) {
+//       throw new Error('Failed to fetch posts');
+//     }
+
+//     const posts: ApiResponse[] = await response.json();
+//     const pageData = posts.find(
+//       (item) => item.slug.toLowerCase() === slug.toLowerCase()
+//     );
+
+//     if (!pageData) {
+//       console.error(`Page data not found for slug: ${slug}`);
+//       return <div>Page not found for slug: {slug}</div>;
+//     }
+
+//     console.log('page Data:???', pageData);
+
+//     const blocksResponse = await fetch(
+//       `${process.env.NEXT_PUBLIC_API_URL}/api/block/${pageData.id}`
+//     );
+
+//     if (!blocksResponse.ok) {
+//       console.error(`Failed to fetch blocks for pageId: ${pageData.id}`);
+//       return <div>Blocks not found for this page</div>;
+//     }
+
+//     const blocks: BlockObjectResponse[] = await blocksResponse.json();
+
+//     return (
+//       <div className="bg-neutral-100 dark:bg-neutral-700 px-20 py-5 rounded-lg">
+//         <NotionRenderer blocks={blocks} />
+//       </div>
+//     );
+//   } catch (error) {
+//     console.error('Error loading page content:', error);
+//     return <div>Error loading content. Please try again later.</div>;
+//   }
+// }
+
+// app/[category]/[slug]/page.tsx
 import NotionRenderer from '@/components/NotionRenderer';
 import { ApiResponse } from '@/lib/notion/types/notionDataType';
 import { BlockObjectResponse } from '@notionhq/client/build/src/api-endpoints';
@@ -278,16 +334,18 @@ export default async function ContentPage({ params }: PageProps) {
   const { category, slug } = params;
 
   try {
-    const response = await fetch(
-      `${process.env.NEXT_PUBLIC_API_URL}/api/post/${category}`,
-      { cache: 'no-store' }
-    );
+    const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000';
+    const response = await fetch(`${apiUrl}/api/post/${category}`, {
+      cache: 'no-store',
+    });
 
     if (!response.ok) {
-      throw new Error('Failed to fetch posts');
+      console.error(`Failed to fetch posts. Status: ${response.status}`);
+      throw new Error(`Failed to fetch posts for category: ${category}`);
     }
 
     const posts: ApiResponse[] = await response.json();
+
     const pageData = posts.find(
       (item) => item.slug.toLowerCase() === slug.toLowerCase()
     );
@@ -297,18 +355,29 @@ export default async function ContentPage({ params }: PageProps) {
       return <div>Page not found for slug: {slug}</div>;
     }
 
-    console.log('page Data:???', pageData);
+    if (!pageData.id) {
+      console.error('Page ID not found in pageData:', pageData);
+      return <div>Error: Page ID not found.</div>;
+    }
 
-    const blocksResponse = await fetch(
-      `${process.env.NEXT_PUBLIC_API_URL}/api/block/${pageData.id}`
-    );
+    console.log('Page Data:', pageData); // pageData의 내용 확인
+
+    const blocksResponse = await fetch(`${apiUrl}/api/block/${pageData.id}`, {
+      cache: 'no-store',
+    });
 
     if (!blocksResponse.ok) {
       console.error(`Failed to fetch blocks for pageId: ${pageData.id}`);
-      return <div>Blocks not found for this page</div>;
+      throw new Error(`Failed to fetch blocks for pageId: ${pageData.id}`);
     }
 
     const blocks: BlockObjectResponse[] = await blocksResponse.json();
+    console.log('Received Blocks:', blocks); // blocks의 내용 확인
+
+    if (!blocks || blocks.length === 0) {
+      console.error('No blocks data found.');
+      return <div>No content available.</div>;
+    }
 
     return (
       <div className="bg-neutral-100 dark:bg-neutral-700 px-20 py-5 rounded-lg">
@@ -316,7 +385,13 @@ export default async function ContentPage({ params }: PageProps) {
       </div>
     );
   } catch (error) {
-    console.error('Error loading page content:', error);
-    return <div>Error loading content. Please try again later.</div>;
+    const errorMessage =
+      error instanceof Error ? error.message : 'Unknown error occurred';
+    console.error('Error loading content:', errorMessage);
+    return (
+      <div>
+        Error loading content. Please try again later. Details: {errorMessage}
+      </div>
+    );
   }
 }

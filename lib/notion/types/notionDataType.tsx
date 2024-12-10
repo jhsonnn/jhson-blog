@@ -366,15 +366,23 @@ export function isHeading1Block(
   return isBlockOfType(block, 'heading_1');
 }
 
+export function isHeading2Block(
+  block: BlockObjectResponse
+): block is BlockObjectResponse & { type: 'heading_2' } {
+  return isBlockOfType(block, 'heading_2');
+}
+
 export function isHeading3Block(
   block: BlockObjectResponse
 ): block is BlockObjectResponse & { type: 'heading_3' } {
+  console.log('Checking isHeading3Block:', block.type);
   return block.type === 'heading_3';
 }
 
 export function isBulletedListItemBlock(
   block: BlockObjectResponse
 ): block is BlockObjectResponse & { type: 'bulleted_list_item' } {
+  console.log('Checking isBulletedListItemBlock:', block.type);
   return block.type === 'bulleted_list_item';
 }
 
@@ -382,6 +390,18 @@ export function isNumberedListItemBlock(
   block: BlockObjectResponse
 ): block is BlockObjectResponse & { type: 'numbered_list_item' } {
   return block.type === 'numbered_list_item';
+}
+
+export function isColumnListBlock(
+  block: BlockObjectResponse
+): block is BlockObjectResponse & { type: 'column_list' } {
+  return block.type === 'column_list';
+}
+
+export function isDividerBlock(
+  block: BlockObjectResponse
+): block is BlockObjectResponse & { type: 'divider' } {
+  return block.type === 'divider';
 }
 
 export function hasChildren(
@@ -556,6 +576,7 @@ export interface ApiResponse {
   slug: string;
   title: string;
   created_time: string;
+  thumbnailUrl: string;
 }
 
 export function isValidPageObject(page: PageObjectResponse): boolean {
