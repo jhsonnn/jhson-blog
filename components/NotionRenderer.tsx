@@ -148,149 +148,373 @@
 
 // export default NotionRenderer;
 
-//components/NotionRenderer.tsx
+// components/NotionRenderer.tsx
+
+// import React from 'react';
+// import {
+//   RichTextItemResponse,
+//   ParagraphBlockObjectResponse,
+//   ImageBlockObjectResponse,
+//   Heading1BlockObjectResponse,
+//   Heading2BlockObjectResponse,
+//   Heading3BlockObjectResponse,
+//   BulletedListItemBlockObjectResponse,
+// } from '@notionhq/client/build/src/api-endpoints';
+
+// import { BlockWithChildren } from '@/lib/notion/types/notionDataType';
+
+// interface NotionRendererProps {
+//   blocks: BlockWithChildren[]; // `children` 포함된 블록 리스트
+// }
+
+// const NotionRenderer: React.FC<NotionRendererProps> = ({ blocks }) => (
+//   <div className="notion-container">
+//     {blocks.map((block) => (
+//       <div key={block.id}>{renderBlock(block)}</div>
+//     ))}
+//   </div>
+// );
+
+// const renderBlock = (block: BlockWithChildren) => {
+//   switch (block.type) {
+//     case 'paragraph':
+//       return renderParagraph(block as ParagraphBlockObjectResponse);
+
+//     case 'heading_1':
+//       return renderHeading1(block as Heading1BlockObjectResponse);
+
+//     case 'heading_2':
+//       return renderHeading2(block as Heading2BlockObjectResponse);
+
+//     case 'heading_3':
+//       return renderHeading3(block as Heading3BlockObjectResponse);
+
+//     case 'bulleted_list_item':
+//       return renderBulletedListItem(
+//         block as BulletedListItemBlockObjectResponse
+//       );
+
+//     case 'column_list':
+//       return renderColumnList(block as BlockWithChildren);
+
+//     case 'column':
+//       return renderColumn(block as BlockWithChildren);
+
+//     case 'image':
+//       return renderImage(block as ImageBlockObjectResponse);
+
+//     case 'divider':
+//       return <hr className="my-4 border-gray-300" />;
+
+//     default:
+//       console.warn(`Unsupported block type: ${block.type}`);
+//       return (
+//         <div className="text-blue-500 my-2">
+//           Unsupported block type: <strong>{block.type}</strong>
+//         </div>
+//       );
+//   }
+// };
+
+// const renderParagraph = (block: ParagraphBlockObjectResponse) => {
+//   if (!block.paragraph || !Array.isArray(block.paragraph.rich_text)) {
+//     console.warn('Invalid paragraph block structure:', block);
+//     return <div>Invalid paragraph block</div>;
+//   }
+//   return (
+//     <p className="text-base my-1">
+//       {renderRichText(block.paragraph.rich_text)}
+//     </p>
+//   );
+// };
+
+// const renderHeading1 = (block: Heading1BlockObjectResponse) => {
+//   if (!block.heading_1?.rich_text) return null;
+//   return (
+//     <h1 className="text-3xl font-bold my-4">
+//       {renderRichText(block.heading_1.rich_text)}
+//     </h1>
+//   );
+// };
+
+// const renderHeading2 = (block: Heading2BlockObjectResponse) => {
+//   if (!block.heading_2?.rich_text) return null;
+//   return (
+//     <h2 className="text-2xl font-semibold my-3">
+//       {renderRichText(block.heading_2.rich_text)}
+//     </h2>
+//   );
+// };
+
+// const renderHeading3 = (block: Heading3BlockObjectResponse) => {
+//   if (!block.heading_3?.rich_text) return null;
+//   return (
+//     <h3 className="text-xl font-medium my-2">
+//       {renderRichText(block.heading_3.rich_text)}
+//     </h3>
+//   );
+// };
+
+// const renderBulletedListItem = (block: BulletedListItemBlockObjectResponse) => {
+//   if (!block.bulleted_list_item?.rich_text) return null;
+//   return (
+//     <ul className="list-disc ml-6 my-1">
+//       <li>{renderRichText(block.bulleted_list_item.rich_text)}</li>
+//     </ul>
+//   );
+// };
+
+// const renderImage = (block: ImageBlockObjectResponse) => {
+//   if (!block.image) {
+//     console.warn('Invalid image block structure:', block);
+//     return <div>Invalid image block</div>;
+//   }
+
+//   const { url } =
+//     block.image.type === 'file' ? block.image.file : block.image.external;
+
+//   const altText = block.image.caption?.[0]?.plain_text || 'Notion Image';
+
+//   return (
+//     <img
+//       src={url}
+//       alt={altText}
+//       className="my-3 max-w-full h-auto rounded-lg"
+//     />
+//   );
+// };
+
+// const renderColumnList = (block: BlockWithChildren) => {
+//   if (!block.children || !Array.isArray(block.children)) {
+//     console.warn('Invalid column_list structure:', block);
+//     return <div>Invalid column list</div>;
+//   }
+
+//   return (
+//     <div className="flex gap-4 my-4">
+//       {block.children.map((column) =>
+//         renderColumn(column as BlockWithChildren)
+//       )}
+//     </div>
+//   );
+// };
+
+// const renderColumn = (block: BlockWithChildren) => {
+//   if (!block.children || !Array.isArray(block.children)) {
+//     console.warn('Invalid column structure:', block);
+//     return <div>Invalid column</div>;
+//   }
+
+//   return (
+//     <div className="flex-1">
+//       {block.children.map((childBlock) =>
+//         renderBlock(childBlock as BlockWithChildren)
+//       )}
+//     </div>
+//   );
+// };
+
+// const renderRichText = (richTextArray: RichTextItemResponse[]) => {
+//   return richTextArray.map((richText, index) => {
+//     const { plain_text, href, annotations } = richText;
+//     const style: React.CSSProperties = {
+//       fontWeight: annotations.bold ? 'bold' : undefined,
+//       fontStyle: annotations.italic ? 'italic' : undefined,
+//       textDecoration: annotations.strikethrough
+//         ? 'line-through'
+//         : annotations.underline
+//         ? 'underline'
+//         : undefined,
+//       fontFamily: annotations.code ? 'monospace' : undefined,
+//       color: annotations.color !== 'default' ? annotations.color : undefined,
+//     };
+
+//     return href ? (
+//       <a
+//         key={index}
+//         href={href}
+//         target="_blank"
+//         rel="noopener noreferrer"
+//         style={style}
+//         className="hover:underline text-blue-500"
+//       >
+//         {plain_text}
+//       </a>
+//     ) : (
+//       <span key={index} style={style}>
+//         {plain_text}
+//       </span>
+//     );
+//   });
+// };
+
+// export default NotionRenderer;
+
+//진행중
+// components/NotionRenderer.tsx
+'use client';
+
 import React from 'react';
 import {
-  BlockObjectResponse,
-  PartialBlockObjectResponse,
-  RichTextItemResponse,
+  ParagraphBlockObjectResponse,
+  Heading1BlockObjectResponse,
+  Heading2BlockObjectResponse,
+  Heading3BlockObjectResponse,
+  BulletedListItemBlockObjectResponse,
+  ImageBlockObjectResponse,
 } from '@notionhq/client/build/src/api-endpoints';
-
-import {
-  BlockWithChildren,
-  isFullBlockResponse,
-} from '@/lib/notion/types/notionDataType';
-
-// ✅ Image 타입 정의
-interface ImageFile {
-  type: 'file';
-  file: { url: string; expiry_time: string };
-  caption: RichTextItemResponse[];
-}
-
-interface ImageExternal {
-  type: 'external';
-  external: { url: string };
-  caption: RichTextItemResponse[];
-}
-
-interface ImageBlock {
-  type: 'image';
-  image: ImageFile | ImageExternal;
-}
+import { BlockWithChildren } from '@/lib/notion/types/notionDataType';
 
 interface NotionRendererProps {
-  blocks: (BlockObjectResponse | PartialBlockObjectResponse)[];
+  blocks: BlockWithChildren[];
 }
 
 const NotionRenderer: React.FC<NotionRendererProps> = ({ blocks }) => (
   <div className="notion-container">
-    {blocks.map((block) =>
-      isFullBlockResponse(block) ? (
-        <div key={block.id}>{renderBlock(block)}</div>
-      ) : (
-        <div key={block.id}>Unsupported block format</div>
-      )
+    {blocks.map(
+      (block) =>
+        renderBlock(block) ?? <div key={block.id}>Unsupported block type</div>
     )}
   </div>
 );
 
-/**
- * Type Guard 개선
- * block.type이 'image'일 때, block.image가 존재함을 TypeScript에 명확히 알려줍니다.
- */
-const isImageBlock = (
-  block: BlockWithChildren
-): block is BlockWithChildren & ImageBlock => {
-  if (block.type !== 'image') return false;
-  if (!('image' in block)) return false;
-
-  const image = block.image;
-  if (!image || typeof image !== 'object') return false;
-  if (!('type' in image)) return false;
-
-  return image.type === 'file' || image.type === 'external';
-};
-
-/**
- * 블록 렌더링 함수
- */
 const renderBlock = (block: BlockWithChildren) => {
   switch (block.type) {
     case 'paragraph':
-      return (
-        <p className="text-base my-1">
-          {renderRichText(block.paragraph.rich_text)}
-        </p>
-      );
-
+      return renderParagraph(block as ParagraphBlockObjectResponse);
     case 'heading_1':
-      return (
-        <h1 className="text-3xl font-bold my-4">
-          {renderRichText(block.heading_1.rich_text)}
-        </h1>
+      return renderHeading1(block as Heading1BlockObjectResponse);
+    case 'heading_2':
+      return renderHeading2(block as Heading2BlockObjectResponse);
+    case 'heading_3':
+      return renderHeading3(block as Heading3BlockObjectResponse);
+    case 'bulleted_list_item':
+      return renderBulletedListItem(
+        block as BulletedListItemBlockObjectResponse
       );
-
-    case 'image': {
-      if (!isImageBlock(block)) {
-        console.warn('Unsupported image block structure');
-        return <div>Unsupported image block structure</div>;
-      }
-
-      // imageUrl 타입 명시 제거 (ESLint 에러 해결)
-      let imageUrl = '';
-      if (block.image.type === 'file') {
-        imageUrl = block.image.file.url;
-      } else if (block.image.type === 'external') {
-        imageUrl = block.image.external.url;
-      } else {
-        console.warn(`Unsupported image type: ${block.image}`);
-        return <div>Unsupported image type</div>;
-      }
-
-      const altText = block.image.caption[0]?.plain_text ?? 'Notion Image';
-
-      return (
-        <img
-          src={imageUrl}
-          alt={altText}
-          className="my-3 max-w-full h-auto rounded-lg"
-        />
-      );
-    }
-
+    case 'divider':
+      return renderDivider();
+    case 'image':
+      return renderImage(block as ImageBlockObjectResponse);
+    case 'column_list':
+      return renderColumnList(block);
     default:
       console.warn(`Unsupported block type: ${block.type}`);
-      return <div>Unsupported block type: {block.type}</div>;
+      return null;
   }
 };
 
-const renderRichText = (richTextArray: RichTextItemResponse[]) =>
-  richTextArray.map((richText, index) => {
-    const { plain_text, href, annotations } = richText;
-    const style: React.CSSProperties = {
-      fontWeight: annotations.bold ? 'bold' : undefined,
-      fontStyle: annotations.italic ? 'italic' : undefined,
-      textDecoration: annotations.underline ? 'underline' : undefined,
-      color: annotations.color !== 'default' ? annotations.color : undefined,
-    };
+const renderParagraph = (block: ParagraphBlockObjectResponse) => (
+  <p className="my-2">
+    {block.paragraph.rich_text.map((text, index) => (
+      <span key={index}>{text.plain_text}</span>
+    ))}
+  </p>
+);
 
-    return href ? (
-      <a
-        key={index}
-        href={href}
-        target="_blank"
-        rel="noopener noreferrer"
-        style={style}
-        className="hover:underline text-blue-500"
-      >
-        {plain_text}
-      </a>
-    ) : (
-      <span key={index} style={style}>
-        {plain_text}
-      </span>
-    );
-  });
+const renderHeading1 = (block: Heading1BlockObjectResponse) => (
+  <h1 className="text-3xl font-bold my-4">
+    {block.heading_1.rich_text.map((text, index) => (
+      <span key={index}>{text.plain_text}</span>
+    ))}
+  </h1>
+);
+
+const renderHeading2 = (block: Heading2BlockObjectResponse) => (
+  <h2 className="text-2xl font-semibold my-3">
+    {block.heading_2.rich_text.map((text, index) => (
+      <span key={index}>{text.plain_text}</span>
+    ))}
+  </h2>
+);
+
+const renderHeading3 = (block: Heading3BlockObjectResponse) => (
+  <h3 className="text-xl font-medium my-2">
+    {block.heading_3.rich_text.map((text, index) => (
+      <span key={index}>{text.plain_text}</span>
+    ))}
+  </h3>
+);
+
+const renderBulletedListItem = (block: BulletedListItemBlockObjectResponse) => (
+  <ul className="list-disc ml-6 my-1">
+    <li>
+      {block.bulleted_list_item.rich_text.map((text, index) => (
+        <span key={index}>{text.plain_text}</span>
+      ))}
+    </li>
+  </ul>
+);
+
+const renderDivider = () => <hr className="my-4 border-gray-300" />;
+
+const renderImage = (block: ImageBlockObjectResponse) => {
+  const { url } =
+    block.image.type === 'file' ? block.image.file : block.image.external;
+  const altText = block.image.caption?.[0]?.plain_text || 'Image';
+  return (
+    <img
+      src={url}
+      alt={altText}
+      className="my-3 max-w-full h-auto rounded-lg"
+    />
+  );
+};
+
+const renderColumnList = (block: BlockWithChildren) => {
+  console.group(`Debugging column_list block: ${block.id}`);
+  console.log('block:', block);
+
+  if (!block.children) {
+    console.warn('No children available for column_list block:', block.id);
+    console.groupEnd();
+    return <div>No columns available</div>;
+  }
+
+  if (block.children.length === 0) {
+    console.warn('Children array is empty for column_list block:', block.id);
+    console.groupEnd();
+    return <div>No columns available</div>;
+  }
+
+  console.log(`block.children length: ${block.children.length}`);
+  console.log('block.children details:', block.children);
+
+  return (
+    <div className="flex gap-4 my-4">
+      {block.children.map((column, columnIndex) => {
+        console.group(`Column ${columnIndex + 1} (ID: ${column.id})`);
+        console.log('column:', column);
+
+        if (!column.children) {
+          console.warn('No children found in this column:', column.id);
+          console.groupEnd();
+          return <div key={column.id}>No content in this column</div>;
+        }
+
+        if (column.children.length === 0) {
+          console.warn('Children array is empty in this column:', column.id);
+          console.groupEnd();
+          return <div key={column.id}>No content in this column</div>;
+        }
+
+        console.log(`column.children length: ${column.children.length}`);
+        console.log('column.children details:', column.children);
+
+        console.groupEnd();
+        return (
+          <div key={column.id} className="flex-1">
+            {column.children.map(
+              (childBlock) =>
+                renderBlock(childBlock as BlockWithChildren) ?? (
+                  <div key={childBlock.id}>Unsupported block type</div>
+                )
+            )}
+          </div>
+        );
+      })}
+    </div>
+  );
+};
 
 export default NotionRenderer;

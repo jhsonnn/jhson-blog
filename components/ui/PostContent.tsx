@@ -163,51 +163,78 @@
 //   );
 // }
 
-////////
-import React from 'react';
-import { BlockObjectResponse } from '@notionhq/client/build/src/api-endpoints';
+// ////////
 
-// BlockWithChildren 타입 정의
-type BlockWithChildren = BlockObjectResponse & {
-  children?: BlockWithChildren[];
+// /components/PostContent.tsx
+// components/PostContent.tsx
+import React from 'react';
+import {
+  BlockWithChildren,
+  LocalRichTextItemResponse,
+} from '@/lib/notion/types/notionDataType';
+
+type PostContentProps = {
+  blocks: BlockWithChildren[];
 };
 
-function renderBlock(block: BlockWithChildren): JSX.Element {
-  if (block.type === 'heading_3') {
-    const text = block.heading_3.rich_text
-      .map((text) => text.plain_text)
-      .join('');
-    return <h3 key={block.id}>{text}</h3>;
+const PostContent: React.FC<PostContentProps> = ({ blocks }) => {
+  return (
+    <div>
+      {blocks.map((block) => (
+        <BlockRenderer key={block.id} block={block} />
+      ))}
+    </div>
+  );
+};
+
+const BlockRenderer: React.FC<{ block: BlockWithChildren }> = ({ block }) => {
+  switch (block.type) {
+    case 'heading_3':
+      return <Heading3Block block={block} />;
+    case 'paragraph':
+      return <ParagraphBlock block={block} />;
+    case 'bulleted_list_item':
+      return <BulletedListItemBlock block={block} />;
+    default:
+      console.warn(`Unsupported block type: ${block.type}`);
+      return (
+        <div key={block.id} style={{ color: 'red' }}>
+          Unsupported block type: {block.type}
+        </div>
+      );
   }
+};
 
-  if (block.type === 'bulleted_list_item') {
-    const text = block.bulleted_list_item.rich_text
-      .map((text) => text.plain_text)
-      .join('');
-    return (
-      <li key={block.id}>
-        {text}
-        {block.children && (
-          <ul>{block.children.map((child) => renderBlock(child))}</ul>
-        )}
-      </li>
-    );
-  }
+const Heading3Block: React.FC<{ block: BlockWithChildren }> = ({ block }) => {
+  const text = renderRichText(block.heading_3?.rich_text);
+  return <h3>{text}</h3>;
+};
 
-  if (block.type === 'paragraph') {
-    const text = block.paragraph.rich_text
-      .map((text) => text.plain_text)
-      .join('');
-    return <p key={block.id}>{text}</p>;
-  }
+const ParagraphBlock: React.FC<{ block: BlockWithChildren }> = ({ block }) => {
+  const text = renderRichText(block.paragraph?.rich_text);
+  return <p>{text}</p>;
+};
 
-  return <div key={block.id}>Unsupported block type</div>;
-}
+const BulletedListItemBlock: React.FC<{ block: BlockWithChildren }> = ({
+  block,
+}) => {
+  const text = renderRichText(block.bulleted_list_item?.rich_text);
+  return (
+    <ul>
+      <li>{text}</li>
+      {block.children &&
+        block.children.map((child) => (
+          <BlockRenderer key={child.id} block={child} />
+        ))}
+    </ul>
+  );
+};
 
-export default function PostContent({
-  blocks,
-}: {
-  blocks: BlockWithChildren[];
-}) {
-  return <div>{blocks.map(renderBlock)}</div>;
-}
+const renderRichText = (
+  richTextArray?: LocalRichTextItemResponse[]
+): string => {
+  if (!richTextArray) return '';
+  return richTextArray.map((item) => item.plain_text).join('');
+};
+
+export default PostContent;

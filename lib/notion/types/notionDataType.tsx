@@ -273,25 +273,6 @@ export function isFullPageObjectResponse(
   return 'properties' in value;
 }
 
-export function isBlockOfType<T extends BlockObjectResponse['type']>(
-  block: BlockObjectResponse,
-  type: T
-): block is BlockObjectResponse & { type: T } {
-  return block.type === type;
-}
-
-/**
- * BlockWithChildren 타입 정의
- * 기존 BlockObjectResponse에 children 속성을 선택적으로 추가
- */
-// export type BlockWithChildren = BlockObjectResponse & {
-//   children?: BlockObjectResponse[];
-// };
-////////////
-export type BlockWithChildren = BlockObjectResponse & {
-  children?: BlockWithChildren[]; // children을 BlockWithChildren[]으로 설정
-};
-
 // Title property 타입 가드
 export function isTitleProperty(property: Property | undefined): property is {
   id: string;
@@ -343,6 +324,82 @@ export function isRichTextProperty(
   return isPropertyOfType(property, 'rich_text');
 }
 
+/**
+ * 공통 타입 가드 함수
+ * @param block - 블록 객체
+ * @param type - 특정 블록 타입 (예: 'heading_1', 'image' 등)
+ * @returns 특정 타입의 블록인지 여부
+ */
+
+/**
+ * BlockWithChildren 타입 정의
+ * BlockObjectResponse에 children 속성을 추가한 타입
+ */
+// export type BlockWithChildren = BlockObjectResponse & {
+//   children: BlockWithChildren[];
+// };
+
+export type LocalRichTextItemResponse = {
+  plain_text: string;
+  href?: string | null;
+  annotations: {
+    bold: boolean;
+    italic: boolean;
+    strikethrough: boolean;
+    underline: boolean;
+    code: boolean;
+    color: string;
+  };
+  type: 'text' | 'mention' | 'equation';
+};
+
+export type BlockWithChildren = {
+  id: string;
+  type: string;
+  has_children: boolean;
+  children?: BlockWithChildren[];
+  heading_3?: {
+    rich_text: LocalRichTextItemResponse[];
+  };
+  paragraph?: {
+    rich_text: LocalRichTextItemResponse[];
+  };
+  bulleted_list_item?: {
+    rich_text: LocalRichTextItemResponse[];
+  };
+};
+
+/**
+ * 특정 블록이 children을 가지고 있는지 확인하는 타입 가드
+ * @param block - 블록 객체
+ * @returns block이 children을 가지고 있는지 여부
+ */
+// export function isBlockWithChildren(
+//   block: BlockObjectResponse
+// ): block is BlockWithChildren {
+//   if (!block.has_children) return false;
+
+//   if (!('children' in block) || block.children === undefined) {
+//     (block as BlockWithChildren).children = [];
+//   }
+
+//   return true;
+// }
+
+/**
+ * 블록이 특정 타입인지 확인하는 함수
+ * @param block - 블록 객체
+ * @param type - 블록 타입 (예: 'heading_3', 'bulleted_list_item' 등)
+ * @returns 블록이 특정 타입인지 여부
+ */
+
+export function isBlockOfType<T extends BlockObjectResponse['type']>(
+  block: BlockObjectResponse,
+  type: T
+): block is BlockObjectResponse & { type: T } {
+  return block.type === type;
+}
+
 export function isFullBlockResponse(
   block: BlockObjectResponse | PartialBlockObjectResponse
 ): block is BlockObjectResponse {
@@ -372,10 +429,15 @@ export function isHeading2Block(
   return isBlockOfType(block, 'heading_2');
 }
 
+// export function isHeading3Block(
+//   block: BlockObjectResponse
+// ): block is BlockObjectResponse & { type: 'heading_3' } {
+//   console.log('Checking isHeading3Block:', block.type);
+//   return block.type === 'heading_3';
+// }
 export function isHeading3Block(
   block: BlockObjectResponse
 ): block is BlockObjectResponse & { type: 'heading_3' } {
-  console.log('Checking isHeading3Block:', block.type);
   return block.type === 'heading_3';
 }
 
@@ -404,11 +466,54 @@ export function isDividerBlock(
   return block.type === 'divider';
 }
 
-export function hasChildren(
+export function isCalloutBlock(
   block: BlockObjectResponse
-): block is BlockObjectResponse & { children: BlockObjectResponse[] } {
-  return block.has_children && 'children' in block;
+): block is BlockObjectResponse & { type: 'callout' } {
+  return isBlockOfType(block, 'callout');
 }
+
+export function isQuoteBlock(
+  block: BlockObjectResponse
+): block is BlockObjectResponse & { type: 'quote' } {
+  return isBlockOfType(block, 'quote');
+}
+
+export function isImageBlock(
+  block: BlockObjectResponse
+): block is BlockObjectResponse & { type: 'image' } {
+  return isBlockOfType(block, 'image');
+}
+
+export function isVideoBlock(
+  block: BlockObjectResponse
+): block is BlockObjectResponse & { type: 'video' } {
+  return isBlockOfType(block, 'video');
+}
+
+export function isToDoBlock(
+  block: BlockObjectResponse
+): block is BlockObjectResponse & { type: 'to_do' } {
+  return isBlockOfType(block, 'to_do');
+}
+
+export function isChildPageBlock(
+  block: BlockObjectResponse
+): block is BlockObjectResponse & { type: 'child_page' } {
+  return isBlockOfType(block, 'child_page');
+}
+
+export type RichTextItem = {
+  plain_text: string;
+  href?: string;
+  annotations: {
+    bold: boolean;
+    italic: boolean;
+    underline: boolean;
+    strikethrough: boolean;
+    code: boolean;
+    color: string;
+  };
+};
 
 // NotionPageItem 타입
 // export interface NotionPageItem {
