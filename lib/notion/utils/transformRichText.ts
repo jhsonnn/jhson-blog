@@ -23,7 +23,7 @@
 
 //진행중2
 // lib/notion/utils/transformRichText.ts
-import { RichText, NotionRichTextItemResponse } from '@/lib/notion/types/notionDataType';
+import { RichText, NotionRichTextItemResponse } from '@/lib/notion/types';
 
 function transformRichText(item: NotionRichTextItemResponse): RichText {
   // 텍스트 타입 변환 처리

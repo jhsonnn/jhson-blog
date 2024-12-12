@@ -166,11 +166,11 @@
 // ////////
 
 // components/PostContent.tsx
-import React from 'react';
 import {
   BlockWithChildren,
   LocalRichTextItemResponse,
-} from '@/lib/notion/types/notionDataType';
+} from '@/lib/notion/types';
+import React from 'react';
 
 type PostContentProps = {
   blocks: BlockWithChildren[];

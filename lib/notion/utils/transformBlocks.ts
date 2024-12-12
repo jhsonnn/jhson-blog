@@ -9,7 +9,7 @@ import {
   isParagraphBlock,
   NotionBlockType,
   NotionRichTextItemResponse,
-} from '@/lib/notion/types/notionDataType';
+} from '@/lib/notion/types';
 import transformRichText from './transformRichText';
 
 async function fetchChildren(blockId: string): Promise<BlockObjectResponse[]> {

@@ -367,7 +367,7 @@ import {
   BlockWithChildren,
   isImageBlock,
   //isQuoteBlock,
-} from '@/lib/notion/types/notionDataType';
+} from '@/lib/notion/types';
 
 // export function isImageBlock(
 //   block: BlockWithChildren

@@ -1,7 +1,7 @@
 // fetchPageBlocks.ts
 
 import { notion } from "../client";
-import { BlockWithChildren } from "../types/notionDataType";
+import { BlockWithChildren } from "../types";
 
 export async function fetchWithRetry(blockId: string, retries = 3): Promise<BlockWithChildren[]> {
   for (let attempt = 0; attempt < retries; attempt++) {

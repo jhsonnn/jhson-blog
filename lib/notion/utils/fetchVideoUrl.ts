@@ -162,7 +162,7 @@
 
 
 import { notion } from '../client';
-import { isPageObjectResponse } from '@/lib/notion/types/notionDataType';
+import { isPageObjectResponse } from '@/lib/notion/types';
 
 const videoUrlCache = new Map<string, { url: string | null; expiry: number }>();
 const CACHE_DURATION_MS = 60 * 60 * 1000; // 1 hour caching duration
