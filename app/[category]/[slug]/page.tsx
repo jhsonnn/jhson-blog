@@ -447,9 +447,9 @@
 
 // app/[category]/[slug]/page.tsx
 import NotionRenderer from '@/components/NotionRenderer';
-import { ApiResponse } from '@/lib/notion/types/notionDataType';
+import { ApiResponse } from '@/lib/notion/types';
 import transformBlocks from '@/lib/notion/utils/transformBlocks';
-import { fetchVideoUrl } from '@/lib/notion/utils/fetchVideoUrl'; // fetchVideoUrl 사용
+import { fetchVideoUrl } from '@/lib/notion/utils/fetchVideoUrl';
 
 interface PageProps {
   params: { category?: string; slug?: string };

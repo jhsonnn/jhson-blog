@@ -12,7 +12,7 @@
 
 ///진행중2
 // lib/notion/fetchNotionChildren.ts
-import { BlockWithChildren } from '@/lib/notion/types/notionDataType';
+import { BlockWithChildren } from '@/lib/notion/types';
 
 export async function fetchNotionChildren(blockId: string): Promise<BlockWithChildren[]> {
   try {

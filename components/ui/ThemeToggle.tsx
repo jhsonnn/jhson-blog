@@ -8,7 +8,7 @@ const ThemeToggle = () => {
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
-    setMounted(true); // 컴포넌트가 클라이언트에서 마운트된 후 렌더링 허용
+    setMounted(true); //컴포넌트가 클라이언트에서 마운트된 후 렌더링 허용
   }, []);
 
   if (!mounted || !resolvedTheme) {

@@ -312,7 +312,7 @@
 // /lib/notion/api/fetchPageContentBlocks.ts
 import { notion } from '@/lib/notion/client';
 import { fetchBlockChildren } from '@/lib/notion/api/fetchBlockChildren';
-import { BlockWithChildren } from '../types/notionDataType';
+import { BlockWithChildren } from '../types';
 
 /**
  * 특정 Notion 페이지의 모든 최상위 블록과 하위 블록을 가져오는 함수

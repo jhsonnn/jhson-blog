@@ -1,7 +1,7 @@
 // import { BlockObjectResponse } from '@notionhq/client/build/src/api-endpoints';
 
-import { notion } from "../client";
-import { BlockWithChildren } from "../types/notionDataType";
+// import { notion } from "../client";
+// import { BlockWithChildren } from "../types";
 
 // export async function fetchBlockChildren(blockId: string): Promise<BlockObjectResponse[]> {
 //   const response = await fetch(`/api/block/${blockId}/children`);
@@ -119,6 +119,11 @@ import { BlockWithChildren } from "../types/notionDataType";
 
 
 ////
+
+import { notion } from "../client";
+import { BlockWithChildren } from "../types";
+
+
 export async function fetchBlockChildren(
   blockId: string,
   depth = 1,

@@ -3,8 +3,8 @@
 // import { Client } from '@notionhq/client';
 // import { QueryDatabaseResponse } from '@notionhq/client/build/src/api-endpoints';
 
-import { PageObjectResponse, QueryDatabaseResponse } from "@notionhq/client/build/src/api-endpoints";
-import { notion } from "../client";
+// import { PageObjectResponse, QueryDatabaseResponse } from "@notionhq/client/build/src/api-endpoints";
+// import { notion } from "../client";
 
 
 // const notion = new Client({ auth: process.env.NOTION_API_KEY });
@@ -524,6 +524,9 @@ import { notion } from "../client";
 //     throw error;
 //   }
 // };
+
+import { PageObjectResponse, QueryDatabaseResponse } from "@notionhq/client/build/src/api-endpoints";
+import { notion } from "../client";
 
 export const fetchCategories = async (): Promise<string[]> => {
   try {

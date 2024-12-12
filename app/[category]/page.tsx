@@ -589,33 +589,6 @@
 //   }
 // }
 
-// ///
-// import { NextResponse } from 'next/server';
-// import { fetchNotionDatabaseByCategory } from '@/lib/notion/api/fetchNotionDatabaseByCategory';
-
-// export async function GET(
-//   req: Request,
-//   { params }: { params: { category: string } }
-// ) {
-//   const { category } = params;
-
-//   try {
-//     const posts = await fetchNotionDatabaseByCategory(category);
-
-//     if (posts.length === 0) {
-//       return NextResponse.json({ error: 'No posts found' }, { status: 404 });
-//     }
-
-//     return NextResponse.json(posts);
-//   } catch (error) {
-//     console.error('Error fetching posts:', error);
-//     return NextResponse.json(
-//       { error: 'Failed to fetch posts' },
-//       { status: 500 }
-//     );
-//   }
-// }
-
 import { fetchNotionDatabaseByCategory } from '@/lib/notion/api/fetchNotionDatabaseByCategory';
 import Link from 'next/link';
 import Post from '@/components/ui/Post';

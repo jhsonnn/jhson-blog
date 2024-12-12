@@ -350,7 +350,6 @@
 
 // // export default NotionRenderer;
 
-// 하위항목 잘나오는 애 잘되는 애임!
 // components/NotionRenderer.tsx
 
 import React from 'react';
@@ -361,19 +360,8 @@ import {
   Heading3BlockObjectResponse,
   BulletedListItemBlockObjectResponse,
   ImageBlockObjectResponse,
-  //QuoteBlockObjectResponse,
 } from '@notionhq/client/build/src/api-endpoints';
-import {
-  BlockWithChildren,
-  isImageBlock,
-  //isQuoteBlock,
-} from '@/lib/notion/types';
-
-// export function isImageBlock(
-//   block: BlockWithChildren
-// ): block is BlockWithChildren & { type: 'image' } {
-//   return block.type === 'image';
-// }
+import { BlockWithChildren, isImageBlock } from '@/lib/notion/types';
 
 interface NotionRendererProps {
   blocks: BlockWithChildren[];
@@ -389,8 +377,6 @@ const NotionRenderer: React.FC<NotionRendererProps> = ({
     //return null;
     return <div>No content available</div>;
   }
-
-  // const videoBlocks = blocks.filter((block) => block.type === 'video');
 
   const filteredBlocks = blocks.filter(
     (block) =>
@@ -411,10 +397,6 @@ const NotionRenderer: React.FC<NotionRendererProps> = ({
         </div>
       )}
 
-      {/* {filteredBlocks.map(
-        (block) =>
-          renderBlock(block) ?? <div key={block.id}>Unsupported block type</div>
-      )} */}
       {filteredBlocks.map((block) => (
         <div key={block.id}>
           {renderBlock(block) ?? 'Unsupported block type'}

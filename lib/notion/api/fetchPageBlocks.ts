@@ -49,7 +49,7 @@
 
 import { notion } from '@/lib/notion/client';
 import { BlockObjectResponse } from '@notionhq/client/build/src/api-endpoints';
-import { BlockWithChildren } from '@/lib/notion/types/notionDataType';
+import { BlockWithChildren } from '@/lib/notion/types';
 import transformBlocks from '@/lib/notion/utils/transformBlocks';
 
 export async function fetchPageBlocks(pageId: string): Promise<BlockWithChildren[]> {
