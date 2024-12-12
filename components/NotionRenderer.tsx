@@ -350,9 +350,7 @@
 
 // export default NotionRenderer;
 
-//진행중
 // components/NotionRenderer.tsx
-'use client';
 
 import React from 'react';
 import {
@@ -362,44 +360,104 @@ import {
   Heading3BlockObjectResponse,
   BulletedListItemBlockObjectResponse,
   ImageBlockObjectResponse,
+  //QuoteBlockObjectResponse,
 } from '@notionhq/client/build/src/api-endpoints';
-import { BlockWithChildren } from '@/lib/notion/types/notionDataType';
+import {
+  BlockWithChildren,
+  isImageBlock,
+  //isQuoteBlock,
+} from '@/lib/notion/types/notionDataType';
+
+// export function isImageBlock(
+//   block: BlockWithChildren
+// ): block is BlockWithChildren & { type: 'image' } {
+//   return block.type === 'image';
+// }
 
 interface NotionRendererProps {
   blocks: BlockWithChildren[];
 }
 
-const NotionRenderer: React.FC<NotionRendererProps> = ({ blocks }) => (
-  <div className="notion-container">
-    {blocks.map(
-      (block) =>
-        renderBlock(block) ?? <div key={block.id}>Unsupported block type</div>
-    )}
-  </div>
-);
+const NotionRenderer: React.FC<NotionRendererProps> = ({ blocks }) => {
+  if (!Array.isArray(blocks) || blocks.length === 0) {
+    console.warn('Blocks are empty or invalid:', blocks);
+    //return null;
+    return <div>No content available</div>;
+  }
+
+  const filteredBlocks = blocks.filter(
+    (block) =>
+      !(block.type === 'paragraph' && block.paragraph?.rich_text.length === 0)
+  );
+
+  return (
+    <div className="notion-container">
+      {filteredBlocks.map(
+        (block) =>
+          renderBlock(block) ?? <div key={block.id}>Unsupported block type</div>
+      )}
+    </div>
+  );
+};
 
 const renderBlock = (block: BlockWithChildren) => {
   switch (block.type) {
     case 'paragraph':
+      if (
+        !block.paragraph?.rich_text ||
+        block.paragraph.rich_text.length === 0
+      ) {
+        console.warn('Empty paragraph block:', block);
+        return null;
+      }
       return renderParagraph(block as ParagraphBlockObjectResponse);
     case 'heading_1':
       return renderHeading1(block as Heading1BlockObjectResponse);
+
     case 'heading_2':
       return renderHeading2(block as Heading2BlockObjectResponse);
+
     case 'heading_3':
       return renderHeading3(block as Heading3BlockObjectResponse);
+
     case 'bulleted_list_item':
+      if (block.bulleted_list_item?.rich_text.length === 0) {
+        return null;
+      }
       return renderBulletedListItem(
         block as BulletedListItemBlockObjectResponse
       );
+
     case 'divider':
       return renderDivider();
+
+    // case 'line_break':
+    //   return <br key={block.id} />;
+
+    // case 'quote':
+    //   if (isQuoteBlock(block)) {
+    //     return renderQuote(block);
+    //   }
+    //   console.warn('Invalid quote block:', block);
+    //   return null;
+
     case 'image':
-      return renderImage(block as ImageBlockObjectResponse);
+      if (isImageBlock(block)) {
+        return renderImage(block as ImageBlockObjectResponse);
+      }
+      break;
+
+    case 'video':
+      return renderVideo(block);
+
     case 'column_list':
       return renderColumnList(block);
+
+    case 'column':
+      return renderColumn(block);
+
     default:
-      console.warn(`Unsupported block type: ${block.type}`);
+      console.warn(`Unsupported block type: ${block.type}`, block);
       return null;
   }
 };
@@ -448,10 +506,32 @@ const renderBulletedListItem = (block: BulletedListItemBlockObjectResponse) => (
 
 const renderDivider = () => <hr className="my-4 border-gray-300" />;
 
+// const renderQuote = (block: QuoteBlockObjectResponse) => (
+//   <blockquote className="italic border-l-4 pl-4 my-2">
+//     {block.quote.rich_text.map((text, index) => (
+//       <span key={index}>{text.plain_text}</span>
+//     ))}
+//   </blockquote>
+// );
+
 const renderImage = (block: ImageBlockObjectResponse) => {
-  const { url } =
-    block.image.type === 'file' ? block.image.file : block.image.external;
+  if (!block.image) {
+    console.warn('Image block is missing the image property:', block);
+    return null;
+  }
+
+  const url =
+    block.image.type === 'file'
+      ? block.image.file?.url
+      : block.image.external?.url;
+
+  if (!url) {
+    console.warn('Image block is missing a valid URL:', block);
+    return null;
+  }
+
   const altText = block.image.caption?.[0]?.plain_text || 'Image';
+
   return (
     <img
       src={url}
@@ -461,58 +541,92 @@ const renderImage = (block: ImageBlockObjectResponse) => {
   );
 };
 
+const renderVideo = (block: BlockWithChildren) => {
+  if (!block.video) {
+    console.warn(`Video block is missing the video property: ${block.id}`);
+    return null;
+  }
+
+  const url =
+    block.video.type === 'file'
+      ? block.video.file?.url
+      : block.video.external?.url;
+
+  if (!url) {
+    console.warn(`Video block is missing a valid URL: ${block.id}`);
+    return null;
+  }
+
+  return (
+    <video
+      key={block.id}
+      controls
+      src={url}
+      className="my-4 w-full max-w-screen-lg rounded-lg"
+    >
+      Your browser does not support the video tag.
+    </video>
+  );
+};
+
 const renderColumnList = (block: BlockWithChildren) => {
-  console.group(`Debugging column_list block: ${block.id}`);
-  console.log('block:', block);
-
-  if (!block.children) {
-    console.warn('No children available for column_list block:', block.id);
-    console.groupEnd();
-    return <div>No columns available</div>;
+  if (!block.children || block.children.length === 0) {
+    console.warn(`No columns available in column_list block: ${block.id}`);
+    return null;
   }
-
-  if (block.children.length === 0) {
-    console.warn('Children array is empty for column_list block:', block.id);
-    console.groupEnd();
-    return <div>No columns available</div>;
-  }
-
-  console.log(`block.children length: ${block.children.length}`);
-  console.log('block.children details:', block.children);
 
   return (
     <div className="flex gap-4 my-4">
-      {block.children.map((column, columnIndex) => {
-        console.group(`Column ${columnIndex + 1} (ID: ${column.id})`);
-        console.log('column:', column);
-
-        if (!column.children) {
-          console.warn('No children found in this column:', column.id);
-          console.groupEnd();
-          return <div key={column.id}>No content in this column</div>;
+      {block.children.map((column) => {
+        if (!column.children || column.children.length === 0) {
+          return null;
         }
 
-        if (column.children.length === 0) {
-          console.warn('Children array is empty in this column:', column.id);
-          console.groupEnd();
-          return <div key={column.id}>No content in this column</div>;
-        }
-
-        console.log(`column.children length: ${column.children.length}`);
-        console.log('column.children details:', column.children);
-
-        console.groupEnd();
         return (
           <div key={column.id} className="flex-1">
-            {column.children.map(
-              (childBlock) =>
-                renderBlock(childBlock as BlockWithChildren) ?? (
-                  <div key={childBlock.id}>Unsupported block type</div>
-                )
-            )}
+            {column.children.map((childBlock) => {
+              if (
+                childBlock.type === 'bulleted_list_item' &&
+                childBlock.bulleted_list_item
+              ) {
+                return (
+                  <ul className="list-disc" key={childBlock.id}>
+                    <li>
+                      {childBlock.bulleted_list_item.rich_text.map(
+                        (text, index) => (
+                          <span key={index}>{text.plain_text}</span>
+                        )
+                      )}
+                      {childBlock.children &&
+                        childBlock.children.length > 0 && (
+                          <ul className="list-disc">
+                            {childBlock.children.map((nestedChild) =>
+                              renderBlock(nestedChild)
+                            )}
+                          </ul>
+                        )}
+                    </li>
+                  </ul>
+                );
+              }
+
+              return renderBlock(childBlock);
+            })}
           </div>
         );
       })}
+    </div>
+  );
+};
+
+const renderColumn = (block: BlockWithChildren) => {
+  if (!block.children || block.children.length === 0) {
+    return null;
+  }
+
+  return (
+    <div key={block.id} className="flex-1">
+      {block.children.map((childBlock) => renderBlock(childBlock))}
     </div>
   );
 };
