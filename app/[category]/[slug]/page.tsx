@@ -151,200 +151,45 @@
 //   }
 // }
 
-// //최종진행중
-// import NotionRenderer from '@/components/NotionRenderer';
-// import RootLayout from '@/app/layout';
-// import { BlockObjectResponse } from '@notionhq/client/build/src/api-endpoints';
-// import { NotionPageItem } from '@/lib/notion/types/notionDataType';
-
-// interface PageProps {
-//   params: { category: string; slug: string };
-// }
-
-// export default async function ContentPage({ params }: PageProps) {
-//   // const { category, slug } = params;
-//   const { slug } = params;
-
-//   try {
-//     // API 요청을 통해 카테고리별 게시물 가져오기
-//     const response = await fetch(
-//       // `${process.env.NEXT_PUBLIC_API_URL}/api/post/${category}`
-//       `${process.env.NEXT_PUBLIC_API_URL}/api/posts?category=resume`
-//     );
-//     if (!response.ok) {
-//       throw new Error('Failed to fetch posts');
-//     }
-//     const posts: NotionPageItem[] = await response.json(); // NotionPageItem 타입 적용
-
-//     // 해당 슬러그에 해당하는 게시물 찾기
-//     const pageData = posts.find((item) => item.slug === slug);
-//     if (!pageData) {
-//       return <div>Page not found for slug: {slug}</div>;
-//     }
-
-//     // API 요청을 통해 블록 데이터와 비디오 URL 가져오기
-//     const [videoResponse, blocksResponse] = await Promise.all([
-//       fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/video/${slug}`),
-//       fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/block/${pageData.post.id}`),
-//     ]);
-
-//     const videoUrl: string | null = videoResponse.ok
-//       ? await videoResponse.json()
-//       : null;
-//     const blocks: BlockObjectResponse[] = blocksResponse.ok
-//       ? await blocksResponse.json()
-//       : [];
-
-//     return (
-//       <RootLayout>
-//         <div className="bg-neutral-100 dark:bg-neutral-700 px-20 py-5 rounded-lg">
-//           {videoUrl && (
-//             <video src={videoUrl} controls width="100%" className="mb-5" />
-//           )}
-//           <NotionRenderer blocks={blocks} />
-//         </div>
-//       </RootLayout>
-//     );
-//   } catch (error) {
-//     console.error('Error loading page content:', error);
-//     return <div>Error loading content. Please try again later.</div>;
-//   }
-// }
-//app/[category]/[slug]/page.tsx;
-// import NotionRenderer from '@/components/NotionRenderer';
-// import RootLayout from '@/app/layout';
-// import { BlockObjectResponse } from '@notionhq/client/build/src/api-endpoints';
-// import { ApiResponse } from '@/lib/notion/types/notionDataType';
-
-// interface PageProps {
-//   params: { category: string; slug: string };
-// }
-
-// export default async function ContentPage({ params }: PageProps) {
-//   const { category, slug } = params;
-
-//   try {
-//     // API 요청을 통해 게시물 가져오기
-//     const response = await fetch(
-//       `${process.env.NEXT_PUBLIC_API_URL}/api/post/${category}`,
-//       { cache: 'no-store' }
-//     );
-
-//     if (!response.ok) {
-//       throw new Error('Failed to fetch posts');
-//     }
-
-//     const posts: ApiResponse[] = await response.json();
-
-//     // 슬러그에 해당하는 게시물 찾기
-//     const pageData = posts.find((item) => item.slug === slug);
-//     if (!pageData) {
-//       return <div>Page not found for slug: {slug}</div>;
-//     }
-
-//     // 블록 데이터 가져오기
-//     const blocksResponse = await fetch(
-//       `${process.env.NEXT_PUBLIC_API_URL}/api/block/${pageData.id}`
-//     );
-
-//     const blocks: BlockObjectResponse[] = blocksResponse.ok
-//       ? await blocksResponse.json()
-//       : [];
-
-//     return (
-//       <RootLayout>
-//         <div className="bg-neutral-100 dark:bg-neutral-700 px-20 py-5 rounded-lg">
-//           <NotionRenderer blocks={blocks} />
-//         </div>
-//       </RootLayout>
-//     );
-//   } catch (error) {
-//     console.error('Error loading page content:', error);
-//     return <div>Error loading content. Please try again later.</div>;
-//   }
-// }
-
-// app/[category]/[slug]/page.tsx
-
-// import NotionRenderer from '@/components/NotionRenderer';
-// import { ApiResponse } from '@/lib/notion/types/notionDataType';
-// import { BlockObjectResponse } from '@notionhq/client/build/src/api-endpoints';
-
-// interface PageProps {
-//   params: { category: string; slug: string };
-// }
-
-// export default async function ContentPage({ params }: PageProps) {
-//   const { category, slug } = params;
-
-//   try {
-//     const response = await fetch(
-//       `${process.env.NEXT_PUBLIC_API_URL}/api/post/${category}`,
-//       { cache: 'no-store' }
-//     );
-
-//     if (!response.ok) {
-//       throw new Error('Failed to fetch posts');
-//     }
-
-//     const posts: ApiResponse[] = await response.json();
-//     const pageData = posts.find(
-//       (item) => item.slug.toLowerCase() === slug.toLowerCase()
-//     );
-
-//     if (!pageData) {
-//       console.error(`Page data not found for slug: ${slug}`);
-//       return <div>Page not found for slug: {slug}</div>;
-//     }
-
-//     console.log('page Data:???', pageData);
-
-//     const blocksResponse = await fetch(
-//       `${process.env.NEXT_PUBLIC_API_URL}/api/block/${pageData.id}`
-//     );
-
-//     if (!blocksResponse.ok) {
-//       console.error(`Failed to fetch blocks for pageId: ${pageData.id}`);
-//       return <div>Blocks not found for this page</div>;
-//     }
-
-//     const blocks: BlockObjectResponse[] = await blocksResponse.json();
-
-//     return (
-//       <div className="bg-neutral-100 dark:bg-neutral-700 px-20 py-5 rounded-lg">
-//         <NotionRenderer blocks={blocks} />
-//       </div>
-//     );
-//   } catch (error) {
-//     console.error('Error loading page content:', error);
-//     return <div>Error loading content. Please try again later.</div>;
-//   }
-// }
-
+//진행중2
 // app/[category]/[slug]/page.tsx
 import NotionRenderer from '@/components/NotionRenderer';
 import { ApiResponse } from '@/lib/notion/types/notionDataType';
-import { BlockObjectResponse } from '@notionhq/client/build/src/api-endpoints';
+import transformBlocks from '@/lib/notion/utils/transformBlocks';
 
 interface PageProps {
-  params: { category: string; slug: string };
+  params: { category?: string; slug?: string };
 }
 
 export default async function ContentPage({ params }: PageProps) {
-  const { category, slug } = params;
+  const { category, slug } = params || {};
+
+  console.log('Category:', category);
+  console.log('Slug:', slug);
+
+  if (!category || !slug) {
+    console.error('Missing category or slug.');
+    return <div>Error: Missing category or slug.</div>;
+  }
 
   try {
     const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000';
-    const response = await fetch(`${apiUrl}/api/post/${category}`, {
+
+    const postsResponse = await fetch(`${apiUrl}/api/post/${category}`, {
       cache: 'no-store',
     });
 
-    if (!response.ok) {
-      console.error(`Failed to fetch posts. Status: ${response.status}`);
+    console.log('Posts API Response Status:', postsResponse.status);
+
+    if (!postsResponse.ok) {
+      console.error(`Failed to fetch posts. Status: ${postsResponse.status}`);
       throw new Error(`Failed to fetch posts for category: ${category}`);
     }
 
-    const posts: ApiResponse[] = await response.json();
+    const posts: ApiResponse[] = await postsResponse.json();
+    console.log('Fetched posts:', posts);
+
+    console.log('Provided slug:', slug);
 
     const pageData = posts.find(
       (item) => item.slug.toLowerCase() === slug.toLowerCase()
@@ -355,24 +200,22 @@ export default async function ContentPage({ params }: PageProps) {
       return <div>Page not found for slug: {slug}</div>;
     }
 
-    if (!pageData.id) {
-      console.error('Page ID not found in pageData:', pageData);
-      return <div>Error: Page ID not found.</div>;
-    }
-
-    console.log('Page Data:', pageData); // pageData의 내용 확인
-
     const blocksResponse = await fetch(`${apiUrl}/api/block/${pageData.id}`, {
       cache: 'no-store',
     });
 
     if (!blocksResponse.ok) {
       console.error(`Failed to fetch blocks for pageId: ${pageData.id}`);
-      throw new Error(`Failed to fetch blocks for pageId: ${pageData.id}`);
+      return <div>Failed to load content.</div>;
     }
 
-    const blocks: BlockObjectResponse[] = await blocksResponse.json();
-    console.log('Received Blocks:', blocks); // blocks의 내용 확인
+    console.log('Blocks API Response Status:', blocksResponse.status);
+
+    const rawBlocks = await blocksResponse.json();
+    console.log('Raw Blocks:', rawBlocks);
+    const blocks = await transformBlocks(rawBlocks);
+
+    console.log('Transformed Blocks:', blocks);
 
     if (!blocks || blocks.length === 0) {
       console.error('No blocks data found.');

@@ -343,11 +343,10 @@
 // }
 
 
-///
-import { NextResponse } from "next/server";
+// app/api/post/[category]/route.ts
+import { NextRequest, NextResponse } from "next/server";
 import { Client } from "@notionhq/client";
 import {
-  QueryDatabaseResponse,
   PageObjectResponse,
 } from "@notionhq/client/build/src/api-endpoints";
 
@@ -387,9 +386,6 @@ function isExternalProperty(file: ThumbnailFile): file is ExternalProperty {
   return file.type === "external";
 }
 
-/**
- * Type Guard: PageObjectResponse인지 확인
- */
 function isPageObjectResponse(result: unknown): result is PageObjectResponse {
   return (
     typeof result === "object" &&
@@ -398,57 +394,68 @@ function isPageObjectResponse(result: unknown): result is PageObjectResponse {
     "created_time" in result
   );
 }
-
-export async function GET(req: Request, { params }: { params: { category: string } }) {
+export async function GET(req: NextRequest, { params }: { params: { category?: string } }) {
   const { category } = params;
 
+  console.log('Received Params:', params);
+
   try {
-    const response: QueryDatabaseResponse = await notion.databases.query({
+    // category 값이 undefined일 경우 에러를 반환
+    if (!category) {
+      return NextResponse.json(
+        { error: 'Category parameter is missing or undefined.' },
+        { status: 400 }
+      );
+    }
+
+    const response = await notion.databases.query({
       database_id: process.env.NOTION_DATABASE_ID!,
       filter: {
-        property: "category",
-        select: { equals: category },
+        property: 'category',
+        select: { equals: category }, // category가 반드시 string임을 보장
       },
     });
 
+    console.log('Fetched Database Query Response:', response);
+    
     const posts = response.results
-      .filter(isPageObjectResponse) // PageObjectResponse만 필터링
+      .filter(isPageObjectResponse)
       .map((post) => {
         const properties = post.properties;
 
-        let thumbnailUrl = "/default-thumbnail.png";
-
-        // Thumbnail 처리 로직
+        let thumbnailUrl = '/default-thumbnail.png';
         if (
-          properties.thumbnailUrl?.type === "files" &&
+          properties.thumbnailUrl?.type === 'files' &&
           properties.thumbnailUrl.files.length > 0
         ) {
-          const file = properties.thumbnailUrl.files[0] as ThumbnailFile; // 명시적 타입 지정
-          if (isFileProperty(file)) {
-            thumbnailUrl = file.file.url;
-          } else if (isExternalProperty(file)) {
-            thumbnailUrl = file.external.url;
-          }
+          const file = properties.thumbnailUrl.files[0] as ThumbnailFile;
+          thumbnailUrl = isFileProperty(file)
+            ? file.file.url
+            : isExternalProperty(file)
+            ? file.external.url
+            : thumbnailUrl;
         }
 
         return {
           id: post.id,
           slug:
-            properties.slug?.type === "rich_text"
-              ? properties.slug.rich_text[0]?.plain_text
-              : "no-slug",
+            properties.slug?.type === 'rich_text'
+              ? properties.slug.rich_text[0]?.plain_text || 'no-slug'
+              : 'no-slug',
           title:
-            properties.title?.type === "title"
-              ? properties.title.title[0]?.plain_text
-              : "Untitled",
+            properties.title?.type === 'title'
+              ? properties.title.title[0]?.plain_text || 'Untitled'
+              : 'Untitled',
           created_time: post.created_time,
           thumbnailUrl,
         };
       });
 
+    console.log('Processed Posts:', posts);
+    
     return NextResponse.json(posts);
   } catch (error) {
-    console.error("Error fetching posts:", error);
-    return NextResponse.json({ error: "Failed to fetch posts" }, { status: 500 });
+    console.error('Error fetching posts:', error);
+    return NextResponse.json({ error: 'Failed to fetch posts' }, { status: 500 });
   }
 }

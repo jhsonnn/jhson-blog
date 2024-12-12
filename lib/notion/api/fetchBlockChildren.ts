@@ -130,7 +130,7 @@ export async function fetchBlockChildren(
 
   const children: BlockWithChildren[] = [];
   let hasMore = true;
-  let cursor: string | undefined = undefined;
+  let cursor: string | undefined;
 
   while (hasMore) {
     const response = await notion.blocks.children.list({
@@ -138,14 +138,9 @@ export async function fetchBlockChildren(
       start_cursor: cursor,
     });
 
-    console.log(`Fetched children for block ${blockId} at depth ${depth}:`, response.results);
+    console.log(`Fetched children for block ${blockId}:`, response.results);
 
     const results = response.results as BlockWithChildren[];
-    children.push(...results);
-
-    hasMore = response.has_more;
-    cursor = response.next_cursor || undefined;
-
     for (const block of results) {
       if (block.has_children) {
         console.log(`Fetching children for block ${block.id}`);
@@ -154,6 +149,10 @@ export async function fetchBlockChildren(
         block.children = [];
       }
     }
+
+    children.push(...results);
+    hasMore = response.has_more;
+    cursor = response.next_cursor || undefined;
   }
 
   return children;
