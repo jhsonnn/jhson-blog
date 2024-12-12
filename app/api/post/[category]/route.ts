@@ -352,9 +352,6 @@ import {
 
 const notion = new Client({ auth: process.env.NOTION_API_KEY });
 
-/**
- * 타입 정의: Thumbnail 파일 속성
- */
 type FileProperty = {
   type: "file";
   file: {
@@ -372,16 +369,12 @@ type ExternalProperty = {
 
 type ThumbnailFile = FileProperty | ExternalProperty;
 
-/**
- * 타입 가드: 파일이 'file' 타입인지 확인
- */
+
 function isFileProperty(file: ThumbnailFile): file is FileProperty {
   return file.type === "file";
 }
 
-/**
- * 타입 가드: 파일이 'external' 타입인지 확인
- */
+
 function isExternalProperty(file: ThumbnailFile): file is ExternalProperty {
   return file.type === "external";
 }
@@ -400,7 +393,6 @@ export async function GET(req: NextRequest, { params }: { params: { category?: s
   console.log('Received Params:', params);
 
   try {
-    // category 값이 undefined일 경우 에러를 반환
     if (!category) {
       return NextResponse.json(
         { error: 'Category parameter is missing or undefined.' },

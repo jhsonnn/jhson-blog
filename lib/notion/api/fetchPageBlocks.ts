@@ -42,27 +42,10 @@
 //   }
 // }
 
-// import { notion } from "@/lib/notion/client";
 
-// export async function fetchPageBlocks(pageId: string) {
-//   try {
-//     const response = await notion.blocks.children.list({
-//       block_id: pageId,
-//     });
-
-//     if (!response.results || response.results.length === 0) {
-//       throw new Error(`No blocks found for pageId: ${pageId}`);
-//     }
-
-//     return response.results;
-//   } catch (error) {
-//     console.error(`Failed to fetch blocks for pageId: ${pageId}`, error);
-//     throw new Error(`Failed to fetch blocks for pageId: ${pageId}`);
-//   }
-// }
-
-
-// 파일: lib/notion/fetchPageBlocks.ts
+//진행중3
+//lib/notion/fetchPageBlocks.ts
+//Notion API에서 특정 페이지의 블록 데이터를 가져오고 -> 가져온 데이터를 변환
 
 import { notion } from '@/lib/notion/client';
 import { BlockObjectResponse } from '@notionhq/client/build/src/api-endpoints';
@@ -74,9 +57,12 @@ export async function fetchPageBlocks(pageId: string): Promise<BlockWithChildren
     const response = await notion.blocks.children.list({
       block_id: pageId,
     });
+    console.log('Raw API Response:', response);
 
     const blocks = response.results as BlockObjectResponse[];
-    const transformedBlocks = await transformBlocks(blocks); // 변환 처리
+
+    // 변환 및 필터링된 블록 반환
+    const transformedBlocks = await transformBlocks(blocks);
     return transformedBlocks;
   } catch (error) {
     console.error(`Failed to fetch blocks for pageId: ${pageId}`, error);

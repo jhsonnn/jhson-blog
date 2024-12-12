@@ -54,6 +54,9 @@ export async function GET(req: NextRequest, { params }: { params?: { id?: string
 
     console.log("Fetched Blocks:", response);
 
+    console.log('Raw API Response for Block ID:', JSON.stringify(response, null, 2));
+
+    
     if (!response.results || response.results.length === 0) {
       console.error("No blocks found for id:", id);
       return NextResponse.json(
