@@ -46,10 +46,14 @@ const nextConfig = {
     ],
   },
   env: {
+    NEXT_PUBLIC_API_URL: process.env.NEXT_PUBLIC_API_URL,
     NOTION_API_KEY: process.env.NOTION_API_KEY,
     NOTION_DATABASE_ID: process.env.NOTION_DATABASE_ID,
-    NEXT_PUBLIC_API_URL: process.env.NEXT_PUBLIC_API_URL, //클라이언트, 서버에서 모두 사용
     NOTION_VIDEO_DB_ID: process.env.NOTION_VIDEO_DB_ID,
+    MY_TOKEN: process.env.MY_TOKEN,
+    REDIS_PASSWORD: process.env.REDIS_PASSWORD,
+    REDIS_HOST: process.env.REDIS_HOST,
+    REDIS_PORT: process.env.REDIS_PORT,
   },
   webpack: (config, { isServer }) => {
     if (isServer) {
