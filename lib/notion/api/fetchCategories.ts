@@ -525,6 +525,8 @@
 //   }
 // };
 
+
+//카테고리만 필터링
 import { PageObjectResponse, QueryDatabaseResponse } from "@notionhq/client/build/src/api-endpoints";
 import { notion } from "../client";
 

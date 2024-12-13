@@ -1,21 +1,42 @@
-import { NextApiRequest, NextApiResponse } from 'next';
+//app/api/video/route.ts
 import { fetchVideoUrl } from '@/lib/notion/utils/fetchVideoUrl';
 
-export default async function handler(req: NextApiRequest, res: NextApiResponse) {
-  const { slug } = req.query;
+export const GET = async (req: Request) => {
+  const { searchParams } = new URL(req.url);
+  const slug = searchParams.get('slug');
 
   if (!process.env.NOTION_VIDEO_DB_ID) {
-    return res.status(500).json({ error: 'NOTION_VIDEO_DB_ID is missing in environment variables' });
+    return new Response(JSON.stringify({ error: 'NOTION_VIDEO_DB_ID is missing in environment variables' }), {
+      status: 500,
+      headers: { 'Content-Type': 'application/json' }
+    });
   }
 
   try {
-    const videoUrl = await fetchVideoUrl(slug as string);
-    if (!videoUrl) {
-      return res.status(404).json({ error: 'Video not found' });
+    if (!slug) {
+      return new Response(JSON.stringify({ error: 'Slug is required' }), {
+        status: 400,
+        headers: { 'Content-Type': 'application/json' }
+      });
     }
-    res.status(200).json({ videoUrl });
+
+    const videoUrl = await fetchVideoUrl(slug);
+    if (!videoUrl) {
+      return new Response(JSON.stringify({ error: 'Video not found' }), {
+        status: 404,
+        headers: { 'Content-Type': 'application/json' }
+      });
+    }
+
+    return new Response(JSON.stringify({ videoUrl }), {
+      status: 200,
+      headers: { 'Content-Type': 'application/json' }
+    });
   } catch (error) {
     console.error('Error fetching video URL:', error);
-    res.status(500).json({ error: 'Failed to fetch video URL' });
+    return new Response(JSON.stringify({ error: 'Failed to fetch video URL' }), {
+      status: 500,
+      headers: { 'Content-Type': 'application/json' }
+    });
   }
-}
+};

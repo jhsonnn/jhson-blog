@@ -191,7 +191,7 @@ export async function fetchVideoUrl(slug: string): Promise<string | null> {
     throw new Error('Missing environment variable: NOTION_VIDEO_DB_ID');
   }
 
-  console.log('Slug:', slug);
+  //console.log('Slug:', slug);
   
   try {
     

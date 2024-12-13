@@ -340,6 +340,7 @@
 // };
 
 
+//카테고리별 db
 // lib/notion/api/fetchNotionDatabaseByCategory.ts
 import { notion } from "@/lib/notion/client";
 import {
@@ -347,9 +348,7 @@ import {
   QueryDatabaseResponse,
 } from "@notionhq/client/build/src/api-endpoints";
 
-/**
- * 파일 객체에 대한 사용자 정의 타입
- */
+
 type FileObject = {
   type: "file";
   file: { url: string; expiry_time: string };
@@ -364,16 +363,10 @@ type ExternalObject = {
 
 type FileValue = FileObject | ExternalObject;
 
-/**
- * 파일이 'file' 타입인지 확인
- */
 function isFileProperty(file: FileValue): file is FileObject {
   return file.type === "file";
 }
 
-/**
- * 파일이 'external' 타입인지 확인
- */
 function isExternalProperty(file: FileValue): file is ExternalObject {
   return file.type === "external";
 }
@@ -399,9 +392,9 @@ export async function fetchNotionDatabaseByCategory(category: string) {
       ) {
         const file = properties.thumbnailUrl.files[0] as FileValue;
         if (isFileProperty(file)) {
-          thumbnailUrl = file.file.url; // 'file' 타입
+          thumbnailUrl = file.file.url;
         } else if (isExternalProperty(file)) {
-          thumbnailUrl = file.external.url; // 'external' 타입
+          thumbnailUrl = file.external.url;
         }
       }
 

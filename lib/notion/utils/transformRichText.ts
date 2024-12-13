@@ -42,7 +42,7 @@ function transformRichText(item: NotionRichTextItemResponse): RichText {
 
   console.warn(`Unsupported RichTextItemResponse type: ${item.type}`);
 
-  // 기본 값을 반환하여 앱 중단 방지
+  // 기본 값 반환해서 앱 중단 방지
   return {
     type: 'text',
     text: {

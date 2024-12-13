@@ -8,8 +8,7 @@ export async function fetchWithRetry(blockId: string, retries = 3): Promise<Bloc
     try {
       const response = await notion.blocks.children.list({ block_id: blockId });
 
-      // Debugging the response
-      console.log(`Attempt ${attempt + 1}: Fetched response for blockId ${blockId}`, response);
+      //console.log(`Attempt ${attempt + 1}: Fetched response for blockId ${blockId}`, response);
 
       return response.results as BlockWithChildren[];
     } catch (error) {
@@ -24,7 +23,7 @@ export async function fetchWithRetry(blockId: string, retries = 3): Promise<Bloc
     }
   }
 
-  // Returning an empty array as a fallback
+  //빈 배열 기본값 반환
   console.warn(`Returning empty array for blockId ${blockId} after ${retries} retries.`);
   return [];
 }

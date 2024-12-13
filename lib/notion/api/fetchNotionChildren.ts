@@ -10,7 +10,7 @@
 // }
 
 
-///진행중2
+//blockId에 따라 데이터 필터링
 // lib/notion/fetchNotionChildren.ts
 import { BlockWithChildren } from '@/lib/notion/types';
 

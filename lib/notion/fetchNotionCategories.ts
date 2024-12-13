@@ -38,5 +38,5 @@ export async function fetchNotionCategories(): Promise<string[]> {
     })
     .filter((category): category is string => Boolean(category)); // null 제거
 
-  return [...new Set(categories)]; // 중복 제거
+  return [...new Set(categories)]; //중복 제거
 }

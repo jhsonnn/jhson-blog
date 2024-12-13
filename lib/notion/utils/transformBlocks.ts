@@ -71,7 +71,7 @@ async function transformBlocks(blocks: BlockObjectResponse[]): Promise<BlockWith
             file: block.video.type === 'file' ? { url: block.video.file?.url || '' } : undefined,
             external: block.video.type === 'external' ? { url: block.video.external?.url || '' } : undefined,
         };
-      console.log('Transformed video block:', JSON.stringify(transformedBlock.video, null, 2)); // 변환된 비디오 블록 확인
+      //console.log('Transformed video block:', JSON.stringify(transformedBlock.video, null, 2)); // 변환된 비디오 블록 확인
 }
 
       if (block.has_children) {
