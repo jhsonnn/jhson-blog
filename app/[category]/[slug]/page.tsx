@@ -470,6 +470,8 @@ export default async function ContentPage({ params }: PageProps) {
       { cache: 'no-store' }
     );
 
+    console.log('NEXT_PUBLIC_BASE_URL:', process.env.NEXT_PUBLIC_BASE_URL);
+
     if (!postsResponse.ok) {
       console.error(`Failed to fetch posts. Status: ${postsResponse.status}`);
       throw new Error(`Failed to fetch posts for category: ${category}`);
