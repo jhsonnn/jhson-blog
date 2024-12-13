@@ -548,11 +548,11 @@ export const fetchCategories = async (): Promise<string[]> => {
           return categoryProperty.select.name;
         }
 
-        return null; // 유효하지 않으면 null 반환
+        return null; //유효하지 않으면 null 반환
       })
       .filter((category): category is string => !!category); // null 제거
 
-    return [...new Set(categories)]; // 중복 제거
+    return [...new Set(categories)]; //중복 제거
   } catch (error) {
     console.error("Error fetching categories:", error);
     throw error;

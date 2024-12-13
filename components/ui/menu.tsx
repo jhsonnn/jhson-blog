@@ -45,16 +45,24 @@
 
 // // export default Menu;
 
-// components/ui/menu.tsx
+// // components/ui/menu.tsx
 'use client';
 
-import Link from 'next/link';
-import { useEffect, useState } from 'react';
+import { useState, useEffect } from 'react';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
+import { useRouter } from 'next/navigation';
 
 const Menu = () => {
   const [categories, setCategories] = useState<string[]>([]);
-  const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
+  const [error, setError] = useState<string | null>(null);
+  const router = useRouter();
 
   useEffect(() => {
     const loadCategories = async () => {
@@ -97,21 +105,25 @@ const Menu = () => {
   }
 
   return (
-    <nav>
-      <ul className="font-bold flex flex-col sm:flex-row md:flex-row lg:flex-col lg:space-x-0 sm:space-x-4">
-        {categories.map((category) => (
-          <li
-            key={category}
-            className="hover:text-amber-400 cursor-pointer mb-1"
-          >
-            <Link href={`/${category}`}>{category}</Link>
-          </li>
-        ))}
-      </ul>
-    </nav>
+    <div className="w-36 max-w-xs">
+      <Select onValueChange={(value) => router.push(`/${value}`)}>
+        <SelectTrigger className="rounded-xl border-2 border-gray-300 text-left">
+          <SelectValue placeholder="All Posts" className="font-bold text-xl" />
+        </SelectTrigger>
+        <SelectContent className="rounded-xl bg-white shadow-md">
+          {categories.map((category) => (
+            <SelectItem
+              key={category}
+              value={category}
+              className="!bg-white px-3 py-2 text-gray-700 hover:!bg-gray-300 hover:!text-black focus:!bg-amber-400 focus:!rounded-xl focus:!text-black"
+            >
+              {category}
+            </SelectItem>
+          ))}
+        </SelectContent>
+      </Select>
+    </div>
   );
 };
-{
-  /*  */
-}
+
 export default Menu;

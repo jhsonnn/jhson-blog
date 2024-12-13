@@ -1,26 +1,25 @@
+// components/ui/ConditionalSidebar.tsx
 'use client';
 
 import React from 'react';
-import { usePathname } from 'next/navigation';
-import Menu from '@/components/ui/menu';
-import Profile from '@/components/ui/profile';
+import TagsMenu from './tagsMenu';
+import Menu from './menu';
+import Profile from './profile';
 
-const ConditionalSidebar = () => {
-  const pathname = usePathname();
-  // '/[category]/[slug]'이면 header만 표시되도록
-  const isPostPage = /^\/[^/]+\/[^/]+$/.test(pathname);
+const ConditionalSidebar = ({ section }: { section: string }) => {
+  if (section === 'tagsMenu') {
+    return <TagsMenu />;
+  }
 
-  if (isPostPage) return null;
-  return (
-    <>
-      <aside className="order-1 lg:order-3 w-full lg:w-1/5">
-        <Profile />
-      </aside>
-      <aside className="order-2 lg:order-1 w-full lg:w-1/5 lg:block">
-        <Menu />
-      </aside>
-    </>
-  );
+  if (section === 'menu') {
+    return <Menu />;
+  }
+
+  if (section === 'profile') {
+    return <Profile />;
+  }
+
+  return null;
 };
 
 export default ConditionalSidebar;

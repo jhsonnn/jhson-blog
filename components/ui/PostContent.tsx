@@ -265,7 +265,7 @@ const ImageBlock: React.FC<{ block: BlockWithChildren }> = ({ block }) => {
     <img
       src={url}
       alt={altText}
-      className="my-3 max-w-full h-auto rounded-lg"
+      className="my-3 max-w-full h-auto rounded-xl"
     />
   );
 };
@@ -291,7 +291,7 @@ const VideoBlock: React.FC<{ block: BlockWithChildren }> = ({ block }) => {
       key={block.id}
       controls
       src={url}
-      className="my-4 w-full max-w-screen-lg rounded-lg"
+      className="my-4 w-full max-w-screen-lg rounded-xl"
     >
       Your browser does not support the video tag.
     </video>

@@ -390,7 +390,7 @@ const NotionRenderer: React.FC<NotionRendererProps> = ({
           <video
             controls
             src={videoUrl}
-            className="w-full max-w-screen-lg rounded-lg"
+            className="w-full max-w-screen-lg rounded-xl"
           >
             Your browser does not support the video tag.
           </video>
@@ -548,7 +548,7 @@ const renderImage = (block: ImageBlockObjectResponse) => {
     <img
       src={url}
       alt={altText}
-      className="my-3 max-w-full h-auto rounded-lg"
+      className="my-3 max-w-full h-auto rounded-xl"
     />
   );
 };
@@ -571,7 +571,7 @@ const renderVideo = (block: BlockWithChildren) => {
 
   return (
     <div key={block.id} className="video-container">
-      <video controls src={url} className="w-full max-w-screen-lg rounded-lg">
+      <video controls src={url} className="w-full max-w-screen-lg rounded-xl">
         Your browser does not support the video tag.
       </video>
     </div>

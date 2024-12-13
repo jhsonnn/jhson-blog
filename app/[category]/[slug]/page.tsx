@@ -182,7 +182,7 @@ export default async function ContentPage({ params }: PageProps) {
     console.log('Video URL:', videoUrl);
 
     return (
-      <div className="bg-neutral-100 dark:bg-neutral-700 px-20 py-5 rounded-lg">
+      <div className="bg-neutral-100 dark:bg-neutral-700 px-20 py-5 rounded-xl">
         <NotionRenderer blocks={blocks} videoUrl={videoUrl} />
       </div>
     );
