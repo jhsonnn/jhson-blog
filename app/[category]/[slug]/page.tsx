@@ -466,7 +466,7 @@ export default async function ContentPage({ params }: PageProps) {
   try {
     // Posts 데이터 가져오기
     const postsResponse = await fetch(
-      `${process.env.NEXT_PUBLIC_API_URL}/api/post/${category}`,
+      `${process.env.NEXT_PUBLIC_BASE_URL}/api/post/${category}`,
       { cache: 'no-store' }
     );
 
@@ -487,7 +487,7 @@ export default async function ContentPage({ params }: PageProps) {
 
     // Blocks 데이터 가져오기
     const blocksResponse = await fetch(
-      `${process.env.NEXT_PUBLIC_API_URL}/api/block/${pageData.id}`,
+      `${process.env.NEXT_PUBLIC_BASE_URL}/api/block/${pageData.id}`,
       { cache: 'no-store' }
     );
 

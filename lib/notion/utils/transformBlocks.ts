@@ -13,7 +13,7 @@ import {
 import transformRichText from './transformRichText';
 
 async function fetchChildren(blockId: string): Promise<BlockObjectResponse[]> {
-  const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000';
+  const apiUrl = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000';
   const response = await fetch(`${apiUrl}/api/block/${blockId}`, { cache: 'no-store' });
 
   if (!response.ok) {
