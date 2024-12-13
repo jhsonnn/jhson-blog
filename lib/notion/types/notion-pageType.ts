@@ -32,6 +32,8 @@ export interface Post {
   title: string;
   slug: string;
   created_time: string;
+  category: string; // 🔥 추가
+  tags: string[]; // 🔥 추가
 }
 
 export interface ApiResponse {

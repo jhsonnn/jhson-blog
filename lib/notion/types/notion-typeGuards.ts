@@ -6,6 +6,7 @@ import {
 } from '@notionhq/client/build/src/api-endpoints';
 import { SelectProperty } from "./notion-pageType";
 import { BlockWithChildren } from './notion-blocksType';
+import { ExternalObject, FileObject, FileValue } from './notion-apiType';
 
 type Property =
   PageObjectResponse['properties'][keyof PageObjectResponse['properties']];
@@ -93,4 +94,13 @@ export function isSelectProperty(
 export function isCategoryProperty(result: NotionPageObjectResponse): boolean {
   const categoryProperty = result.properties.category;
   return isSelectProperty(categoryProperty) && !!categoryProperty.select?.name;
+}
+
+
+export function isFileProperty(file: FileValue): file is FileObject {
+  return file.type === "file";
+}
+
+export function isExternalProperty(file: FileValue): file is ExternalObject {
+  return file.type === "external";
 }

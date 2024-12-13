@@ -57,3 +57,18 @@ export type ApiColor =
   | 'purple_background'
   | 'pink_background'
   | 'red_background';
+
+
+export type FileObject = {
+  type: "file";
+  file: { url: string; expiry_time: string };
+  name: string;
+};
+
+export type ExternalObject = {
+  type: "external";
+  external: { url: string };
+  name: string;
+};
+
+export type FileValue = FileObject | ExternalObject;

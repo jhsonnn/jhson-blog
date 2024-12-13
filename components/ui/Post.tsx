@@ -11,9 +11,17 @@ type PostProps = {
   date: string;
   thumbnailUrl: string;
   category: string;
+  tags: string[];
 };
 
-const Post: React.FC<PostProps> = ({ title, date, thumbnailUrl, category }) => {
+const Post: React.FC<PostProps> = ({
+  title,
+  //slug,
+  date,
+  thumbnailUrl,
+  category,
+  tags,
+}: PostProps) => {
   const [isLoaded, setIsLoaded] = useState(false);
 
   // 날짜 형식 변환
@@ -67,7 +75,7 @@ const Post: React.FC<PostProps> = ({ title, date, thumbnailUrl, category }) => {
           onLoadingComplete={() => setIsLoaded(true)}
           onError={() => setIsLoaded(false)}
         />
-        {/* 이미지 위의 오버레이 */}
+        {/* 이미지 위의의 오버레이 */}
         <div className="absolute inset-0 bg-[var(--sk-fill-gray-quaternary-alpha)] opacity-0 transition-opacity duration-300 hover:opacity-30"></div>
       </div>
 
@@ -80,9 +88,18 @@ const Post: React.FC<PostProps> = ({ title, date, thumbnailUrl, category }) => {
           {formattedDate}
         </p>
         <div className="flex flex-wrap gap-2">
-          <span className="bg-[var(--sk-fill-tertiary)] text-[var(--sk-glyph-gray-secondary)] text-xs font-medium px-2 py-1 rounded hover:bg-[var(--sk-fill-gray-secondary)] hover:text-[var(--sk-body-text-color)] transition-colors duration-300">
+          <span className="bg-[var(--sk-fill-tertiary)] text-[var(--sk-glyph-gray-secondary)] text-xs font-medium px-2 py-1 rounded-full border border-gray-300 hover:bg-[var(--sk-fill-gray-secondary)] hover:text-[var(--sk-body-text-color)] transition-colors duration-300">
             {category}
           </span>
+
+          {tags?.map((tag) => (
+            <span
+              key={tag}
+              className="border rounded-full px-3 py-1 text-xs text-gray-700 border-gray-300"
+            >
+              {tag}
+            </span>
+          ))}
         </div>
       </div>
 
