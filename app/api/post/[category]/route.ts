@@ -342,13 +342,11 @@
 //   }
 // }
 
-
 // app/api/post/[category]/route.ts
-import { NextResponse } from "next/server";
+
+import { NextRequest, NextResponse } from "next/server";
 import { Client } from "@notionhq/client";
-import {
-  PageObjectResponse,
-} from "@notionhq/client/build/src/api-endpoints";
+import { PageObjectResponse } from "@notionhq/client/build/src/api-endpoints";
 
 const notion = new Client({ auth: process.env.NOTION_API_KEY });
 
@@ -369,11 +367,9 @@ type ExternalProperty = {
 
 type ThumbnailFile = FileProperty | ExternalProperty;
 
-
 function isFileProperty(file: ThumbnailFile): file is FileProperty {
   return file.type === "file";
 }
-
 
 function isExternalProperty(file: ThumbnailFile): file is ExternalProperty {
   return file.type === "external";
@@ -387,10 +383,18 @@ function isPageObjectResponse(result: unknown): result is PageObjectResponse {
     "created_time" in result
   );
 }
-export async function GET({ params }: { params: { category?: string } }) {
+
+export async function GET(_req: NextRequest, { params }: { params: { category?: string } }) {
   const { category } = params;
 
-  console.log('Received Params:', params);
+  //console.log('Received Params:', params);
+
+  if (!params || !params.category) {
+    return new Response(JSON.stringify({ error: 'Category is required' }), { 
+      status: 400, 
+      headers: { 'Content-Type': 'application/json' } 
+    });
+  }
 
   try {
     if (!category) {
@@ -404,7 +408,7 @@ export async function GET({ params }: { params: { category?: string } }) {
       database_id: process.env.NOTION_DATABASE_ID!,
       filter: {
         property: 'category',
-        select: { equals: category }, // category가 반드시 string임을 보장
+        select: { equals: category },
       },
     });
 
@@ -443,7 +447,7 @@ export async function GET({ params }: { params: { category?: string } }) {
         };
       });
 
-    console.log('Processed Posts:', posts);
+    //console.log('Processed Posts:', posts);
     
     return NextResponse.json(posts);
   } catch (error) {

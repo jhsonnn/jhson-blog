@@ -34,7 +34,7 @@ import { Client } from "@notionhq/client";
 
 const notion = new Client({ auth: process.env.NOTION_API_KEY });
 
-export async function GET(req: NextRequest, { params }: { params?: { id?: string } }) {
+export async function GET(_req: NextRequest, { params }: { params?: { id?: string } }) {
   console.log("Received Params:", params);
 
   if (!params || !params.id) {
