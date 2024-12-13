@@ -344,7 +344,7 @@
 
 
 // app/api/post/[category]/route.ts
-import { NextRequest, NextResponse } from "next/server";
+import { NextResponse } from "next/server";
 import { Client } from "@notionhq/client";
 import {
   PageObjectResponse,
@@ -387,7 +387,7 @@ function isPageObjectResponse(result: unknown): result is PageObjectResponse {
     "created_time" in result
   );
 }
-export async function GET(req: NextRequest, { params }: { params: { category?: string } }) {
+export async function GET({ params }: { params: { category?: string } }) {
   const { category } = params;
 
   console.log('Received Params:', params);
