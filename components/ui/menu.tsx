@@ -45,10 +45,93 @@
 
 // // export default Menu;
 
-// // components/ui/menu.tsx
-'use client';
+// // // components/ui/menu.tsx
+// 'use client';
 
-import { useState, useEffect } from 'react';
+// import { useState, useEffect } from 'react';
+// import {
+//   Select,
+//   SelectContent,
+//   SelectItem,
+//   SelectTrigger,
+//   SelectValue,
+// } from '@/components/ui/select';
+// import { useRouter } from 'next/navigation';
+
+// const Menu = () => {
+//   const [categories, setCategories] = useState<string[]>([]);
+//   const [loading, setLoading] = useState<boolean>(true);
+//   const [error, setError] = useState<string | null>(null);
+//   const router = useRouter();
+
+//   useEffect(() => {
+//     const loadCategories = async () => {
+//       try {
+//         const response = await fetch('/api/category');
+
+//         if (!response.ok) {
+//           const errorText = await response.text();
+//           console.error('Failed to fetch categories:', errorText);
+//           throw new Error(`Failed to fetch categories: ${errorText}`);
+//         }
+
+//         const data: string[] = await response.json();
+
+//         if (!data || data.length === 0) {
+//           setError('No categories available.');
+//           setCategories([]);
+//         } else {
+//           setCategories(data);
+//         }
+//       } catch (error: unknown) {
+//         const errorMessage =
+//           error instanceof Error ? error.message : 'Unknown error occurred';
+//         console.error('Error loading categories:', errorMessage);
+//         setError(errorMessage);
+//       } finally {
+//         setLoading(false);
+//       }
+//     };
+
+//     loadCategories();
+//   }, []);
+
+//   if (loading) {
+//     return <div>Loading categories...</div>;
+//   }
+
+//   if (error) {
+//     return <div>Error: {error}</div>;
+//   }
+
+//   return (
+//     <div className="w-36 max-w-xs">
+//       <Select onValueChange={(value) => router.push(`/${value}`)}>
+//         <SelectTrigger className="rounded-xl border-2 border-gray-300 text-left">
+//           <SelectValue placeholder="All Posts" className="font-bold text-xl" />
+//         </SelectTrigger>
+//         <SelectContent className="rounded-xl bg-white shadow-md">
+//           {categories.map((category) => (
+//             <SelectItem
+//               key={category}
+//               value={category}
+//               className="!bg-white px-3 py-2 text-gray-700 hover:!bg-gray-300 hover:!text-black focus:!bg-amber-400 focus:!rounded-xl focus:!text-black"
+//             >
+//               {category}
+//             </SelectItem>
+//           ))}
+//         </SelectContent>
+//       </Select>
+//     </div>
+//   );
+// };
+
+// export default Menu;
+
+/////
+// components/ui/Menu.tsx
+'use client'; // 클라이언트 컴포넌트로 전환
+
 import {
   Select,
   SelectContent,
@@ -56,22 +139,24 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { useRouter } from 'next/navigation';
+import { useState, useEffect } from 'react';
 
 const Menu = () => {
   const [categories, setCategories] = useState<string[]>([]);
-  const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
-  const router = useRouter();
+  const [loading, setLoading] = useState<boolean>(true);
 
   useEffect(() => {
     const loadCategories = async () => {
       try {
-        const response = await fetch('/api/category');
+        const API_URL =
+          process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000';
+        const response = await fetch(`${API_URL}/api/category`, {
+          cache: 'no-store',
+        });
 
         if (!response.ok) {
           const errorText = await response.text();
-          console.error('Failed to fetch categories:', errorText);
           throw new Error(`Failed to fetch categories: ${errorText}`);
         }
 
@@ -83,11 +168,10 @@ const Menu = () => {
         } else {
           setCategories(data);
         }
-      } catch (error: unknown) {
-        const errorMessage =
-          error instanceof Error ? error.message : 'Unknown error occurred';
-        console.error('Error loading categories:', errorMessage);
-        setError(errorMessage);
+      } catch (error) {
+        setError(
+          error instanceof Error ? error.message : 'Unknown error occurred'
+        );
       } finally {
         setLoading(false);
       }
@@ -106,7 +190,7 @@ const Menu = () => {
 
   return (
     <div className="w-36 max-w-xs">
-      <Select onValueChange={(value) => router.push(`/${value}`)}>
+      <Select onValueChange={(value) => (window.location.href = `/${value}`)}>
         <SelectTrigger className="rounded-xl border-2 border-gray-300 text-left">
           <SelectValue placeholder="All Posts" className="font-bold text-xl" />
         </SelectTrigger>
