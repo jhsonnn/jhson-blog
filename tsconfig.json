@@ -9,7 +9,8 @@
       "dom.iterable",
       "esnext"
     ],
-    "allowJs": true,
+    // "allowJs": true,
+    "allowJs": false,
     "skipLibCheck": true,
     "strict": true,
     "noEmit": true,
@@ -18,9 +19,11 @@
     "noImplicitAny": true,
     "esModuleInterop": true,
     "module": "esnext",
-    "moduleResolution": "bundler",
+    // "moduleResolution": "bundler",
+    "moduleResolution": "node",
     "resolveJsonModule": true,
     "isolatedModules": true,
+    // "jsx": "preserve",
     "jsx": "preserve",
     "incremental": true,
     "plugins": [
@@ -58,8 +61,9 @@
     "**/*.ts",
     "**/*.tsx",
     "jest.setup.ts",
-    ".next/types/**/*.ts"
-, "notion-api-test.mjs"  ],
+    ".next/types/**/*.ts",
+    "notion-api-test.mjs"
+  ],
   "exclude": [
     "node_modules"
   ]

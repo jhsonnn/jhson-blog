@@ -120,20 +120,8 @@ import {
   QueryDatabaseResponse,
   QueryDatabaseParameters,
 } from "@notionhq/client/build/src/api-endpoints";
+import { ExternalObject, FileObject, FileValue } from "../types";
 
-type FileObject = {
-  type: "file";
-  file: { url: string; expiry_time: string };
-  name: string;
-};
-
-type ExternalObject = {
-  type: "external";
-  external: { url: string };
-  name: string;
-};
-
-type FileValue = FileObject | ExternalObject;
 
 function isFileProperty(file: FileValue): file is FileObject {
   return file.type === "file";

@@ -97,10 +97,30 @@ export function isCategoryProperty(result: NotionPageObjectResponse): boolean {
 }
 
 
+// export function isFileProperty(file: FileValue): file is FileObject {
+//   return file.type === "file";
+// }
+
 export function isFileProperty(file: FileValue): file is FileObject {
-  return file.type === "file";
+  return (
+    typeof file === "object" &&
+    file !== null &&
+    file.type === "file" &&
+    file.file !== undefined &&
+    typeof file.file.url === "string"
+  );
 }
 
+// export function isExternalProperty(file: FileValue): file is ExternalObject {
+//   return file.type === "external";
+// }
+
 export function isExternalProperty(file: FileValue): file is ExternalObject {
-  return file.type === "external";
+  return (
+    typeof file === "object" &&
+    file !== null &&
+    file.type === "external" &&
+    file.external !== undefined &&
+    typeof file.external.url === "string"
+  );
 }

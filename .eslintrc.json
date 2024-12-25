@@ -37,7 +37,12 @@
     "no-unused-vars": "off", // 일반 JavaScript 규칙 비활성화
     "@typescript-eslint/no-unused-vars": [
       "error",
-      { "vars": "all", "args": "after-used", "ignoreRestSiblings": true }
+      {
+        "vars": "all",
+        "args": "after-used",
+        "ignoreRestSiblings": true,
+        "argsIgnorePattern": "^_"
+      } 
     ],
     "@typescript-eslint/no-explicit-any": "error", // any 타입 금지
     "@typescript-eslint/no-inferrable-types": [
@@ -46,7 +51,9 @@
         "ignoreParameters": true, // 함수 매개변수는 제외
         "ignoreProperties": true  // 클래스 프로퍼티는 제외
       }
+      
     ],
     "eqeqeq": ["error", "always"] // 항상 === 사용
+    
   }
 }

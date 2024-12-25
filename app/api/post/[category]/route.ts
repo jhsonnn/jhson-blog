@@ -344,114 +344,217 @@
 
 // app/api/post/[category]/route.ts
 
+// import { NextRequest, NextResponse } from "next/server";
+// import { Client } from "@notionhq/client";
+// import { PageObjectResponse } from "@notionhq/client/build/src/api-endpoints";
+
+// const notion = new Client({ auth: process.env.NOTION_API_KEY });
+
+// type FileProperty = {
+//   type: "file";
+//   file: {
+//     url: string;
+//     expiry_time: string;
+//   };
+// };
+
+// type ExternalProperty = {
+//   type: "external";
+//   external: {
+//     url: string;
+//   };
+// };
+
+// type ThumbnailFile = FileProperty | ExternalProperty;
+
+// function isFileProperty(file: ThumbnailFile): file is FileProperty {
+//   return file.type === "file";
+// }
+
+// function isExternalProperty(file: ThumbnailFile): file is ExternalProperty {
+//   return file.type === "external";
+// }
+
+// function isPageObjectResponse(result: unknown): result is PageObjectResponse {
+//   return (
+//     typeof result === "object" &&
+//     result !== null &&
+//     "properties" in result &&
+//     "created_time" in result
+//   );
+// }
+
+// export async function GET(_req: NextRequest, { params }: { params: { category?: string } }) {
+//   const { category } = params;
+
+//   //console.log('Received Params:', params);
+
+//   if (!params || !params.category) {
+//     return new Response(JSON.stringify({ error: 'Category is required' }), {
+//       status: 400,
+//       headers: { 'Content-Type': 'application/json' }
+//     });
+//   }
+
+//   try {
+//     if (!category) {
+//       return NextResponse.json(
+//         { error: 'Category parameter is missing or undefined.' },
+//         { status: 400 }
+//       );
+//     }
+
+//     const response = await notion.databases.query({
+//       database_id: process.env.NOTION_DATABASE_ID!,
+//       filter: {
+//         property: 'category',
+//         select: { equals: category },
+//       },
+//     });
+
+//     console.log('Fetched Database Query Response:', response);
+    
+//     const posts = response.results
+//       .filter(isPageObjectResponse)
+//       .map((post) => {
+//         const properties = post.properties;
+
+//         let thumbnailUrl = '/default-thumbnail.png';
+//         if (
+//           properties.thumbnailUrl?.type === 'files' &&
+//           properties.thumbnailUrl.files.length > 0
+//         ) {
+//           const file = properties.thumbnailUrl.files[0] as ThumbnailFile;
+//           thumbnailUrl = isFileProperty(file)
+//             ? file.file.url
+//             : isExternalProperty(file)
+//             ? file.external.url
+//             : thumbnailUrl;
+//         }
+
+//         return {
+//           id: post.id,
+//           slug:
+//             properties.slug?.type === 'rich_text'
+//               ? properties.slug.rich_text[0]?.plain_text || 'no-slug'
+//               : 'no-slug',
+//           title:
+//             properties.title?.type === 'title'
+//               ? properties.title.title[0]?.plain_text || 'Untitled'
+//               : 'Untitled',
+//           created_time: post.created_time,
+//           thumbnailUrl,
+//         };
+//       });
+
+//     //console.log('Processed Posts:', posts);
+    
+//     return NextResponse.json(posts);
+//   } catch (error) {
+//     console.error('Error fetching posts:', error);
+//     return NextResponse.json({ error: 'Failed to fetch posts' }, { status: 500 });
+//   }
+// }
+
+//test
+
+// 포스트 데이터 API
 import { NextRequest, NextResponse } from "next/server";
 import { Client } from "@notionhq/client";
-import { PageObjectResponse } from "@notionhq/client/build/src/api-endpoints";
+import {
+  isFileProperty,
+  isExternalProperty,
+  isPageObjectResponse,
+  FileValue,
+} from "@/lib/notion/types";
 
 const notion = new Client({ auth: process.env.NOTION_API_KEY });
 
-type FileProperty = {
-  type: "file";
-  file: {
-    url: string;
-    expiry_time: string;
-  };
-};
-
-type ExternalProperty = {
-  type: "external";
-  external: {
-    url: string;
-  };
-};
-
-type ThumbnailFile = FileProperty | ExternalProperty;
-
-function isFileProperty(file: ThumbnailFile): file is FileProperty {
-  return file.type === "file";
-}
-
-function isExternalProperty(file: ThumbnailFile): file is ExternalProperty {
-  return file.type === "external";
-}
-
-function isPageObjectResponse(result: unknown): result is PageObjectResponse {
-  return (
-    typeof result === "object" &&
-    result !== null &&
-    "properties" in result &&
-    "created_time" in result
-  );
-}
-
-export async function GET(_req: NextRequest, { params }: { params: { category?: string } }) {
+export async function GET(
+  _req: NextRequest,
+  { params }: { params: { category?: string } }
+) {
   const { category } = params;
 
-  //console.log('Received Params:', params);
-
-  if (!params || !params.category) {
-    return new Response(JSON.stringify({ error: 'Category is required' }), { 
-      status: 400, 
-      headers: { 'Content-Type': 'application/json' } 
-    });
+  if (!category) {
+    return NextResponse.json(
+      { error: "Category parameter is missing or undefined." },
+      { status: 400 }
+    );
   }
 
   try {
-    if (!category) {
-      return NextResponse.json(
-        { error: 'Category parameter is missing or undefined.' },
-        { status: 400 }
-      );
-    }
-
     const response = await notion.databases.query({
       database_id: process.env.NOTION_DATABASE_ID!,
       filter: {
-        property: 'category',
+        property: "category",
         select: { equals: category },
       },
     });
 
-    console.log('Fetched Database Query Response:', response);
-    
     const posts = response.results
       .filter(isPageObjectResponse)
       .map((post) => {
         const properties = post.properties;
+// 썸네일 처리
+let thumbnailUrl = "/default-thumbnail.png";
 
-        let thumbnailUrl = '/default-thumbnail.png';
-        if (
-          properties.thumbnailUrl?.type === 'files' &&
-          properties.thumbnailUrl.files.length > 0
-        ) {
-          const file = properties.thumbnailUrl.files[0] as ThumbnailFile;
-          thumbnailUrl = isFileProperty(file)
-            ? file.file.url
-            : isExternalProperty(file)
-            ? file.external.url
-            : thumbnailUrl;
-        }
+if (
+  properties.thumbnailUrl?.type === "files" &&
+  properties.thumbnailUrl.files.length > 0
+) {
+  const fileItem = properties.thumbnailUrl.files[0] as FileValue;
+
+  if (fileItem.type === "file" && isFileProperty(fileItem)) {
+    thumbnailUrl = fileItem.file.url;
+  } else if (fileItem.type === "external" && isExternalProperty(fileItem)) {
+    thumbnailUrl = fileItem.external.url;
+  }
+}
+
+
+
+        // Category 처리
+        const postCategory =
+          properties.category?.type === "select" &&
+          properties.category.select?.name
+            ? properties.category.select.name
+            : "none";
+
+        // Tags 처리
+        const tags =
+          properties.tags?.type === "multi_select"
+            ? properties.tags.multi_select
+                .filter((tag) => !!tag.name)
+                .map((tag) => tag.name)
+            : [];
 
         return {
           id: post.id,
           slug:
-            properties.slug?.type === 'rich_text'
-              ? properties.slug.rich_text[0]?.plain_text || 'no-slug'
-              : 'no-slug',
+            properties.slug?.type === "rich_text" &&
+            properties.slug.rich_text.length > 0
+              ? properties.slug.rich_text[0].plain_text
+              : "no-slug",
           title:
-            properties.title?.type === 'title'
-              ? properties.title.title[0]?.plain_text || 'Untitled'
-              : 'Untitled',
+            properties.title?.type === "title" &&
+            properties.title.title.length > 0
+              ? properties.title.title[0].plain_text
+              : "Untitled",
+          category: postCategory,
+          tags,
           created_time: post.created_time,
           thumbnailUrl,
         };
-      });
+      })
+      .filter((post) => post.category !== "none" && post.tags.length > 0); // 필터링: category "none"과 tags 비어있음 제거
 
-    //console.log('Processed Posts:', posts);
-    
     return NextResponse.json(posts);
   } catch (error) {
-    console.error('Error fetching posts:', error);
-    return NextResponse.json({ error: 'Failed to fetch posts' }, { status: 500 });
+    console.error("Error fetching posts:", error);
+    return NextResponse.json(
+      { error: "Failed to fetch posts" },
+      { status: 500 }
+    );
   }
 }

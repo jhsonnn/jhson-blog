@@ -32,7 +32,8 @@ export type NotionBlockType =
   | 'image'
   | 'video'
   | 'audio'
-  | 'code';
+  | 'code'
+  | 'equation'; 
 
 export type SelectColor =
   | 'default'

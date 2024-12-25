@@ -32,8 +32,9 @@ export interface Post {
   title: string;
   slug: string;
   created_time: string;
-  category: string; // 🔥 추가
-  tags: string[]; // 🔥 추가
+  category: string;
+  tags: string[];
+  thumbnailUrl?: string;
 }
 
 export interface ApiResponse {
