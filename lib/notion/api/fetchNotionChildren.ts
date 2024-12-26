@@ -1,17 +1,4 @@
-// lib/notion/fetchNotionChildren.ts
-// import { fetchBlockChildren } from './fetchBlockChildren';
-// import { BlockWithChildren } from '@/lib/notion/types/notionDataType';
-
-// export async function fetchNotionChildren(
-//   blockId: string,
-//   maxDepth: number = 3
-// ): Promise<BlockWithChildren[]> {
-//   return fetchBlockChildren(blockId, 1, maxDepth);
-// }
-
-
 //blockId에 따라 데이터 필터링
-// lib/notion/fetchNotionChildren.ts
 import { BlockWithChildren } from '@/lib/notion/types';
 
 export async function fetchNotionChildren(blockId: string): Promise<BlockWithChildren[]> {

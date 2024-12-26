@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import TagsMenu from './TagsMenu';
 
 export default function TagsMenuWrapper() {
-  const [tags, setTags] = useState<string[]>([]); // 태그 타입 명시
+  const [tags, setTags] = useState<string[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -17,7 +17,7 @@ export default function TagsMenuWrapper() {
           cache: 'no-store',
         });
         if (!response.ok) throw new Error('Failed to fetch tags');
-        const data = (await response.json()) as string[]; // 데이터 타입 지정
+        const data = (await response.json()) as string[];
         setTags(data.filter((tag: string) => tag !== 'none'));
       } catch (error) {
         setError(

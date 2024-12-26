@@ -1,4 +1,3 @@
-// app/api/route.ts
 import { NextResponse } from "next/server";
 import { notion } from "@/lib/notion/client";
 

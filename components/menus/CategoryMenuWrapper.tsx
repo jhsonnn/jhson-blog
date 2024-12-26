@@ -1,37 +1,40 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
+import { useState } from 'react';
 import CategoryMenu from './CategoryMenu';
 
-export default function CategoryMenuWrapper() {
-  const [categories, setCategories] = useState<string[]>([]); // 카테고리 타입 명시
-  const [loading, setLoading] = useState<boolean>(true);
-  const [error, setError] = useState<string | null>(null);
+type CategoryMenuWrapperProps = {
+  categories: string[];
+};
 
-  useEffect(() => {
-    const fetchCategories = async () => {
-      try {
-        const API_URL =
-          process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000';
-        const response = await fetch(`${API_URL}/api/categories`, {
-          cache: 'no-store',
-        });
-        if (!response.ok) throw new Error('Failed to fetch categories');
-        const data = (await response.json()) as string[]; // 데이터 타입 지정
-        setCategories(data.filter((category: string) => category !== 'none'));
-      } catch (error) {
-        setError(
-          error instanceof Error ? error.message : 'Failed to load categories'
-        );
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchCategories();
-  }, []);
+export default function CategoryMenuWrapper({
+  categories,
+}: CategoryMenuWrapperProps) {
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const [selectedCategory, setSelectedCategory] = useState(
+    searchParams.get('category') || 'all'
+  );
 
-  if (loading) return <div>Loading categories...</div>;
-  if (error) return <div className="text-red-500">{error}</div>;
+  const handleCategoryChange = (category: string) => {
+    setSelectedCategory(category);
+    const params = new URLSearchParams(searchParams.toString());
 
-  return <CategoryMenu categories={categories} />;
+    if (category === 'all') {
+      params.delete('category');
+    } else {
+      params.set('category', category);
+    }
+
+    router.push(`/?${params.toString()}`);
+  };
+
+  return (
+    <CategoryMenu
+      categories={categories}
+      selectedCategory={selectedCategory}
+      onCategoryChange={handleCategoryChange}
+    />
+  );
 }

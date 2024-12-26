@@ -1,5 +1,3 @@
-//components/PostCategoryMenu.tsx
-
 import { fetchNotionDatabaseByCategory } from '@/lib/notion/api/fetchNotionDatabaseByCategory';
 import { useQueryClient } from 'react-query';
 

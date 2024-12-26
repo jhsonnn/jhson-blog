@@ -1,4 +1,3 @@
-//app/api/video/route.ts
 import { fetchVideoUrl } from '@/lib/notion/utils/fetchVideoUrl';
 
 export const GET = async (req: Request) => {

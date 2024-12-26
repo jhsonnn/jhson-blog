@@ -16,8 +16,8 @@ type PostType = {
 interface PostListProps {
   title: string;
   posts: PostType[];
-  basePath: string; // 링크 기본 경로
-  noPostsMessage?: string; // 데이터 없을 때 메시지
+  basePath: string; //링크 기본 경로
+  noPostsMessage?: string; //데이터 없을 때 메시지
 }
 
 const PostList = ({
@@ -40,7 +40,7 @@ const PostList = ({
                     slug={slug}
                     date={created_time}
                     thumbnailUrl={thumbnailUrl || '/default-thumbnail.png'}
-                    category={basePath.replace('/', '')} // 카테고리 경로 기반
+                    category={basePath.replace('/', '')}
                     tags={tags}
                   />
                 </Link>

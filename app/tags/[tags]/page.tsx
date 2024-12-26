@@ -1,8 +1,8 @@
-// 특정 태그의 포스트 목록 페이지
+//특정 태그의 포스트 목록 페이지
 import { fetchPosts } from '@/lib/notion/fetchPosts';
 
 const TagPostsPage = async ({ params }: { params: { tags: string } }) => {
-  // 특정 태그로 필터링된 포스트 데이터 가져오기
+  //특정 태그로 필터링된 포스트 데이터 가져오기
   const posts = await fetchPosts({ tag: params.tags });
 
   return (
