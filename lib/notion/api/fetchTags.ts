@@ -16,14 +16,14 @@ export const fetchTags = async (): Promise<string[]> => {
           tagProperty?.type === "multi_select" &&
           Array.isArray(tagProperty.multi_select)
         ) {
-          // 각 페이지의 태그 목록 추출
+          //각 페이지 태그 목록 추출
           return tagProperty.multi_select.map((tag) => tag.name);
         }
         return [];
       })
       .filter((tag) => tag.toLowerCase() !== "none"); // "none" 필터링
 
-    // 중복 제거 후 반환
+    //중복 제거 후 반환
     return [...new Set(tags)];
   } catch (error) {
     console.error("Error fetching tags:", error);

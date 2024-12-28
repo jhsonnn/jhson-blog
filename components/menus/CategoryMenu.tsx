@@ -26,7 +26,7 @@ export default function CategoryMenu({
         onValueChange={(value) => onCategoryChange(value)}
       >
         {/* 트리거 버튼 */}
-        <SelectTrigger className="!bg-amber-400 px-3 py-2 rounded-xl text-neutral-50 border border-neutral-200 hover:!text-neutral-50 focus:outline-none focus:ring-2 focus:ring-amber-400 font-bold">
+        <SelectTrigger className="!bg-amber-400 px-3 py-2 rounded-xl text-neutral-50 border dark:border-neutral-500 border-neutral2300 hover:!text-neutral-50 focus:outline-none focus:ring-2 focus:ring-amber-400 font-bold">
           <SelectValue placeholder="All Categories" />
         </SelectTrigger>
 

@@ -1,4 +1,4 @@
-// 포스트 컨텐츠 렌더링
+//포스트 컨텐츠 렌더링
 import {
   BlockWithChildren,
   LocalRichTextItemResponse,

@@ -15,10 +15,10 @@ export const fetchPosts = async ({ category, tag }: FetchPostsParams): Promise<P
 
   const posts: Post[] = await response.json();
 
-  // 필터링 로직 추가
+
   return posts.filter((post) => {
-    if (category && post.category !== category) return false; // 카테고리 필터링
-    if (tag && !post.tags.includes(tag)) return false;        // 태그 필터링
-    return post.category !== 'none';                          // 'none' 제외
+    if (category && post.category !== category) return false; //카테고리 필터링
+    if (tag && !post.tags.includes(tag)) return false;        //태그 필터링
+    return post.category !== 'none';                          //none 제외
   });
 };

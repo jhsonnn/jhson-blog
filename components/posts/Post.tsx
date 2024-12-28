@@ -52,7 +52,7 @@ const Post: React.FC<PostProps> = ({
         </div>
 
         {/* 텍스트 */}
-        <div className="p-6">
+        <div className="text-neutral-400 p-6">
           <h2 className="text-xl font-semibold text-[var(--sk-headline-text-color)] mb-2 transition-colors duration-300 hover:text-[var(--sk-focus-color)]">
             {title}
           </h2>
@@ -60,14 +60,14 @@ const Post: React.FC<PostProps> = ({
             {formattedDate}
           </p>
           <div className="flex flex-wrap gap-2">
-            <span className="bg-[var(--sk-fill-tertiary)] text-[var(--sk-glyph-gray-secondary)] text-xs font-medium px-2 py-1 rounded-full border border-gray-300 hover:bg-[var(--sk-fill-gray-secondary)] hover:text-[var(--sk-body-text-color)] transition-colors duration-300">
+            <span className="bg-[var(--sk-fill-tertiary)] text-[var(--sk-glyph-gray-secondary)] text-xs font-medium px-2 py-1 rounded-full border border-neutral-400 hover:bg-[var(--sk-fill-gray-secondary)] hover:text-[var(--sk-body-text-color)] transition-colors duration-300">
               {category}
             </span>
 
             {tags?.map((tag) => (
               <span
                 key={tag}
-                className="border rounded-full px-3 py-1 text-xs text-gray-700 border-gray-300"
+                className="border rounded-full border-neutral-400 px-3 py-1 text-xs"
               >
                 {tag}
               </span>

@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import { Client } from '@notionhq/client';
-import { isPageObjectResponse } from '@/lib/notion/types'; // 타입 가드 추가
+import { isPageObjectResponse } from '@/lib/notion/types';
 
 const notion = new Client({ auth: process.env.NOTION_API_KEY });
 

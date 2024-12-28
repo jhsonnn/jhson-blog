@@ -17,7 +17,7 @@ const PostCategoryMenu: React.FC<PostCategoryMenuProps> = ({
         <button
           key={category}
           onClick={() => {
-            // 미리 캐싱된 데이터가 있는지 확인하고 없으면 새로 로드
+            //미리 캐싱된 데이터가 있는지 확인하고 없으면 새로 로드
             queryClient.prefetchQuery(['notionData', category], () =>
               fetchNotionDatabaseByCategory(category)
             );

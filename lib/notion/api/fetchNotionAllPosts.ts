@@ -17,9 +17,9 @@ export async function fetchNotionAllPosts() {
         properties.thumbnailUrl?.type === 'files' &&
         properties.thumbnailUrl.files.length > 0
           ? properties.thumbnailUrl.files[0].type === 'file'
-            ? properties.thumbnailUrl.files[0].file.url // 'file' 타입의 URL
+            ? properties.thumbnailUrl.files[0].file.url
             : properties.thumbnailUrl.files[0].type === 'external'
-            ? properties.thumbnailUrl.files[0].external.url // 'external' 타입의 URL
+            ? properties.thumbnailUrl.files[0].external.url
             : '/default-thumbnail.png'
           : '/default-thumbnail.png';
 
@@ -41,7 +41,7 @@ export async function fetchNotionAllPosts() {
         thumbnailUrl,
       };
     })
-    .filter((post) => post.category !== 'none'); // 'none' 제외
+    .filter((post) => post.category !== 'none'); //none제외
 
   return posts;
 }

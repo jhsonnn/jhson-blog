@@ -29,7 +29,7 @@ export default function TagsMenu({ tags }: TagsMenuProps) {
           className={`px-3 py-1 rounded-full cursor-pointer font-medium transition ${
             searchParams.get('tag') === tag
               ? 'bg-amber-400 text-neutral-50 font-bold' //선택된 태그 스타일
-              : 'hover:bg-amber-400 hover:text-neutral-50 bg-transparent text-neutral-700'
+              : 'hover:bg-amber-400 hover:text-neutral-50 bg-transparent'
           }`}
         >
           {tag}

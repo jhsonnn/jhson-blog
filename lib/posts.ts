@@ -15,10 +15,8 @@ export const fetchPosts = async ({ category, tag }: FetchPostsParams): Promise<P
       throw new Error('Failed to fetch posts');
     }
 
-    // 응답 타입을 Post[]로 지정
     const posts: Post[] = await response.json();
 
-    // 필터링 로직
     return posts.filter((post: Post) => {
       if (category && post.category !== category) return false;
       if (tag && !post.tags.includes(tag)) return false;
