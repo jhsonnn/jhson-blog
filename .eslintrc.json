@@ -1,33 +1,79 @@
+// {
+//   "env": {
+//     "browser": true,
+//     "node": true, 
+//     "es2020": true
+//   },
+//   "extends": [
+//     "eslint:recommended",
+//     "plugin:react/recommended",
+//     "plugin:@typescript-eslint/recommended",
+//     "next/core-web-vitals"
+//   ],
+//   "parserOptions": {
+//     "ecmaFeatures": {
+//       "jsx": true
+//     },
+//     "ecmaVersion": 11,
+//     "sourceType": "module"
+//   },
+//   "plugins": ["react", "@typescript-eslint"],
+//   "rules": {
+//     "react/prop-types": "off", //TypeScript를 사용하는 경우 PropTypes 비활성화
+//     //"space-before-function-paren": ["error", "never"], // 함수 괄호 앞 공백 금지
+//     "space-before-function-paren": 0, // 함수 괄호 앞 공백 금지
+//     "indent": 0,
+//     "prefer-rest-params": "error", // arguments 대신 rest parameter 권장
+//     "react/jsx-uses-react": "error",
+//     "react/jsx-uses-vars": "error",
+//     "react/react-in-jsx-scope": "off", // React 17 이상에서는 불필요
+//     "no-unused-vars": "off", // 일반 JavaScript 규칙 비활성화
+//     "@typescript-eslint/no-unused-vars": [
+//       "error",
+//       {
+//         "vars": "all",
+//         "args": "after-used",
+//         "ignoreRestSiblings": true,
+//         "argsIgnorePattern": "^_"
+//       } 
+//     ],
+//     "@typescript-eslint/no-explicit-any": "error", // any 타입 금지
+//     "@typescript-eslint/no-inferrable-types": [
+//       "error",
+//       {
+//         "ignoreParameters": true, // 함수 매개변수는 제외
+//         "ignoreProperties": true  // 클래스 프로퍼티는 제외
+//       }
+      
+//     ],
+//     "eqeqeq": ["error", "always"] // 항상 === 사용
+    
+//   }
+// }
+
 {
   "env": {
     "browser": true,
-    "node": true, 
+    "node": true,
     "es2020": true
   },
   "extends": [
-    "eslint:recommended",
+   "eslint:recommended",
     "plugin:react/recommended",
     "plugin:@typescript-eslint/recommended",
-    "next/core-web-vitals"
+    "plugin:@next/next/recommended",
+    "plugin:prettier/recommended" //prettier과 통합
   ],
   "parserOptions": {
     "ecmaFeatures": {
       "jsx": true
     },
-    "ecmaVersion": 11,
+    "ecmaVersion": 2020,
     "sourceType": "module"
   },
-  "plugins": ["react", "@typescript-eslint"],
+  "plugins": ["react", "@typescript-eslint", "prettier"],
   "rules": {
-    "react/prop-types": "off", //TypeScript를 사용하는 경우 PropTypes 비활성화
-    //"space-before-function-paren": ["error", "never"], // 함수 괄호 앞 공백 금지
-    "space-before-function-paren": 0, // 함수 괄호 앞 공백 금지
-    "indent": 0,
-    "prefer-rest-params": "error", // arguments 대신 rest parameter 권장
-    "react/jsx-uses-react": "error",
-    "react/jsx-uses-vars": "error",
-    "react/react-in-jsx-scope": "off", // React 17 이상에서는 불필요
-    "no-unused-vars": "off", // 일반 JavaScript 규칙 비활성화
+    "react/prop-types": "off", //TypeScript 사용으로 PropTypes 비활성화
     "@typescript-eslint/no-unused-vars": [
       "error",
       {
@@ -35,18 +81,17 @@
         "args": "after-used",
         "ignoreRestSiblings": true,
         "argsIgnorePattern": "^_"
-      } 
+      }
     ],
-    "@typescript-eslint/no-explicit-any": "error", // any 타입 금지
+    "@typescript-eslint/no-explicit-any": "error", //any 타입 금지
     "@typescript-eslint/no-inferrable-types": [
       "error",
       {
-        "ignoreParameters": true, // 함수 매개변수는 제외
-        "ignoreProperties": true  // 클래스 프로퍼티는 제외
+        "ignoreParameters": true,
+        "ignoreProperties": true
       }
-      
     ],
-    "eqeqeq": ["error", "always"] // 항상 === 사용
-    
+    "eqeqeq": ["error", "always"], //항상 === 사용
+    "prettier/prettier": "error"
   }
 }
