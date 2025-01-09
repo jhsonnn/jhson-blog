@@ -21,12 +21,11 @@ export async function fetchBlockChildren(
       start_cursor: cursor,
     });
 
-    console.log(`Fetched children for block ${blockId}:`, response.results);
+    // console.log(`Fetched children for block ${blockId}:`, response.results);
 
     const results = response.results as BlockWithChildren[];
     for (const block of results) {
       if (block.has_children) {
-        console.log(`Fetching children for block ${block.id}`);
         block.children = await fetchBlockChildren(block.id, depth + 1, maxDepth);
       } else {
         block.children = [];

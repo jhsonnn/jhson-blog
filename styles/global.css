@@ -29,7 +29,7 @@ body {
 }
 
 .notion-container p {
-  white-space: pre-line; /* 줄바꿈 유지 */
+  white-space: pre-line;
   margin-bottom: 1rem;
 }
 

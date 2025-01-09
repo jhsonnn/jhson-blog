@@ -4,8 +4,6 @@ import { Client } from "@notionhq/client";
 const notion = new Client({ auth: process.env.NOTION_API_KEY });
 
 export async function GET(_req: NextRequest, { params }: { params?: { id?: string } }) {
-  console.log("Received Params:", params);
-
   if (!params || !params.id) {
     console.error("Missing 'id' in params.");
     return NextResponse.json(
@@ -20,11 +18,6 @@ export async function GET(_req: NextRequest, { params }: { params?: { id?: strin
     const response = await notion.blocks.children.list({
       block_id: id,
     });
-
-    console.log("Fetched Blocks:", response);
-
-    console.log('Raw API Response for Block ID:', JSON.stringify(response, null, 2));
-
     
     if (!response.results || response.results.length === 0) {
       console.error("No blocks found for id:", id);

@@ -9,7 +9,7 @@ async function fetchDatabase() {
     const response = await notion.databases.query({
       database_id: databaseId,
     });
-    console.log('API Response:', JSON.stringify(response, null, 2));
+    // console.log('API Response:', JSON.stringify(response, null, 2));
     return response;
   } catch (error) {
     console.error('Error fetching database:', error);

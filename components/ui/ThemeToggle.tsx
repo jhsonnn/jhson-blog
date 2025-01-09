@@ -20,7 +20,7 @@ const ThemeToggle = () => {
       onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
       className="rounded"
     >
-      {theme === 'dark' ? '☀️' : '🌙'}
+      {theme === 'dark' ? '🌙' : '☀️'}
     </button>
   );
 };

@@ -16,13 +16,10 @@ export default async function ContentPage({ params }: PageProps) {
   }
 
   try {
-    // Posts 데이터 가져오기
     const postsResponse = await fetch(
       `${process.env.NEXT_PUBLIC_BASE_URL}/api/post/${category}`,
       { cache: 'no-store' }
     );
-
-    console.log('NEXT_PUBLIC_BASE_URL:', process.env.NEXT_PUBLIC_BASE_URL);
 
     if (!postsResponse.ok) {
       console.error(`Failed to fetch posts. Status: ${postsResponse.status}`);
@@ -60,7 +57,6 @@ export default async function ContentPage({ params }: PageProps) {
 
     // 비디오 URL 가져오기
     const videoUrl = await fetchVideoUrl(slug);
-    console.log('Video URL:', videoUrl);
 
     return (
       <div className="bg-neutral-50 dark:bg-neutral-700 px-20 py-5 rounded-xl">

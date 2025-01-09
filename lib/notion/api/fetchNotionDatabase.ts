@@ -12,7 +12,7 @@ export const fetchNotionDatabase = async (): Promise<PageObjectResponse[]> => {
       (item): item is PageObjectResponse => 'properties' in item
     );
 
-    console.log('Fetched Notion database:', results);
+    // console.log('Fetched Notion database:', results);
     return results;
   } catch (error) {
     console.error('Error fetching Notion database:', error);

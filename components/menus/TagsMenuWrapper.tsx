@@ -1,37 +1,47 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
 import TagsMenu from './TagsMenu';
 
-export default function TagsMenuWrapper() {
-  const [tags, setTags] = useState<string[]>([]);
-  const [loading, setLoading] = useState<boolean>(true);
-  const [error, setError] = useState<string | null>(null);
+export type TagsMenuWrapperProps = {
+  tags: string[];
+  currentTag: string;
+};
+
+export default function TagsMenuWrapper({
+  tags,
+  currentTag,
+}: TagsMenuWrapperProps) {
+  const router = useRouter();
+  const searchParams = useSearchParams();
+
+  //url에서 초기 태그 상태 설정
+  const [selectedTag, setSelectedTag] = useState(currentTag || 'all');
 
   useEffect(() => {
-    const fetchTags = async () => {
-      try {
-        const API_URL =
-          process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000';
-        const response = await fetch(`${API_URL}/api/tags`, {
-          cache: 'no-store',
-        });
-        if (!response.ok) throw new Error('Failed to fetch tags');
-        const data = (await response.json()) as string[];
-        setTags(data.filter((tag: string) => tag !== 'none'));
-      } catch (error) {
-        setError(
-          error instanceof Error ? error.message : 'Failed to load tags'
-        );
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchTags();
-  }, []);
+    const tagFromURL = searchParams.get('tag') || 'all';
+    setSelectedTag(tagFromURL); //url파라미터 기준으로 상태 설정
+  }, [searchParams]);
 
-  if (loading) return <div>Loading tags...</div>;
-  if (error) return <div className="text-red-500">{error}</div>;
+  const handleTagChange = (newTag: string) => {
+    setSelectedTag(newTag);
 
-  return <TagsMenu tags={tags} />;
+    const params = new URLSearchParams(window.location.search);
+    if (newTag === 'all') {
+      params.delete('tag');
+    } else {
+      params.set('tag', newTag);
+    }
+
+    router.push(`/?${params.toString()}`);
+  };
+
+  return (
+    <TagsMenu
+      tags={tags}
+      currentTag={selectedTag}
+      onTagChange={handleTagChange}
+    />
+  );
 }

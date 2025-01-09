@@ -35,7 +35,7 @@ const Post: React.FC<PostProps> = ({
     <Link href={`/${category}/${slug}`} passHref>
       <div className="relative min-w-full min-h-full max-w-xl mx-auto bg-white rounded-3xl shadow-lg overflow-hidden transition-transform duration-300 hover:scale-[1.01] hover:shadow-xl mb-6 cursor-pointer">
         {/* 이미지 */}
-        <div className="relative w-full h-64">
+        <div className="relative w-full h-80">
           <Image
             src={thumbnailUrl}
             alt={title}
@@ -44,7 +44,7 @@ const Post: React.FC<PostProps> = ({
             className={`transition-opacity duration-500 ${
               isLoaded ? 'opacity-100' : 'opacity-0'
             }`}
-            onLoadingComplete={() => setIsLoaded(true)}
+            onLoad={() => setIsLoaded(true)}
             onError={() => setIsLoaded(false)}
           />
           {/* 이미지 위의 오버레이 */}
@@ -52,7 +52,7 @@ const Post: React.FC<PostProps> = ({
         </div>
 
         {/* 텍스트 */}
-        <div className="text-neutral-400 p-6">
+        <div className="text-neutral-400 px-5 pt-3 my-auto">
           <h2 className="text-xl font-semibold text-[var(--sk-headline-text-color)] mb-2 transition-colors duration-300 hover:text-[var(--sk-focus-color)]">
             {title}
           </h2>

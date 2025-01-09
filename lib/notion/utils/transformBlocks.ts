@@ -16,7 +16,7 @@ async function fetchChildren(blockId: string): Promise<BlockObjectResponse[]> {
   const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000';
   const response = await fetch(`${baseUrl}/api/block/${blockId}`, { cache: 'no-store' });
 
-  console.log('NEXT_PUBLIC_BASE_URL:', process.env.NEXT_PUBLIC_BASE_URL);
+  // console.log('NEXT_PUBLIC_BASE_URL:', process.env.NEXT_PUBLIC_BASE_URL);
 
   if (!response.ok) {
     console.error(`Failed to fetch children for blockId: ${blockId}`);
@@ -24,7 +24,7 @@ async function fetchChildren(blockId: string): Promise<BlockObjectResponse[]> {
   }
 
   const children = await response.json();
-  console.log(`Fetched children for block ${blockId}:`, children);
+  // console.log(`Fetched children for block ${blockId}:`, children);
   return children;
 }
 
@@ -67,7 +67,7 @@ async function transformBlocks(blocks: BlockObjectResponse[]): Promise<BlockWith
           caption: block.image.caption ? block.image.caption.map((item) => ({ ...item })) : [],
         };
       } else if (block.type === 'video' && block.video) {
-          console.log('Processing video block:', JSON.stringify(block, null, 2)); // 비디오 블록 전체 디버깅
+          // console.log('Processing video block:', JSON.stringify(block, null, 2)); // 비디오 블록 전체 디버깅
           transformedBlock.video = {
            type: block.video.type,
             file: block.video.type === 'file' ? { url: block.video.file?.url || '' } : undefined,

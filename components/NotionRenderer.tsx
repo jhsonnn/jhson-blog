@@ -100,7 +100,6 @@ const renderBlock = (block: BlockWithChildren) => {
       break;
 
     case 'video':
-      console.log('Rendering video block:', block.video); // 렌더링 전 비디오 블록 출력
       if (block.video) {
         return renderVideo(block);
       } else {

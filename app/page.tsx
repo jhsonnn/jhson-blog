@@ -1,5 +1,7 @@
+import { Suspense } from 'react';
 import CategoryMenuWrapper from '@/components/menus/CategoryMenuWrapper';
-import TagsMenu from '@/components/menus/TagsMenu';
+import TagsMenuWrapperClient from '@/components/menus/TagsMenuWrapperClient';
+import Profile from '@/components/ui/Profile';
 import Post from '@/components/posts/Post';
 import { fetchNotionAllPosts } from '@/lib/notion/api/fetchNotionAllPosts';
 
@@ -8,37 +10,22 @@ export default async function Home({
 }: {
   searchParams: { category?: string; tag?: string };
 }) {
-  const { category, tag } = searchParams;
+  const { category = 'all', tag = 'all' } = searchParams;
 
-  //전체 포스트 가져오기
   const allPosts = await fetchNotionAllPosts();
-
-  //필터링된 포스트
   const filteredPosts = allPosts.filter((post) => {
-    if (category && post.category !== category) return false;
-    if (tag && !post.tags.includes(tag)) return false;
+    if (category !== 'all' && post.category !== category) return false;
+    if (tag !== 'all' && !post.tags.includes(tag)) return false;
     return true;
   });
 
-  //중복 제거된 카테고리 및 태그
   const categories = Array.from(new Set(allPosts.map((post) => post.category)));
   const tags = Array.from(new Set(allPosts.flatMap((post) => post.tags)));
 
-  return (
-    <div className="container mx-auto">
-      {/* 메뉴 */}
-      <div className="flex flex-col lg:flex-row gap-4 mb-6">
-        <CategoryMenuWrapper categories={categories} />
-
-        {/* 작은 화면에서만 태그 메뉴 표시 */}
-        <div className="block lg:hidden">
-          <TagsMenu tags={tags} />
-        </div>
-      </div>
-
-      {/* 포스트 리스트 */}
-      {filteredPosts.length > 0 ? (
-        <ul className="grid grid-cols-1 gap-6">
+  const renderPostList = () => {
+    if (filteredPosts.length > 0) {
+      return (
+        <ul className="grid grid-cols-1 gap-8">
           {filteredPosts.map((post) => (
             <li key={post.id}>
               <Post
@@ -52,11 +39,57 @@ export default async function Home({
             </li>
           ))}
         </ul>
-      ) : (
-        <p className="text-gray-600 text-center">
-          선택하신 메뉴와 태그에 해당되는 포스트가 없습니다.
-        </p>
-      )}
+      );
+    }
+
+    return (
+      <p className="text-gray-600 text-center">
+        선택하신 메뉴와 태그에 해당되는 포스트가 없습니다.
+      </p>
+    );
+  };
+
+  return (
+    <div className="container mx-auto">
+      {/* 큰 화면: 태그 메뉴, 카테고리 메뉴, 프로필 */}
+      <div className="hidden lg:flex lg:gap-6">
+        {/* 좌측: TagsMenu */}
+        <aside className="lg:w-1/5 lg:h-[calc(100vh-4rem)] sticky top-[4rem] overflow-hidden">
+          <Suspense fallback={<div>Loading tags...</div>}>
+            <TagsMenuWrapperClient tags={tags} currentTag={tag} />
+          </Suspense>
+        </aside>
+
+        {/* 가운데: CategoryMenu + Posts */}
+        <main className="flex-1">
+          <div className="mb-4">
+            <CategoryMenuWrapper
+              categories={categories}
+              currentCategory={category}
+            />
+          </div>
+          {renderPostList()}
+        </main>
+
+        {/* 우측: Profile */}
+        <aside className="lg:w-1/5 lg:h-[calc(100vh-4rem)] sticky top-[4rem] overflow-hidden">
+          <Profile />
+        </aside>
+      </div>
+
+      {/* 작은 화면: TagsMenu + CategoryMenu + Posts */}
+      <div className="block lg:hidden">
+        <div className="flex flex-col gap-4 mb-6">
+          <CategoryMenuWrapper
+            categories={categories}
+            currentCategory={category}
+          />
+          <Suspense fallback={<div>Loading tags...</div>}>
+            <TagsMenuWrapperClient tags={tags} currentTag={tag} />
+          </Suspense>
+        </div>
+        {renderPostList()}
+      </div>
     </div>
   );
 }

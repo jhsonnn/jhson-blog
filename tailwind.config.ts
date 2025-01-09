@@ -60,11 +60,43 @@ const config: Config = {
           "4": "hsl(var(--chart-4))",
           "5": "hsl(var(--chart-5))",
         },
+        width: {
+          '36': "144px",
+        }
       },
       backgroundImage: {
         "gradient-radial": "radial-gradient(var(--tw-gradient-stops))",
         "gradient-conic":
           "conic-gradient(from 180deg at 50% 50%, var(--tw-gradient-stops))",
+      },
+      // maxWidth: {
+      //   "custom-xl": "1150px",
+      //   "custom-m": "900px",
+      // },
+      // width: {
+      //   "custom-xl": "1150px",
+      //   "custom-m": "900px",
+      // }
+ 
+      maxWidth: {
+        'custom-sm': '90%',
+        'custom-md': '900px',
+        'custom-xl': '1280px',
+      },
+      width: {
+        'custom-sm': '90%',
+        'custom-md': '900px',
+        'custom-xl': '1280px',
+      },
+      container: {
+        center: true,
+        padding: {
+          DEFAULT: '1rem', // 기본 패딩 (모든 화면 크기)
+          sm: '2rem', // 640px 이상
+          md: '3rem', // 768px 이상
+          lg: '4rem', // 1024px 이상
+          xl: '6rem', // 1280px 이상
+        },
       },
     },
   },
