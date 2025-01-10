@@ -2,7 +2,7 @@ import React from 'react';
 import ThemeToggle from '../ui/ThemeToggle';
 
 const Header = () => (
-  <div className="flex justify-between font-semibold">
+  <div className="container mx-auto flex justify-between font-semibold">
     <div>
       <a href="/">jisonnn&apos;s story</a>
     </div>

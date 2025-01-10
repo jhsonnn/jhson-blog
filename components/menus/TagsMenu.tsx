@@ -12,7 +12,7 @@ export default function TagsMenu({
   onTagChange,
 }: TagsMenuProps) {
   return (
-    <div className="font-bold flex flex-wrap gap-3 lg:flex-col sm:flex-row justify-start items-start">
+    <div className="font-bold text-sm flex flex-wrap gap-3 lg:flex-col sm:flex-row justify-start items-start">
       {tags.map((tag) => (
         <button
           key={tag}

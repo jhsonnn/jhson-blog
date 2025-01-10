@@ -33,7 +33,7 @@ const Post: React.FC<PostProps> = ({
 
   return (
     <Link href={`/${category}/${slug}`} passHref>
-      <div className="relative min-w-full min-h-full max-w-xl mx-auto bg-white rounded-3xl shadow-lg overflow-hidden transition-transform duration-300 hover:scale-[1.01] hover:shadow-xl mb-6 cursor-pointer">
+      <div className="dark:bg-neutral-700 relative min-w-full min-h-full max-w-xl mx-auto bg-white rounded-3xl shadow-lg overflow-hidden transition-transform duration-300 hover:scale-[1.01] hover:shadow-xl mb-6 cursor-pointer">
         {/* 이미지 */}
         <div className="relative w-full h-80">
           <Image
@@ -47,12 +47,12 @@ const Post: React.FC<PostProps> = ({
             onLoad={() => setIsLoaded(true)}
             onError={() => setIsLoaded(false)}
           />
-          {/* 이미지 위의 오버레이 */}
+          {/* 이미지 위 오버레이 */}
           <div className="absolute inset-0 bg-[var(--sk-fill-gray-quaternary-alpha)] opacity-0 transition-opacity duration-300 hover:opacity-30"></div>
         </div>
 
         {/* 텍스트 */}
-        <div className="text-neutral-400 px-5 pt-3 my-auto">
+        <div className="dark:text-neutral-400 text-neutral-400 px-5 pt-3 my-auto">
           <h2 className="text-xl font-semibold text-[var(--sk-headline-text-color)] mb-2 transition-colors duration-300 hover:text-[var(--sk-focus-color)]">
             {title}
           </h2>
@@ -60,14 +60,14 @@ const Post: React.FC<PostProps> = ({
             {formattedDate}
           </p>
           <div className="flex flex-wrap gap-2">
-            <span className="bg-[var(--sk-fill-tertiary)] text-[var(--sk-glyph-gray-secondary)] text-xs font-medium px-2 py-1 rounded-full border border-neutral-400 hover:bg-[var(--sk-fill-gray-secondary)] hover:text-[var(--sk-body-text-color)] transition-colors duration-300">
+            <span className="bg-[var(--sk-fill-tertiary)] text-[var(--sk-glyph-gray-secondary)] text-xs font-medium px-2 py-1 rounded-full bg-neutral-400 dark:bg-neutral-800 dark:text-neutral-400 border border-neutral-400 dark:border-neutral-800 hover:bg-[var(--sk-fill-gray-secondary)] hover:text-[var(--sk-body-text-color)] transition-colors duration-300">
               {category}
             </span>
 
             {tags?.map((tag) => (
               <span
                 key={tag}
-                className="border rounded-full border-neutral-400 px-3 py-1 text-xs"
+                className="border rounded-full bg-neutral-400 dark:bg-neutral-800  dark:text-neutral-400  border-neutral-400 dark:border-neutral-800 px-3 py-1 text-xs"
               >
                 {tag}
               </span>

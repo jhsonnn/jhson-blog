@@ -52,16 +52,16 @@ export default async function Home({
   return (
     <div className="container mx-auto">
       {/* 큰 화면: 태그 메뉴, 카테고리 메뉴, 프로필 */}
-      <div className="hidden lg:flex lg:gap-6">
-        {/* 좌측: TagsMenu */}
-        <aside className="lg:w-1/5 lg:h-[calc(100vh-4rem)] sticky top-[4rem] overflow-hidden">
+      <div className="hidden lg:flex lg:gap-8">
+        {/* 화면 좌측: TagsMenu */}
+        <aside className="w-1/6 lg:h-[calc(100vh-4rem)] sticky top-[4rem] overflow-hidden">
           <Suspense fallback={<div>Loading tags...</div>}>
             <TagsMenuWrapperClient tags={tags} currentTag={tag} />
           </Suspense>
         </aside>
 
-        {/* 가운데: CategoryMenu + Posts */}
-        <main className="flex-1">
+        {/* 화면 가운데: CategoryMenu + Posts */}
+        <main className="flex-grow lg:w-4/6">
           <div className="mb-4">
             <CategoryMenuWrapper
               categories={categories}
@@ -71,8 +71,8 @@ export default async function Home({
           {renderPostList()}
         </main>
 
-        {/* 우측: Profile */}
-        <aside className="lg:w-1/5 lg:h-[calc(100vh-4rem)] sticky top-[4rem] overflow-hidden">
+        {/* 화면 우측: Profile */}
+        <aside className="w-1/6 lg:h-[calc(100vh-4rem)] sticky top-[4rem] overflow-hidden">
           <Profile />
         </aside>
       </div>
