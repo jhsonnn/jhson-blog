@@ -1,4 +1,4 @@
-// 단일 포스트 컴포넌트
+//단일 포스트 컴포넌트
 'use client';
 
 import Image from 'next/image';
@@ -52,7 +52,7 @@ const Post: React.FC<PostProps> = ({
         </div>
 
         {/* 텍스트 */}
-        <div className="dark:text-neutral-400 text-neutral-400 px-5 pt-3 my-auto">
+        <div className="dark:text-neutral-400 text-neutral-700 px-5 pt-3 my-auto">
           <h2 className="text-xl font-semibold text-[var(--sk-headline-text-color)] mb-2 transition-colors duration-300 hover:text-[var(--sk-focus-color)]">
             {title}
           </h2>
@@ -60,14 +60,14 @@ const Post: React.FC<PostProps> = ({
             {formattedDate}
           </p>
           <div className="flex flex-wrap gap-2">
-            <span className="bg-[var(--sk-fill-tertiary)] text-[var(--sk-glyph-gray-secondary)] text-xs font-medium px-2 py-1 rounded-full bg-neutral-400 dark:bg-neutral-800 dark:text-neutral-400 border border-neutral-400 dark:border-neutral-800 hover:bg-[var(--sk-fill-gray-secondary)] hover:text-[var(--sk-body-text-color)] transition-colors duration-300">
+            <span className="bg-[var(--sk-fill-tertiary)] text-[var(--sk-glyph-gray-secondary)] text-xs font-medium px-2 py-1 rounded-full bg-neutral-200 dark:bg-neutral-800 dark:text-neutral-400 border border-neutral-200 dark:border-neutral-800 hover:bg-[var(--sk-fill-gray-secondary)] hover:text-[var(--sk-body-text-color)] transition-colors duration-300">
               {category}
             </span>
 
             {tags?.map((tag) => (
               <span
                 key={tag}
-                className="border rounded-full bg-neutral-400 dark:bg-neutral-800  dark:text-neutral-400  border-neutral-400 dark:border-neutral-800 px-3 py-1 text-xs"
+                className="border rounded-full bg-neutral-200 dark:bg-neutral-800  dark:text-neutral-400  border-neutral-200 dark:border-neutral-800 px-3 py-1 text-xs"
               >
                 {tag}
               </span>

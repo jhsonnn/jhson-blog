@@ -36,7 +36,7 @@ export default async function ContentPage({ params }: PageProps) {
       return <div>Page not found for slug: {slug}</div>;
     }
 
-    // Blocks 데이터 가져오기
+    //blocks 데이터 가져오기
     const blocksResponse = await fetch(
       `${process.env.NEXT_PUBLIC_BASE_URL}/api/block/${pageData.id}`,
       { cache: 'no-store' }
@@ -55,11 +55,11 @@ export default async function ContentPage({ params }: PageProps) {
       return <div>No content available.</div>;
     }
 
-    // 비디오 URL 가져오기
+    //비디오 URL 가져오기
     const videoUrl = await fetchVideoUrl(slug);
 
     return (
-      <div className="bg-neutral-50 dark:bg-neutral-700 px-20 py-5 rounded-xl">
+      <div className="post-content-layout">
         <NotionRenderer blocks={blocks} videoUrl={videoUrl} />
       </div>
     );

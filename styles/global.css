@@ -29,12 +29,17 @@ body {
 }
 
 .notion-container p {
-  white-space: pre-line;
-  margin-bottom: 1rem;
+  @apply mb-4 whitespace-pre-line
+}
+
+.post-content-page {
+  @apply container mx-auto
+}
+
+.post-content-layout {
+  @apply bg-neutral-50 dark:bg-neutral-700 px-20 py-7 rounded-xl 
 }
 
 .column-list {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 1rem;
+  @apply flex flex-wrap gap-4
 }
