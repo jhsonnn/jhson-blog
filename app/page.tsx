@@ -1,7 +1,7 @@
 import { Suspense } from 'react';
 import CategoryMenuWrapper from '@/components/menus/CategoryMenuWrapper';
 import TagsMenuWrapperClient from '@/components/menus/TagsMenuWrapperClient';
-import Profile from '@/components/ui/Profile';
+import Profile from '@/components/profile/Profile';
 import Post from '@/components/posts/Post';
 import { fetchNotionAllPosts } from '@/lib/notion/api/fetchNotionAllPosts';
 

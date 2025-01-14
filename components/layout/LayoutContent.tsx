@@ -3,7 +3,7 @@
 import { useSelector } from 'react-redux';
 import { RootState } from '@/app/store/store';
 import TagsMenuWrapperClient from '@/components/menus/TagsMenuWrapperClient';
-import Profile from '@/components/ui/Profile';
+import Profile from '@/components/profile/Profile';
 import { useState, useEffect } from 'react';
 
 interface LayoutContentProps {
