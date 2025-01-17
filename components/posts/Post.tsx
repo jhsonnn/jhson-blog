@@ -33,9 +33,12 @@ const Post: React.FC<PostProps> = ({
 
   return (
     <Link href={`/${category}/${slug}`} passHref>
-      <div className="dark:bg-neutral-700 relative min-w-full min-h-full max-w-xl mx-auto bg-white rounded-3xl shadow-lg overflow-hidden transition-transform duration-300 hover:scale-[1.01] hover:shadow-xl mb-6 cursor-pointer">
+      <div className="relative min-w-full min-h-full max-w-xl mx-auto bg-neutral-100 dark:bg-neutral-700 rounded-3xl shadow-lg overflow-hidden transition-transform transition-colors duration-300 hover:scale-[1.01] hover:shadow-xl mb-6 cursor-pointer">
+        {/* 빛 반사 효과 배경 */}
+        <div className="absolute inset-0 rounded-3xl bg-neutral-100 dark:bg-neutral-700 transition-colors duration-300 z-0"></div>
+
         {/* 이미지 */}
-        <div className="relative w-full h-80">
+        <div className="relative w-full h-80 z-10">
           <Image
             src={thumbnailUrl}
             alt={title}
@@ -52,22 +55,21 @@ const Post: React.FC<PostProps> = ({
         </div>
 
         {/* 텍스트 */}
-        <div className="dark:text-neutral-400 text-neutral-700 px-5 pt-3 my-auto">
+        <div className="relative dark:text-neutral-400 text-neutral-700 px-5 pt-3 my-auto bg-transparent z-10">
           <h2 className="text-xl font-semibold text-[var(--sk-headline-text-color)] mb-2 transition-colors duration-300 hover:text-[var(--sk-focus-color)]">
             {title}
           </h2>
-          <p className="text-[var(--sk-glyph-gray-secondary)] mt-2 mb-2">
+          <p className="text-[var(--sk-glyph-gray-secondary)] mt-2 mb-2 transition-colors duration-300">
             {formattedDate}
           </p>
           <div className="flex flex-wrap gap-2">
             <span className="bg-[var(--sk-fill-tertiary)] text-[var(--sk-glyph-gray-secondary)] text-xs font-medium px-2 py-1 rounded-full bg-neutral-200 dark:bg-neutral-800 dark:text-neutral-400 border border-neutral-200 dark:border-neutral-800 hover:bg-[var(--sk-fill-gray-secondary)] hover:text-[var(--sk-body-text-color)] transition-colors duration-300">
               {category}
             </span>
-
             {tags?.map((tag) => (
               <span
                 key={tag}
-                className="border rounded-full bg-neutral-200 dark:bg-neutral-800  dark:text-neutral-400  border-neutral-200 dark:border-neutral-800 px-3 py-1 text-xs"
+                className="border rounded-full bg-neutral-200 dark:bg-neutral-800 dark:text-neutral-400 border-neutral-200 dark:border-neutral-800 px-3 py-1 text-xs transition-colors duration-300"
               >
                 {tag}
               </span>
@@ -76,7 +78,7 @@ const Post: React.FC<PostProps> = ({
         </div>
 
         {/* 빛 반사 효과 */}
-        <div className="absolute inset-0 rounded-2xl ring-1 ring-[var(--sk-fill-gray-tertiary-alpha)] transition-all duration-300 hover:ring-2 hover:ring-[var(--sk-focus-color)]"></div>
+        <div className="absolute inset-0 rounded-2xl ring-1 ring-[var(--sk-fill-gray-tertiary-alpha)] transition-all duration-300 hover:ring-2 hover:ring-[var(--sk-focus-color)] z-10"></div>
       </div>
     </Link>
   );

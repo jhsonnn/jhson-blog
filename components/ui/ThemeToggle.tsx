@@ -4,7 +4,7 @@ import React, { useEffect, useState } from 'react';
 import { useTheme } from 'next-themes';
 
 const ThemeToggle = () => {
-  const { theme, setTheme, resolvedTheme } = useTheme();
+  const { theme: _unusedTheme, setTheme, resolvedTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
@@ -12,16 +12,34 @@ const ThemeToggle = () => {
   }, []);
 
   if (!mounted || !resolvedTheme) {
-    return <button disabled>Loading...</button>;
+    return null;
   }
 
+  const isDarkMode = resolvedTheme === 'dark';
+
   return (
-    <button
-      onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
-      className="rounded"
+    <div
+      className={`relative w-16 h-8 rounded-full flex items-center cursor-pointer transition-colors duration-300 ${
+        isDarkMode ? 'bg-neutral-700' : 'bg-neutral-200'
+      }`}
+      onClick={() => setTheme(isDarkMode ? 'light' : 'dark')}
+      role="button"
+      aria-pressed={isDarkMode}
     >
-      {theme === 'dark' ? '🌙' : '☀️'}
-    </button>
+      <div
+        className={`absolute top-1 left-1 w-5 h-5 rounded-fullshadow-md transition-all duration-300 transform ${
+          isDarkMode ? 'translate-x-8' : 'translate-x-0'
+        }`}
+      >
+        <span
+          className={`text-sm flex items-center justify-center transition-transform duration-300 transform ${
+            isDarkMode ? 'rotate-[360deg]' : 'rotate-0'
+          }`}
+        >
+          {isDarkMode ? '🌛' : '🌞'}
+        </span>
+      </div>
+    </div>
   );
 };
 
