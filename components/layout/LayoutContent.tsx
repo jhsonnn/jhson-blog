@@ -1,7 +1,7 @@
 'use client';
 
 import { useSelector } from 'react-redux';
-import { RootState } from '@/app/store/store';
+import { RootState } from '@/app/store';
 import TagsMenuWrapperClient from '@/components/menus/TagsMenuWrapperClient';
 import Profile from '@/components/profile/Profile';
 import { useState, useEffect } from 'react';

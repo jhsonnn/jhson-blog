@@ -14,6 +14,9 @@ const config: Config = {
   ],
   theme: {
     extend: {
+      screens: {
+        'max-sm': { max: '640px' },
+      },
       borderRadius: {
         lg: "var(--radius)",
         md: "calc(var(--radius) - 2px)",
@@ -69,25 +72,7 @@ const config: Config = {
         "gradient-conic":
           "conic-gradient(from 180deg at 50% 50%, var(--tw-gradient-stops))",
       },
-      // maxWidth: {
-      //   "custom-xl": "1150px",
-      //   "custom-m": "900px",
-      // },
-      // width: {
-      //   "custom-xl": "1150px",
-      //   "custom-m": "900px",
-      // }
- 
-      maxWidth: {
-        'custom-sm': '90%',
-        'custom-md': '900px',
-        'custom-xl': '1280px',
-      },
-      width: {
-        'custom-sm': '90%',
-        'custom-md': '900px',
-        'custom-xl': '1280px',
-      },
+
       container: {
         center: true,
         padding: {
