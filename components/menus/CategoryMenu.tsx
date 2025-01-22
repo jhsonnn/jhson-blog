@@ -20,7 +20,7 @@ export default function CategoryMenu({
   onCategoryChange,
 }: CategoryMenuProps) {
   return (
-    <div className="w-36">
+    <div className="w-36 lg:mb-4">
       <Select
         value={selectedCategory}
         onValueChange={(value) => onCategoryChange(value)}

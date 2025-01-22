@@ -1,26 +1,24 @@
-'use client';
-
-import { Post } from '@/lib/notion/types';
 import { useMemo } from 'react';
+import { Post as PostType } from '@/lib/notion/types';
 
-/**
- * 게시물 필터링 로직을 관리하는 커스텀 훅
- * @param allPosts 전체 게시물
- * @param category 선택된 카테고리
- * @param tag 선택된 태그
- * @param searchKeyword 검색 키워드
- * @returns 필터링된 게시물
- */
-export const useFilteredPosts = (
-  allPosts: Post[],
-  category: string,
-  tag: string,
-  searchKeyword: string
-): Post[] => {
-  return useMemo(() => {
-    return allPosts.filter((post) => {
-      if (category !== 'all' && post.category !== category) return false;
-      if (tag !== 'all' && !post.tags.includes(tag)) return false;
+interface UseFilteredPostsProps {
+  posts: PostType[];
+  searchKeyword: string;
+  categoryFilter?: string;
+  tagFilter?: string;
+}
+
+export function useFilteredPosts({
+  posts,
+  searchKeyword,
+  categoryFilter = 'all',
+  tagFilter = 'all',
+}: UseFilteredPostsProps) {
+  const filteredPosts = useMemo(() => {
+    return posts.filter((post) => {
+      if (categoryFilter !== 'all' && post.category !== categoryFilter)
+        return false;
+      if (tagFilter !== 'all' && !post.tags.includes(tagFilter)) return false;
       if (
         searchKeyword &&
         !post.title.toLowerCase().includes(searchKeyword.toLowerCase())
@@ -28,5 +26,7 @@ export const useFilteredPosts = (
         return false;
       return true;
     });
-  }, [allPosts, category, tag, searchKeyword]);
-};
+  }, [posts, searchKeyword, categoryFilter, tagFilter]);
+
+  return filteredPosts;
+}
