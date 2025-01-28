@@ -1,6 +1,7 @@
+//block 중에서 하위 depth가 있는 데이터 처리
+
 import { notion } from "../client";
 import { BlockWithChildren } from "../types";
-
 
 export async function fetchBlockChildren(
   blockId: string,

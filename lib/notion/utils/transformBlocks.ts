@@ -1,4 +1,3 @@
-// lib/notion/utils/transformBlocks.ts
 import { BlockObjectResponse } from '@notionhq/client/build/src/api-endpoints';
 import {
   BlockWithChildren,

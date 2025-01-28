@@ -6,7 +6,7 @@ import {
 } from "@notionhq/client/build/src/api-endpoints";
 import { FileValue, isExternalProperty, isFileProperty, Post} from "@/lib/notion/types";
 
-export async function fetchNotionDatabaseByCategory(category: string): Promise<Post[]> { // 🔥 반환 타입 지정
+export async function fetchNotionDatabaseByCategory(category: string): Promise<Post[]> {
   const queryOptions: QueryDatabaseParameters = {
     database_id: process.env.NOTION_DATABASE_ID!,
   };

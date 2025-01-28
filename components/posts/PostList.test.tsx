@@ -12,17 +12,17 @@ describe('PostList Component', () => {
   test('PostList 렌더링', () => {
     renderWithRedux(<PostList posts={mockPosts} basePath="/posts" />);
 
-    // 첫 번째 포스트의 제목 확인
+    //1번 포스트 title 확인
     expect(screen.getByText('Mock Post 1')).toBeInTheDocument();
 
-    // 첫 번째 포스트의 링크 확인
+    //1번 포스트 링크 확인
     expect(screen.getByRole('link', { name: /Mock Post 1/i })).toHaveAttribute(
       'href',
       '/projects/mock-post-1'
     );
   });
 
-  test('해당되는 포스트 없을 때 없다는 ㄹㄹ메세지 렌더링', () => {
+  test('해당되는 포스트 없을 때 없다는 메세지 렌더링', () => {
     renderWithRedux(<PostList posts={[]} basePath="/posts" />);
 
     expect(

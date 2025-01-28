@@ -29,7 +29,7 @@ export async function fetchNotionPageBySlug(slug: string) {
     });
 
 const blocks: BlockWithChildren[] = blocksResponse.results
-  .filter((block): block is BlockObjectResponse => block.object === 'block') // 타입 가드
+  .filter((block): block is BlockObjectResponse => block.object === 'block')
   .map((block) => {
     return {
       id: block.id,

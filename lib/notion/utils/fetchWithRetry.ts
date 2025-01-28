@@ -1,5 +1,3 @@
-// fetchPageBlocks.ts
-
 import { notion } from "../client";
 import { BlockWithChildren } from "../types";
 
