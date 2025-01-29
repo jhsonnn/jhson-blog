@@ -12,6 +12,7 @@ type PostProps = {
   thumbnailUrl: string;
   category: string;
   tags: string[];
+  isRandomPosts?: boolean;
 };
 
 const Post: React.FC<PostProps> = ({
@@ -21,10 +22,11 @@ const Post: React.FC<PostProps> = ({
   thumbnailUrl,
   category,
   tags,
+  isRandomPosts = false,
 }: PostProps) => {
   const [isLoaded, setIsLoaded] = useState(false);
 
-  // 날짜 형식 변환
+  //날짜 형식 변환
   const formattedDate = new Date(date).toLocaleDateString('ko-KR', {
     year: 'numeric',
     month: 'long',
@@ -33,12 +35,25 @@ const Post: React.FC<PostProps> = ({
 
   return (
     <Link href={`/${category}/${slug}`} passHref>
-      <div className="relative min-w-full min-h-full max-w-xl mx-auto bg-neutral-100 dark:bg-neutral-700 rounded-3xl shadow-lg overflow-hidden transition-transform transition-colors duration-300 hover:scale-[1.01] hover:shadow-xl mb-6 cursor-pointer">
-        {/* 빛 반사 효과 배경 */}
-        <div className="absolute inset-0 rounded-3xl bg-neutral-100 dark:bg-neutral-700 transition-colors duration-300 z-0"></div>
+      <div
+        className={`relative min-w-full min-h-full max-w-xl mx-auto bg-neutral-100 dark:bg-neutral-700 rounded-3xl shadow-lg overflow-hidden transition-transform transition-colors duration-300 hover:scale-[1.01] hover:shadow-xl mb-6 cursor-pointer ${
+          isRandomPosts ? 'h-[280px]' : ''
+        }`}
+      >
+        <div
+          className={`absolute inset-0 transition-colors duration-300 z-0 ${
+            isRandomPosts
+              ? 'rounded-lg h-[150px] bg-neutral-200 dark:bg-neutral-800'
+              : 'rounded-3xl h-full bg-neutral-100 dark:bg-neutral-700'
+          }`}
+        />
 
         {/* 이미지 */}
-        <div className="relative w-full h-80 z-10">
+        <div
+          className={`relative w-full ${
+            isRandomPosts ? 'h-[180px]' : 'h-80'
+          } z-10`}
+        >
           <Image
             src={thumbnailUrl}
             alt={title}
@@ -55,7 +70,11 @@ const Post: React.FC<PostProps> = ({
         </div>
 
         {/* 텍스트 */}
-        <div className="relative dark:text-neutral-400 text-neutral-700 px-5 pt-3 my-auto bg-transparent z-10">
+        <div
+          className={`relative px-5 pt-3 my-auto bg-transparent z-10 dark:text-neutral-400 text-neutral-700 ${
+            isRandomPosts ? 'h-24' : 'h-auto'
+          }`}
+        >
           <h2 className="text-xl font-semibold text-[var(--sk-headline-text-color)] mb-2 transition-colors duration-300 hover:text-[var(--sk-focus-color)]">
             {title}
           </h2>
@@ -76,9 +95,6 @@ const Post: React.FC<PostProps> = ({
             ))}
           </div>
         </div>
-
-        {/* 빛 반사 효과 */}
-        <div className="absolute inset-0 rounded-2xl ring-1 ring-[var(--sk-fill-gray-tertiary-alpha)] transition-all duration-300 hover:ring-2 hover:ring-[var(--sk-focus-color)] z-10"></div>
       </div>
     </Link>
   );

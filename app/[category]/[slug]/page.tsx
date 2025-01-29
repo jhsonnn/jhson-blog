@@ -2,6 +2,8 @@ import NotionRenderer from '@/components/NotionRenderer';
 import { ApiResponse } from '@/lib/notion/types';
 import transformBlocks from '@/lib/notion/utils/transformBlocks';
 import { fetchVideoUrl } from '@/lib/notion/utils/fetchVideoUrl';
+import { fetchNotionAllPosts } from '@/lib/notion/api/fetchNotionAllPosts';
+import RandomPostList from '@/components/posts/RandomPostList';
 
 interface PageProps {
   params: { category?: string; slug?: string };
@@ -36,7 +38,7 @@ export default async function ContentPage({ params }: PageProps) {
       return <div>Page not found for slug: {slug}</div>;
     }
 
-    //blocks 데이터 가져오기
+    //Blocks 데이터 가져오기
     const blocksResponse = await fetch(
       `${process.env.NEXT_PUBLIC_BASE_URL}/api/block/${pageData.id}`,
       { cache: 'no-store' }
@@ -55,12 +57,24 @@ export default async function ContentPage({ params }: PageProps) {
       return <div>No content available.</div>;
     }
 
+    //모든 포스트 가져오기
+    const allPosts = await fetchNotionAllPosts();
+
     //비디오 URL 가져오기
     const videoUrl = await fetchVideoUrl(slug);
 
     return (
-      <div className="post-content-layout">
-        <NotionRenderer blocks={blocks} videoUrl={videoUrl} />
+      <div>
+        <div className="post-content-layout">
+          <NotionRenderer blocks={blocks} videoUrl={videoUrl} />
+        </div>
+
+        {/* 랜덤 포스트 리스트 */}
+        <RandomPostList
+          posts={allPosts}
+          currentSlug={slug}
+          basePath={`/${category}`}
+        />
       </div>
     );
   } catch (error) {
