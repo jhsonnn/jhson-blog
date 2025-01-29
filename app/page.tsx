@@ -207,6 +207,7 @@ import Profile from '@/components/profile/Profile';
 import PostList from '@/components/posts/PostList';
 import SearchBar from '@/components/menus/SearchBar';
 import { fetchNotionAllPosts } from '@/lib/notion/api/fetchNotionAllPosts';
+import Contact from '@/components/contact/Contact';
 
 export default async function Home({
   searchParams,
@@ -243,6 +244,7 @@ export default async function Home({
         </main>
         <aside className="w-1/6 lg:h-[calc(100vh-4rem)] sticky top-[4rem] overflow-hidden">
           <Profile />
+          <Contact />
         </aside>
       </div>
 
