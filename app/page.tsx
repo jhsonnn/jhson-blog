@@ -224,12 +224,14 @@ export default async function Home({
     <div className="container mx-auto">
       {/* 큰 화면 레이아웃 */}
       <div className="hidden lg:flex lg:gap-8">
-        <aside className="w-1/6 lg:h-[calc(100vh-4rem)] sticky top-[4rem] overflow-hidden">
+        <aside className="w-[17%] lg:h-[calc(100vh-4rem)] sticky top-[4rem] overflow-hidden">
           <Suspense fallback={<div>Loading tags...</div>}>
             <TagsMenuWrapperClient tags={tags} currentTag={tag} />
           </Suspense>
         </aside>
-        <main className="flex-grow lg:w-4/6">
+
+        {/* 메인 콘텐츠 */}
+        <main className="flex-grow lg:w-[62%]">
           <CategoryMenuWrapper
             categories={categories}
             currentCategory={category}
@@ -242,12 +244,12 @@ export default async function Home({
             tagFilter={tag}
           />
         </main>
-        <aside className="w-1/6 lg:h-[calc(100vh-4rem)] sticky top-[4rem] overflow-hidden">
+
+        <aside className="w-[21%] lg:h-[calc(100vh-4rem)] sticky top-[4rem] overflow-hidden">
           <Profile />
           <Contact />
         </aside>
       </div>
-
       {/* 작은 화면 레이아웃 */}
       <div className="block lg:hidden">
         <div className="flex flex-col gap-4 mb-6 lg:mb-2">

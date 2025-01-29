@@ -294,7 +294,7 @@ const PostList: React.FC<PostListProps> = ({
   });
 
   return (
-    <div className="container mx-auto px-0 py-6">
+    <div className="container mx-auto px-0 py-5">
       {title && (
         <h1 className="text-2xl font-bold mb-4 text-center">{title}</h1>
       )}
