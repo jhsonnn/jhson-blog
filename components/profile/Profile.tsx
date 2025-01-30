@@ -2,7 +2,7 @@ import Image from 'next/image';
 
 const Profile = () => {
   return (
-    <div className="mb-3">
+    <div className="mb-6">
       <div className="font-bold text-base mb-3">Profile</div>
 
       <div className="bg-white dark:bg-neutral-700 p-3 rounded-2xl shadow-md">
@@ -13,7 +13,7 @@ const Profile = () => {
           있는 &apos;손지형&apos;입니다.
         </div>
         <div className="flex justify-center">
-          <div className="relative w-40 h-40 overflow-hidden rounded-full">
+          <div className="relative w-40 h-40 overflow-hidden rounded-full mb-3">
             <Image
               src={'/images/profile/profile_image.jpg'}
               layout="fill"
