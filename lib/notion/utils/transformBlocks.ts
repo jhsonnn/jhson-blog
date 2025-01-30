@@ -11,22 +11,6 @@ import {
 } from '@/lib/notion/types';
 import transformRichText from './transformRichText';
 
-async function fetchChildren(blockId: string): Promise<BlockObjectResponse[]> {
-  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000';
-  const response = await fetch(`${baseUrl}/api/block/${blockId}`, { cache: 'no-store' });
-
-  // console.log('NEXT_PUBLIC_BASE_URL:', process.env.NEXT_PUBLIC_BASE_URL);
-
-  if (!response.ok) {
-    console.error(`Failed to fetch children for blockId: ${blockId}`);
-    return [];
-  }
-
-  const children = await response.json();
-  // console.log(`Fetched children for block ${blockId}:`, children);
-  return children;
-}
-
 async function transformBlocks(blocks: BlockObjectResponse[]): Promise<BlockWithChildren[]> {
   return Promise.all(
     
@@ -86,3 +70,21 @@ async function transformBlocks(blocks: BlockObjectResponse[]): Promise<BlockWith
 }
 
 export default transformBlocks;
+
+async function fetchChildren(blockId: string): Promise<BlockObjectResponse[]> {
+  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000';
+  const response = await fetch(`${baseUrl}/api/block/${blockId}`, { cache: 'no-store' });
+
+  // console.log('NEXT_PUBLIC_BASE_URL:', process.env.NEXT_PUBLIC_BASE_URL);
+
+  if (!response.ok) {
+    console.error(`Failed to fetch children for blockId: ${blockId}`);
+    return [];
+  }
+
+  const children = await response.json();
+  // console.log(`Fetched children for block ${blockId}:`, children);
+  return children;
+}
+
+

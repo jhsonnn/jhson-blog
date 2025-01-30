@@ -1,3 +1,4 @@
+//세부 콘텐츠 페이지 하단 랜덤한 포스트
 'use client';
 
 import React, { useEffect, useState } from 'react';

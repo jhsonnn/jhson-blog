@@ -55,10 +55,10 @@
         "./lib/*"
       ]
     },
-    // "target": "ES2017"
     "target": "esnext"
   },
   "include": [
+    "app/**/*",
     "next-env.d.ts",
     "**/*.ts",
     "**/*.tsx",

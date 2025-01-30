@@ -1,4 +1,3 @@
-
 import {fetchNotionAllPosts} from "./fetchNotionAllPosts"
 jest.mock('@/lib/notion/api/fetchNotionAllPosts');
 
