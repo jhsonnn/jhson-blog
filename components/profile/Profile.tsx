@@ -19,6 +19,7 @@ const Profile = () => {
               layout="fill"
               objectFit="cover"
               alt="profile image"
+              loading="lazy"
             />
           </div>
         </div>

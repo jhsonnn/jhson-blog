@@ -1,7 +1,7 @@
+import { notionClient } from "@/lib/notion/client";
 import { NextRequest, NextResponse } from "next/server";
-import { Client } from "@notionhq/client";
 
-const notion = new Client({ auth: process.env.NOTION_API_KEY });
+
 
 export async function GET(_req: NextRequest, { params }: { params?: { id?: string } }) {
   if (!params || !params.id) {
@@ -15,7 +15,7 @@ export async function GET(_req: NextRequest, { params }: { params?: { id?: strin
   const { id } = params;
 
   try {
-    const response = await notion.blocks.children.list({
+    const response = await notionClient.blocks.children.list({
       block_id: id,
     });
     

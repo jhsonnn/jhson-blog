@@ -53,17 +53,18 @@ const Post: React.FC<PostProps> = ({
           className={`relative w-full ${
             isRandomPosts ? 'h-[180px]' : 'h-80'
           } z-10`}
+          style={{ aspectRatio: '16 / 9' }} //비율 고정
         >
           <Image
             src={thumbnailUrl}
             alt={title}
-            fill
-            style={{ objectFit: 'cover', objectPosition: 'center' }}
-            className={`transition-opacity duration-500 ${
-              isLoaded ? 'opacity-100' : 'opacity-0'
-            }`}
+            layout="fill"
+            className={`rounded-t-3xl object-cover`} //transition-opacity 제거
             onLoad={() => setIsLoaded(true)}
             onError={() => setIsLoaded(false)}
+            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 600px" //반응형
+            priority={true} //LCP 최적화
+            loading="eager"
           />
           {/* 이미지 위 오버레이 */}
           <div className="absolute inset-0 bg-[var(--sk-fill-gray-quaternary-alpha)] opacity-0 transition-opacity duration-300 hover:opacity-30"></div>

@@ -1,10 +1,9 @@
-import { Client } from '@notionhq/client';
 import { isPageObjectResponse } from '@/lib/notion/types';
+import { notionClient } from '../client';
 
-const notion = new Client({ auth: process.env.NOTION_API_KEY });
 
 export async function fetchNotionAllPosts() {
-  const response = await notion.databases.query({
+  const response = await notionClient.databases.query({
     database_id: process.env.NOTION_DATABASE_ID!,
   });
 

@@ -1,5 +1,5 @@
-import { notion } from '../client';
 import { isPageObjectResponse } from '@/lib/notion/types';
+import { notionClient } from '../client';
 
 const videoUrlCache = new Map<string, { url: string | null; expiry: number }>();
 const CACHE_DURATION_MS = 60 * 60 * 1000; // 1 hour caching duration
@@ -32,7 +32,7 @@ export async function fetchVideoUrl(slug: string): Promise<string | null> {
   
   try {
     
-    const response = await notion.databases.query({
+    const response = await notionClient.databases.query({
       database_id: process.env.NOTION_VIDEO_DB_ID,
       filter: {
         property: 'name',

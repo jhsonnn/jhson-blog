@@ -1,8 +1,8 @@
-import { notion } from "../client";
+import { notionClient } from "../client";
 
 export const fetchTags = async (): Promise<string[]> => {
   try {
-    const response = await notion.databases.query({
+    const response = await notionClient.databases.query({
       database_id: process.env.NOTION_DATABASE_ID!,
     });
 

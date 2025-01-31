@@ -8,6 +8,7 @@ import {
   ImageBlockObjectResponse,
 } from '@notionhq/client/build/src/api-endpoints';
 import { BlockWithChildren, isImageBlock } from '@/lib/notion/types';
+import Image from 'next/image';
 
 interface NotionRendererProps {
   blocks: BlockWithChildren[];
@@ -190,9 +191,12 @@ const renderImage = (block: ImageBlockObjectResponse) => {
   const altText = block.image.caption?.[0]?.plain_text || 'Image';
 
   return (
-    <img
+    <Image
       src={url}
       alt={altText}
+      layout="responsive"
+      width={200}
+      height={100}
       className="my-3 max-w-full h-auto rounded-xl"
     />
   );

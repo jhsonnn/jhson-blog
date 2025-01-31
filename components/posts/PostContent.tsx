@@ -3,6 +3,7 @@ import {
   BlockWithChildren,
   LocalRichTextItemResponse,
 } from '@/lib/notion/types';
+import Image from 'next/image';
 import React from 'react';
 
 type PostContentProps = {
@@ -95,9 +96,12 @@ const ImageBlock: React.FC<{ block: BlockWithChildren }> = ({ block }) => {
   const altText = block.image.caption?.[0]?.plain_text || 'Image';
 
   return (
-    <img
+    <Image
       src={url}
       alt={altText}
+      layout="responsive"
+      width={200}
+      height={100}
       className="my-3 max-w-full h-auto rounded-xl"
     />
   );

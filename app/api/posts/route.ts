@@ -1,12 +1,11 @@
 import { NextResponse } from 'next/server';
-import { Client } from '@notionhq/client';
 import { isPageObjectResponse } from '@/lib/notion/types';
+import { notionClient } from '@/lib/notion/client';
 
-const notion = new Client({ auth: process.env.NOTION_API_KEY });
 
 export async function GET() {
   try {
-    const response = await notion.databases.query({
+    const response = await notionClient.databases.query({
       database_id: process.env.NOTION_DATABASE_ID!,
     });
 

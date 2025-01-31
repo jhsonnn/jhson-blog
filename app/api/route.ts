@@ -1,9 +1,9 @@
 import { NextResponse } from "next/server";
-import { notion } from "@/lib/notion/client";
+import { notionClient } from "@/lib/notion/client";
 
 export async function GET() {
   try {
-    const response = await notion.databases.query({
+    const response = await notionClient.databases.query({
       database_id: process.env.NOTION_DATABASE_ID!,
     });
 
