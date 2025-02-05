@@ -76,11 +76,29 @@ const config: Config = {
       container: {
         center: true,
         padding: {
-          DEFAULT: '1rem', // 기본 패딩 (모든 화면 크기)
-          sm: '2rem', // 640px 이상
-          md: '3rem', // 768px 이상
-          lg: '4rem', // 1024px 이상
-          xl: '6rem', // 1280px 이상
+          DEFAULT: '1rem',
+          sm: '2rem', //640px 이상
+          md: '3rem', //768px 이상
+          lg: '4rem', //1024px 이상
+          xl: '6rem', //1280px 이상
+        },
+      },
+      animation: {
+        'shimmer': 'shimmer 3s infinite',
+        'fade': 'fade 3s infinite',
+      },
+      keyframes: {
+        shimmer: {
+          '0%': { backgroundPosition: '-200% 0' },
+          '100%': { backgroundPosition: '200% 0' },
+        },
+        fade: {
+          '0%, 100%': { opacity: '0.3'},
+          '50%': { opacity: '1' },
+        },
+        'shimmer-slow': {
+          '0%': { backgroundPosition: '-200% 0' },
+          '100%': { backgroundPosition: '200% 0' },
         },
       },
     },

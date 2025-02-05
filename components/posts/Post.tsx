@@ -24,7 +24,7 @@ const Post: React.FC<PostProps> = ({
   tags,
   isRandomPosts = false,
 }: PostProps) => {
-  const [isLoaded, setIsLoaded] = useState(false);
+  const [_isLoaded, setIsLoaded] = useState(false);
 
   //날짜 형식 변환
   const formattedDate = new Date(date).toLocaleDateString('ko-KR', {
