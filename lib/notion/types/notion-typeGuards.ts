@@ -1,8 +1,10 @@
 import {
+  BlockObjectResponse,
   BlockObjectResponse as NotionBlockObjectResponse,
   PageObjectResponse as NotionPageObjectResponse,
   RichTextItemResponse as NotionRichTextItemResponse,
   PageObjectResponse,
+  PartialBlockObjectResponse,
 } from '@notionhq/client/build/src/api-endpoints';
 import { SelectProperty } from "./notion-pageType";
 import { BlockWithChildren } from './notion-blocksType';
@@ -81,6 +83,24 @@ export function isPageObjectResponse(
     'parent' in value
   );
 }
+
+// export function isBlockObjectResponse(
+//   block: PartialBlockObjectResponse | BlockObjectResponse
+// ): block is BlockObjectResponse {
+//   return "has_children" in block;
+// }
+
+export function isBlockObjectResponse(
+  block: PartialBlockObjectResponse | BlockObjectResponse
+): block is BlockObjectResponse {
+  return (
+    "type" in block &&
+    typeof block.type === "string" &&
+    "has_children" in block &&
+    typeof block.has_children === "boolean"
+  );
+}
+
 
 export function isSelectProperty(
   property:

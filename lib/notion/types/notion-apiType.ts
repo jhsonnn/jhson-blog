@@ -33,7 +33,13 @@ export type NotionBlockType =
   | 'video'
   | 'audio'
   | 'code'
-  | 'equation'; 
+  | 'equation'
+  | "embed"
+  | "table_of_contents"
+  | "bookmark"
+  | "pdf"
+  | "link_preview"
+  | "unsupported"; 
 
 export type SelectColor =
   | 'default'

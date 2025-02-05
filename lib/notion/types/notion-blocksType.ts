@@ -1,4 +1,5 @@
 // import { BlockObjectResponse } from "@notionhq/client/build/src/api-endpoints";
+import { RichTextItemResponse } from "@notionhq/client/build/src/api-endpoints";
 import { NotionBlockType, NotionRichTextItemResponse } from "./notion-apiType";
 
 export interface RichText {
@@ -67,6 +68,7 @@ export interface BlockWithChildren {
   type: NotionBlockType;
   has_children: boolean;
   children?: BlockWithChildren[];
+
   paragraph?: { rich_text: NotionRichTextItemResponse[] };
   heading_1?: { rich_text: NotionRichTextItemResponse[] };
   heading_2?: { rich_text: NotionRichTextItemResponse[] };
@@ -87,6 +89,26 @@ export interface BlockWithChildren {
     type: 'file' | 'external';
     file?: { url: string };
     external?: { url: string };
+  };
+  embed?: {
+    url: string;
+    caption: RichTextItemResponse[];
+  };
+  bookmark?: {
+    url: string;
+    caption: RichTextItemResponse[];
+  };
+  table_of_contents?: {
+    color: string;
+  };
+   pdf?: {
+    type: "external" | "file";
+    external?: { url: string };
+    file?: { url: string; expiry_time: string };
+    caption: RichTextItemResponse[];
+   };
+   link_preview?: {
+    url: string;
   };
   [key: string]: unknown;
 }
