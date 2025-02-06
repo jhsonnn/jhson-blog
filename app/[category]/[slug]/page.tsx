@@ -269,68 +269,136 @@
 //   }
 // }
 
-//skeleton 적용 테스트
+// //skeleton 적용 테스트
+// import NotionRenderer from '@/components/NotionRenderer';
+// import { ApiResponse } from '@/lib/notion/types';
+// import { fetchVideoUrl } from '@/lib/notion/utils/fetchVideoUrl';
+// import { fetchNotionAllPosts } from '@/lib/notion/api/fetchNotionAllPosts';
+// import { transformBlocks } from '@/lib/notion/utils/transformBlocks';
+// import RandomPostList from '@/components/posts/RandomPostList';
+
+// interface PageProps {
+//   params: { category?: string; slug?: string };
+// }
+
+// export default async function ContentPage({ params }: PageProps) {
+//   const { category, slug } = params || {};
+
+//   if (!category || !slug) {
+//     console.error('Missing category or slug.');
+//     return <div>Error: Missing category or slug.</div>;
+//   }
+
+//   try {
+//     const [postsResponse, videoUrl] = await Promise.all([
+//       fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/post/${category}`, {
+//         cache: 'no-store',
+//       }),
+//       fetchVideoUrl(slug),
+//     ]);
+
+//     if (!postsResponse.ok) {
+//       console.error(`Failed to fetch posts. Status: ${postsResponse.status}`);
+//       throw new Error(`Failed to fetch posts for category: ${category}`);
+//     }
+
+//     const posts: ApiResponse[] = await postsResponse.json();
+//     const pageData = posts.find(
+//       (item) => item.slug.toLowerCase() === slug.toLowerCase()
+//     );
+
+//     if (!pageData) {
+//       console.error(`Page data not found for slug: ${slug}`);
+//       return <div>Page not found for slug: {slug}</div>;
+//     }
+
+//     const [blocksResponse, allPosts] = await Promise.all([
+//       fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/block/${pageData.id}`, {
+//         cache: 'no-store',
+//       }),
+//       fetchNotionAllPosts(),
+//     ]);
+
+//     if (!blocksResponse.ok) {
+//       console.error(`Failed to fetch blocks for pageId: ${pageData.id}`);
+//       throw new Error(`Failed to fetch blocks for pageId: ${pageData.id}`);
+//     }
+
+//     const rawBlocks = await blocksResponse.json();
+//     const blocks = await transformBlocks(rawBlocks);
+
+//     if (!blocks || blocks.length === 0) {
+//       console.error('No blocks data found.');
+//       return <div>No content available.</div>;
+//     }
+
+//     return (
+//       <div>
+//         <div className="post-content-layout">
+//           <NotionRenderer blocks={blocks} videoUrl={videoUrl} />
+//         </div>
+//         <RandomPostList
+//           posts={allPosts}
+//           currentSlug={slug}
+//           basePath={`/${category}`}
+//         />
+//       </div>
+//     );
+//   } catch (error) {
+//     console.error('Error loading content:', error);
+//     return (
+//       <div>
+//         Error loading content. Please try again later. Details:{' '}
+//         {error instanceof Error ? error.message : 'Unknown error occurred'}
+//       </div>
+//     );
+//   }
+// }
+
+//ISR 테스트
+// app/[category]/[slug]/page.tsx
 import NotionRenderer from '@/components/NotionRenderer';
-import { ApiResponse } from '@/lib/notion/types';
-import { fetchVideoUrl } from '@/lib/notion/utils/fetchVideoUrl';
-import { fetchNotionAllPosts } from '@/lib/notion/api/fetchNotionAllPosts';
-import { transformBlocks } from '@/lib/notion/utils/transformBlocks';
 import RandomPostList from '@/components/posts/RandomPostList';
+import { fetchNotionAllPosts } from '@/lib/notion/api/fetchNotionAllPosts';
+import { fetchVideoUrl } from '@/lib/notion/utils/fetchVideoUrl';
+import { transformBlocks } from '@/lib/notion/utils/transformBlocks';
 
 interface PageProps {
-  params: { category?: string; slug?: string };
+  params: { category: string; slug: string };
 }
 
-export default async function ContentPage({ params }: PageProps) {
-  const { category, slug } = params || {};
+export const revalidate = 60; // ISR 적용 (60초마다 정적 페이지 재생성)
 
-  if (!category || !slug) {
-    console.error('Missing category or slug.');
-    return <div>Error: Missing category or slug.</div>;
-  }
+export default async function ContentPage({ params }: PageProps) {
+  const { category, slug } = params;
 
   try {
-    const [postsResponse, videoUrl] = await Promise.all([
-      fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/post/${category}`, {
-        cache: 'no-store',
-      }),
-      fetchVideoUrl(slug),
-    ]);
-
-    if (!postsResponse.ok) {
-      console.error(`Failed to fetch posts. Status: ${postsResponse.status}`);
-      throw new Error(`Failed to fetch posts for category: ${category}`);
-    }
-
-    const posts: ApiResponse[] = await postsResponse.json();
-    const pageData = posts.find(
-      (item) => item.slug.toLowerCase() === slug.toLowerCase()
-    );
+    const allPosts = await fetchNotionAllPosts();
+    const pageData = allPosts.find((post) => post.slug === slug);
 
     if (!pageData) {
-      console.error(`Page data not found for slug: ${slug}`);
-      return <div>Page not found for slug: {slug}</div>;
+      return <div>Page not found.</div>;
     }
 
-    const [blocksResponse, allPosts] = await Promise.all([
+    const [videoUrl, blocksResponse] = await Promise.all([
+      fetchVideoUrl(slug),
       fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/block/${pageData.id}`, {
         cache: 'no-store',
       }),
-      fetchNotionAllPosts(),
     ]);
 
     if (!blocksResponse.ok) {
       console.error(`Failed to fetch blocks for pageId: ${pageData.id}`);
-      throw new Error(`Failed to fetch blocks for pageId: ${pageData.id}`);
+      return <div>Error: Unable to fetch content</div>;
     }
 
     const rawBlocks = await blocksResponse.json();
-    const blocks = await transformBlocks(rawBlocks);
-
-    if (!blocks || blocks.length === 0) {
+    if (!rawBlocks || rawBlocks.length === 0) {
       console.error('No blocks data found.');
       return <div>No content available.</div>;
     }
+
+    const blocks = await transformBlocks(rawBlocks);
 
     return (
       <div>
@@ -346,11 +414,6 @@ export default async function ContentPage({ params }: PageProps) {
     );
   } catch (error) {
     console.error('Error loading content:', error);
-    return (
-      <div>
-        Error loading content. Please try again later. Details:{' '}
-        {error instanceof Error ? error.message : 'Unknown error occurred'}
-      </div>
-    );
+    return <div>Error loading content.</div>;
   }
 }

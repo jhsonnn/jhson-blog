@@ -37,12 +37,21 @@ export interface Post {
   thumbnailUrl?: string;
 }
 
+// export interface ApiResponse {
+//   id: string;
+//   slug: string;
+//   title: string;
+//   created_time: string;
+//   thumbnailUrl: string;
+// }
+
 export interface ApiResponse {
   id: string;
-  slug: string;
   title: string;
+  slug: string;
+  category: string;
   created_time: string;
-  thumbnailUrl: string;
+  tags: string[];
 }
 
 export interface NotionPage {

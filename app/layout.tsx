@@ -3,8 +3,8 @@ import { ReactNode } from 'react';
 import Header from '@/components/layout/header';
 import ThemeProviderWrapper from '@/components/ui/ThemeProviderWrapper';
 import { fetchInitialTheme } from '@/lib/theme/themeUtils';
-import ReduxInitializer from '@/components/utils/ReduxInitializer';
-import ReduxProvider from '@/components/utils/ReduxProvider';
+import ReduxInitializer from '@/app/store/ReduxInitializer';
+import ReduxProvider from '@/app/store/ReduxProvider';
 
 interface RootLayoutProps {
   children: ReactNode;
