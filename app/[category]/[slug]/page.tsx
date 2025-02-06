@@ -357,6 +357,146 @@
 
 //ISR 테스트
 // app/[category]/[slug]/page.tsx
+// import NotionRenderer from '@/components/NotionRenderer';
+// import RandomPostList from '@/components/posts/RandomPostList';
+// import { fetchNotionAllPosts } from '@/lib/notion/api/fetchNotionAllPosts';
+// import { fetchVideoUrl } from '@/lib/notion/utils/fetchVideoUrl';
+// import { transformBlocks } from '@/lib/notion/utils/transformBlocks';
+
+// interface PageProps {
+//   params: { category: string; slug: string };
+// }
+
+// export const revalidate = 60; // ISR 적용 (60초마다 정적 페이지 재생성)
+
+// export default async function ContentPage({ params }: PageProps) {
+//   const { category, slug } = params;
+
+//   try {
+//     const allPosts = await fetchNotionAllPosts();
+//     const pageData = allPosts.find((post) => post.slug === slug);
+
+//     if (!pageData) {
+//       return <div>Page not found.</div>;
+//     }
+
+//     const [videoUrl, blocksResponse] = await Promise.all([
+//       fetchVideoUrl(slug),
+//       fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/block/${pageData.id}`, {
+//         cache: 'no-store',
+//       }),
+//     ]);
+
+//     if (!blocksResponse.ok) {
+//       console.error(`Failed to fetch blocks for pageId: ${pageData.id}`);
+//       return <div>Error: Unable to fetch content</div>;
+//     }
+
+//     const rawBlocks = await blocksResponse.json();
+//     if (!rawBlocks || rawBlocks.length === 0) {
+//       console.error('No blocks data found.');
+//       return <div>No content available.</div>;
+//     }
+
+//     const blocks = await transformBlocks(rawBlocks);
+
+//     return (
+//       <div>
+//         <div className="post-content-layout">
+//           <NotionRenderer blocks={blocks} videoUrl={videoUrl} />
+//         </div>
+//         <RandomPostList
+//           posts={allPosts}
+//           currentSlug={slug}
+//           basePath={`/${category}`}
+//         />
+//       </div>
+//     );
+//   } catch (error) {
+//     console.error('Error loading content:', error);
+//     return <div>Error loading content.</div>;
+//   }
+// }
+
+//ISR 테스트2
+// // app/[category]/[slug]/page.tsx
+// import NotionRenderer from '@/components/NotionRenderer';
+// import RandomPostList from '@/components/posts/RandomPostList';
+// import { fetchNotionAllPosts } from '@/lib/notion/api/fetchNotionAllPosts';
+// import { fetchVideoUrl } from '@/lib/notion/utils/fetchVideoUrl';
+// import { transformBlocks } from '@/lib/notion/utils/transformBlocks';
+
+// interface PageProps {
+//   params: { category: string; slug: string };
+// }
+
+// // ISR 적용: 60초마다 정적 페이지 재생성
+// export const revalidate = 60;
+
+// // 정적 경로 생성 (ISR 성능 최적화)
+// export async function generateStaticParams() {
+//   const posts = await fetchNotionAllPosts();
+//   return posts.map((post) => ({
+//     category: post.category,
+//     slug: post.slug,
+//   }));
+// }
+
+// // ISR ContentPage 컴포넌트
+// export default async function ContentPage({ params }: PageProps) {
+//   const { category, slug } = params;
+
+//   try {
+//     // 미리 가져온 모든 포스트 데이터 중 슬러그에 맞는 데이터 찾기
+//     const allPosts = await fetchNotionAllPosts();
+//     const pageData = allPosts.find((post) => post.slug === slug);
+
+//     if (!pageData) {
+//       return <div>Page not found.</div>;
+//     }
+
+//     // 블록 데이터와 비디오 URL 병렬로 가져오기
+//     const [videoUrl, blocksResponse] = await Promise.all([
+//       fetchVideoUrl(slug),
+//       fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/block/${pageData.id}`, {
+//         cache: 'no-store',
+//       }),
+//     ]);
+
+//     if (!blocksResponse.ok) {
+//       console.error(`Failed to fetch blocks for pageId: ${pageData.id}`);
+//       return <div>Error: Unable to fetch content</div>;
+//     }
+
+//     const rawBlocks = await blocksResponse.json();
+//     if (!rawBlocks || rawBlocks.length === 0) {
+//       console.error('No blocks data found.');
+//       return <div>No content available.</div>;
+//     }
+
+//     // 블록 변환 최적화
+//     const blocks = await transformBlocks(rawBlocks);
+
+//     return (
+//       <div>
+//         <div className="post-content-layout">
+//           <NotionRenderer blocks={blocks} videoUrl={videoUrl} />
+//         </div>
+//         <RandomPostList
+//           posts={allPosts}
+//           currentSlug={slug}
+//           basePath={`/${category}`}
+//         />
+//       </div>
+//     );
+//   } catch (error) {
+//     console.error('Error loading content:', error);
+//     return <div>Error loading content.</div>;
+//   }
+// }
+
+//페이지네이션 최적화
+// app/[category]/[slug]/page.tsx
 import NotionRenderer from '@/components/NotionRenderer';
 import RandomPostList from '@/components/posts/RandomPostList';
 import { fetchNotionAllPosts } from '@/lib/notion/api/fetchNotionAllPosts';
@@ -367,13 +507,24 @@ interface PageProps {
   params: { category: string; slug: string };
 }
 
-export const revalidate = 60; // ISR 적용 (60초마다 정적 페이지 재생성)
+// ISR 적용: 60초마다 정적 페이지 재생성
+export const revalidate = 60;
 
+// 정적 경로 생성 (ISR 성능 최적화)
+export async function generateStaticParams() {
+  const posts = await fetchNotionAllPosts();
+  return posts.map((post) => ({
+    category: post.category,
+    slug: post.slug,
+  }));
+}
+
+// ISR ContentPage 컴포넌트
 export default async function ContentPage({ params }: PageProps) {
   const { category, slug } = params;
 
   try {
-    const allPosts = await fetchNotionAllPosts();
+    const allPosts = await fetchNotionAllPosts(); // 모든 게시물을 페이징 없이 가져옴
     const pageData = allPosts.find((post) => post.slug === slug);
 
     if (!pageData) {
@@ -393,11 +544,6 @@ export default async function ContentPage({ params }: PageProps) {
     }
 
     const rawBlocks = await blocksResponse.json();
-    if (!rawBlocks || rawBlocks.length === 0) {
-      console.error('No blocks data found.');
-      return <div>No content available.</div>;
-    }
-
     const blocks = await transformBlocks(rawBlocks);
 
     return (
@@ -406,7 +552,7 @@ export default async function ContentPage({ params }: PageProps) {
           <NotionRenderer blocks={blocks} videoUrl={videoUrl} />
         </div>
         <RandomPostList
-          posts={allPosts}
+          posts={allPosts} // 초기 Infinite Scrolling에 필요한 데이터
           currentSlug={slug}
           basePath={`/${category}`}
         />

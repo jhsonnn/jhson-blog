@@ -47,6 +47,7 @@
 // };
 
 //ISR 테스트
+//app/store/ReduxInitializer.tsx
 'use client';
 import { useEffect } from 'react';
 import { useDispatch } from 'react-redux';
@@ -75,14 +76,9 @@ const ReduxInitializer = () => {
   useEffect(() => {
     const initializeTags = async () => {
       try {
-        console.log('Fetching tags...');
         const fetchedTags = await fetchTags();
-        console.log('Fetched tags:', fetchedTags);
-
         if (fetchedTags.length > 0) {
           dispatch(setTags(fetchedTags));
-        } else {
-          console.warn('No tags fetched from Notion API.');
         }
       } catch (error) {
         console.error('Error fetching tags:', error);

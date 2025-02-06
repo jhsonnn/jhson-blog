@@ -105,7 +105,7 @@
 
 
 //ISR 테스트
-// api/fetchNotionAllPosts.ts
+// lib/notion/api/fetchNotionAllPosts.ts
 
 import { notionClient } from "@/lib/notion/client";
 import { isPageObjectResponse } from "@/lib/notion/types";

@@ -31,10 +31,10 @@ export interface Post {
   id: string;
   title: string;
   slug: string;
-  created_time: string;
   category: string;
   tags: string[];
-  thumbnailUrl?: string;
+  created_time: string;
+  thumbnailUrl: string;
 }
 
 // export interface ApiResponse {
