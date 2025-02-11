@@ -22,9 +22,9 @@ export async function GET() {
                 if (file.type === 'file' && file.file) return file.file.url;
                 if (file.type === 'external' && file.external)
                   return file.external.url;
-                return '/default-thumbnail.png';
+                return '/default_image.png';
               })()
-            : '/default-thumbnail.png';
+            : '/default_image.png';
 
         return {
           id: post.id,

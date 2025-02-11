@@ -1,4 +1,3 @@
-// app/posts/page.tsx
 import PostList from '@/components/posts/PostList';
 import { fetchNotionPostsByPage } from '@/lib/notion/api/fetchNotionPostsbyPage';
 

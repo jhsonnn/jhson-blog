@@ -130,7 +130,7 @@
 //                 title={post.title}
 //                 slug={post.slug}
 //                 date={post.created_time}
-//                 thumbnailUrl={post.thumbnailUrl || '/default-thumbnail.png'}
+//                 thumbnailUrl={post.thumbnailUrl || '/default_image.png'}
 //                 category={post.category}
 //                 tags={post.tags}
 //                 isRandomPosts={true}
@@ -304,7 +304,7 @@
 //                   title={post.title || 'Untitled'}
 //                   slug={post.slug || ''}
 //                   date={post.created_time || 'Unknown Date'}
-//                   thumbnailUrl={post.thumbnailUrl || '/default-thumbnail.png'}
+//                   thumbnailUrl={post.thumbnailUrl || '/default_image.png'}
 //                   category={post.category || 'none'}
 //                   tags={post.tags || []}
 //                   isRandomPosts={true}
@@ -499,7 +499,7 @@
 //                   title={post.title || 'Untitled'}
 //                   slug={post.slug || ''}
 //                   date={post.created_time || 'Unknown Date'}
-//                   thumbnailUrl={post.thumbnailUrl || '/default-thumbnail.png'}
+//                   thumbnailUrl={post.thumbnailUrl || '/default_image.png'}
 //                   category={post.category || 'none'}
 //                   tags={post.tags || []}
 //                   isRandomPosts={true}
@@ -684,7 +684,7 @@
 //                 title={post.title || 'Untitled'}
 //                 slug={post.slug || ''}
 //                 date={post.created_time || 'Unknown Date'}
-//                 thumbnailUrl={post.thumbnailUrl || '/default-thumbnail.png'}
+//                 thumbnailUrl={post.thumbnailUrl || '/default_image.png'}
 //                 category={post.category || 'none'}
 //                 tags={post.tags || []}
 //                 isRandomPosts
@@ -861,7 +861,7 @@ const RandomPostList: React.FC<RandomPostListProps> = ({
                 title={post.title || 'Untitled'}
                 slug={post.slug || ''}
                 date={post.created_time || 'Unknown Date'}
-                thumbnailUrl={post.thumbnailUrl || '/default-thumbnail.png'}
+                thumbnailUrl={post.thumbnailUrl || '/default_image.png'}
                 category={post.category || 'none'}
                 tags={post.tags || []}
               />

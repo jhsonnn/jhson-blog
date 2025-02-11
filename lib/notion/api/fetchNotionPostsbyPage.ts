@@ -37,11 +37,11 @@
 //         Array.isArray(properties.thumbnailUrl.files) &&
 //         properties.thumbnailUrl.files.length > 0
 //           ? properties.thumbnailUrl.files[0]?.type === 'file'
-//             ? properties.thumbnailUrl.files[0]?.file?.url || '/default-thumbnail.png'
+//             ? properties.thumbnailUrl.files[0]?.file?.url || '/default_image.png'
 //             : properties.thumbnailUrl.files[0]?.type === 'external'
-//             ? properties.thumbnailUrl.files[0]?.external?.url || '/default-thumbnail.png'
-//             : '/default-thumbnail.png'
-//           : '/default-thumbnail.png',
+//             ? properties.thumbnailUrl.files[0]?.external?.url || '/default_image.png'
+//             : '/default_image.png'
+//           : '/default_image.png',
 //         created_time,
 //       };
 //     });
@@ -50,8 +50,6 @@
 // }
 
      
-
-// lib/notion/api/fetchNotionPostsByPage.ts
 import { notionClient } from '@/lib/notion/client';
 import { isPageObjectResponse } from '@/lib/notion/types';
 
@@ -75,11 +73,11 @@ export async function fetchNotionPostsByPage(page = 1, pageSize = 10) {
         Array.isArray(post.properties.thumbnailUrl.files) &&
         post.properties.thumbnailUrl.files.length > 0
           ? post.properties.thumbnailUrl.files[0]?.type === 'file'
-            ? post.properties.thumbnailUrl.files[0]?.file?.url || '/default-thumbnail.png'
+            ? post.properties.thumbnailUrl.files[0]?.file?.url || '/default_image.png'
             : post.properties.thumbnailUrl.files[0]?.type === 'external'
-            ? post.properties.thumbnailUrl.files[0]?.external?.url || '/default-thumbnail.png'
-            : '/default-thumbnail.png'
-          : '/default-thumbnail.png',
+            ? post.properties.thumbnailUrl.files[0]?.external?.url || '/default_image.png'
+            : '/default_image.png'
+          : '/default_image.png',
       created_time: post.created_time,
     }));
 

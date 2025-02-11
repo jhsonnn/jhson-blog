@@ -515,8 +515,8 @@ const renderImage = (block: BlockWithChildren) => {
 
   const url =
     block.image.type === 'file'
-      ? block.image.file?.url // Notion에서 제공하는 파일 URL (만료될 수 있음)
-      : block.image.external?.url; // 외부 링크로 연결된 이미지
+      ? block.image.file?.url
+      : block.image.external?.url;
 
   if (!url) {
     console.warn('Image block is missing a valid URL:', block);
@@ -537,8 +537,8 @@ const renderImage = (block: BlockWithChildren) => {
         className="rounded-xl"
         loading="lazy"
         placeholder="blur"
-        blurDataURL="/placeholder.png"
-        unoptimized // Notion 이미지의 경우 최적화 기능을 비활성화해야 정상 로드됨
+        blurDataURL="/default_image.png"
+        unoptimized //Notion 이미지의 경우 최적화 기능을 비활성화해야 정상 로드됨
       />
     </div>
   );

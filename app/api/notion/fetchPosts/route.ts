@@ -30,7 +30,7 @@ export async function GET(request: Request) {
             ? thumbnailFile.file.url
             : thumbnailFile?.type === 'external'
             ? thumbnailFile.external.url
-            : '/default-thumbnail.png';
+            : '/default_image.png';
 
         return {
           id: post.id,

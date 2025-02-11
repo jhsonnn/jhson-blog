@@ -36,7 +36,7 @@ export async function GET(
       .map((post) => {
         const properties = post.properties;
 // 썸네일 처리
-let thumbnailUrl = "/default-thumbnail.png";
+let thumbnailUrl = "/default_image.png";
 
 if (
   properties.thumbnailUrl?.type === "files" &&
