@@ -1,4 +1,3 @@
-// lib/notion/api/fetchNotionPageBySlug.ts
 import { notionClient } from '@/lib/notion/client';
 import { isPageObjectResponse } from '@/lib/notion/types';
 import { Post } from '@/lib/notion/types';
