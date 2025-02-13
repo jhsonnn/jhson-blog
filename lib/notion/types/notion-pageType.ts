@@ -23,7 +23,7 @@ export interface NotionPageItem {
         id: string;
       };
     };
-    created_time: string;
+    date: string;
   };
 }
 
@@ -33,7 +33,8 @@ export interface Post {
   slug: string;
   category: string;
   tags: string[];
-  created_time: string;
+  date?: string;
+  // created_time: string;
   thumbnailUrl: string;
 }
 
@@ -50,7 +51,7 @@ export interface ApiResponse {
   title: string;
   slug: string;
   category: string;
-  created_time: string;
+  date: string;
   tags: string[];
 }
 

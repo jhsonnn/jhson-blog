@@ -31,6 +31,6 @@ export async function fetchNotionPageBySlug(slug: string): Promise<Post | null> 
           ? post.properties.thumbnailUrl.files[0]?.external?.url || '/default_image.png'
           : '/default_image.png'
         : '/default_image.png',
-    created_time: post.created_time,
+    date: post.properties.date?.type === 'date' ? post.properties.date.date?.start || '' : '',
   };
 }

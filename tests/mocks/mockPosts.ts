@@ -6,7 +6,7 @@ export const mockPost: PostType = {
   slug: 'mock-post-1',
   category: 'projects',
   tags: ['React', 'TypeScript'],
-  created_time: '2023-01-01',
+  date: '2023-01-01',
   thumbnailUrl: '/images/mock-thumbnail-1.png',
 };
 
@@ -18,7 +18,7 @@ export const mockPosts: PostType[] = [
     slug: 'mock-post-2',
     category: 'blog',
     tags: ['Next.js', 'JavaScript'],
-    created_time: '2023-01-02',
+    date: '2023-01-02',
     thumbnailUrl: '/images/mock-thumbnail-2.png',
   },
 ];

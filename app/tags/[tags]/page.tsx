@@ -17,7 +17,7 @@ const TagPostsPage = async ({ params }: { params: { tags: string } }) => {
             <Post
               key={post.id}
               title={post.title}
-              date={post.created_time}
+              date={post.date}
               thumbnailUrl={post.thumbnailUrl || '/default_image.png'}
               category={post.category}
               tags={post.tags}

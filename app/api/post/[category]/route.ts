@@ -35,8 +35,9 @@ export async function GET(
       .filter(isPageObjectResponse)
       .map((post) => {
         const properties = post.properties;
-// 썸네일 처리
+
 let thumbnailUrl = "/default_image.png";
+
 
 if (
   properties.thumbnailUrl?.type === "files" &&
@@ -50,20 +51,25 @@ if (
     thumbnailUrl = fileItem.external.url;
   }
 }
-        // Category 처리
         const postCategory =
           properties.category?.type === "select" &&
           properties.category.select?.name
             ? properties.category.select.name
             : "none";
 
-        // Tags 처리
         const tags =
           properties.tags?.type === "multi_select"
             ? properties.tags.multi_select
                 .filter((tag) => !!tag.name)
                 .map((tag) => tag.name)
             : [];
+      
+        console.log('Raw Date Property:', properties.date);
+        
+        const date =
+          properties.date?.type === "date" && properties.date.date?.start
+            ? properties.date.date.start
+            : "0000-00-00";
 
         return {
           id: post.id,
@@ -79,7 +85,7 @@ if (
               : "Untitled",
           category: postCategory,
           tags,
-          created_time: post.created_time,
+          date,
           thumbnailUrl,
         };
       })
@@ -93,4 +99,5 @@ if (
       { status: 500 }
     );
   }
+  
 }

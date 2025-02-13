@@ -7,30 +7,41 @@ import { isPageObjectResponse } from '@/lib/notion/types';
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
   const page = parseInt(searchParams.get('page') || '1', 10);
-  const pageSize = 10;
+  const pageSize = 11;
 
   try {
-    const response = await notionClient.databases.query({
+   const response = await notionClient.databases.query({
       database_id: process.env.NOTION_DATABASE_ID!,
       page_size: pageSize,
-      start_cursor: page > 1 ? `cursor-for-page-${page}` : undefined,
+      start_cursor: searchParams.get('cursor') || undefined,
+      filter: {
+        property: "status",
+        status: { equals: "public" },
+      },
     });
 
     const posts = response.results
       .filter(isPageObjectResponse)
       .map((post) => {
-        const thumbnailFile =
-          post.properties.thumbnailUrl?.type === 'files' &&
-          post.properties.thumbnailUrl.files.length > 0
-            ? post.properties.thumbnailUrl.files[0]
+        const properties = post.properties;
+        
+          const thumbnailFile =
+          properties.thumbnailUrl?.type === 'files' &&
+          properties.thumbnailUrl.files.length > 0
+            ? properties.thumbnailUrl.files[0]
             : null;
 
-        const thumbnailUrl =
+     const thumbnailUrl =
           thumbnailFile?.type === 'file'
             ? thumbnailFile.file.url
             : thumbnailFile?.type === 'external'
             ? thumbnailFile.external.url
             : '/default_image.png';
+
+        const date =
+          properties.date?.type === "date" && properties.date.date?.start
+            ? properties.date.date.start
+            : null;
 
         return {
           id: post.id,
@@ -51,7 +62,7 @@ export async function GET(request: Request) {
               ? post.properties.tags.multi_select.map((tag) => tag.name)
               : [],
           thumbnailUrl,
-          created_time: post.created_time,
+          date,
         };
       });
 

@@ -26,6 +26,13 @@ export async function GET() {
               })()
             : '/default_image.png';
 
+        console.log('Raw Date Property:', properties.date);
+
+        const date =
+          properties.date?.type === "date" && properties.date.date?.start
+            ? properties.date.date.start
+            : null; 
+        
         return {
           id: post.id,
           title:
@@ -47,7 +54,7 @@ export async function GET() {
             properties.tags?.type === 'multi_select'
               ? properties.tags.multi_select.map((tag) => tag.name)
               : [],
-          created_time: post.created_time,
+          date,
           thumbnailUrl,
         };
       })

@@ -1,55 +1,3 @@
-// // lib/notion/api/fetchNotionPostsbyPage.ts
-// import { notionClient } from '@/lib/notion/client';
-// import { isPageObjectResponse } from '@/lib/notion/types';
-
-// export async function fetchNotionPostsByPage(page = 1, pageSize = 10) {
-//   const response = await notionClient.databases.query({
-//     database_id: process.env.NOTION_DATABASE_ID!,
-//     page_size: pageSize,
-//     start_cursor: page > 1 ? `cursor-for-page-${page}` : undefined,
-//   });
-
-//   const posts = response.results
-//     .filter(isPageObjectResponse)
-//     .map((post) => {
-//       const { properties, id, created_time } = post;
-
-//       return {
-//         id,
-//         title:
-//           properties.title?.type === 'title'
-//             ? properties.title.title[0]?.plain_text || ''
-//             : '',
-//         slug:
-//           properties.slug?.type === 'rich_text'
-//             ? properties.slug.rich_text[0]?.plain_text || ''
-//             : '',
-//         category:
-//           properties.category?.type === 'select'
-//             ? properties.category.select?.name || ''
-//             : '',
-//         tags:
-//           properties.tags?.type === 'multi_select'
-//             ? properties.tags.multi_select.map((tag) => tag.name)
-//             : [],
-//         thumbnailUrl:
-//         properties.thumbnailUrl?.type === 'files' &&
-//         Array.isArray(properties.thumbnailUrl.files) &&
-//         properties.thumbnailUrl.files.length > 0
-//           ? properties.thumbnailUrl.files[0]?.type === 'file'
-//             ? properties.thumbnailUrl.files[0]?.file?.url || '/default_image.png'
-//             : properties.thumbnailUrl.files[0]?.type === 'external'
-//             ? properties.thumbnailUrl.files[0]?.external?.url || '/default_image.png'
-//             : '/default_image.png'
-//           : '/default_image.png',
-//         created_time,
-//       };
-//     });
-
-//   return { posts, nextCursor: response.next_cursor };
-// }
-
-     
 import { notionClient } from '@/lib/notion/client';
 import { isPageObjectResponse } from '@/lib/notion/types';
 
@@ -78,7 +26,7 @@ export async function fetchNotionPostsByPage(page = 1, pageSize = 10) {
             ? post.properties.thumbnailUrl.files[0]?.external?.url || '/default_image.png'
             : '/default_image.png'
           : '/default_image.png',
-      created_time: post.created_time,
+      date: post.properties.date?.type === 'date' ? post.properties.date.date?.start || '' : '',
     }));
 
   return { posts, nextCursor: response.next_cursor };

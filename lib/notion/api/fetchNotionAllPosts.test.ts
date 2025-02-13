@@ -8,7 +8,7 @@ const mockPosts = [
     slug: 'test-post',
     category: 'projects',
     tags: ['tag1'],
-    created_time: '2023-01-01',
+    date: '2023-01-01',
     thumbnailUrl: '/thumbnail.png',
   },
 ];

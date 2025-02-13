@@ -743,7 +743,7 @@ const RandomPostList: React.FC<RandomPostListProps> = ({
 
   const transitionDurationTime = 500;
 
-  //화면 크기에 따라 post개수 설정
+  //화면 크기에 따라 post 개수 동적으로 조정
   const updateVisibleCount = useCallback(() => {
     if (window.innerWidth < 640) {
       setVisibleCount(1);
@@ -773,29 +773,26 @@ const RandomPostList: React.FC<RandomPostListProps> = ({
       return;
     }
 
-    const shuffledPosts = filteredPosts
-      .sort(() => Math.random() - 0.5)
-      .slice(0, visibleCount + 2);
+    const shuffledPosts = filteredPosts.sort(() => Math.random() - 0.5);
 
-    setRandomPosts([
-      shuffledPosts[shuffledPosts.length - 1],
-      ...shuffledPosts,
-      shuffledPosts[0],
-    ]);
+    //최소 길이를 충족할 경우에만 randomPosts 설정
+    if (shuffledPosts.length >= visibleCount + 2) {
+      setRandomPosts([
+        shuffledPosts[shuffledPosts.length - 1],
+        ...shuffledPosts,
+        shuffledPosts[0],
+      ]);
+    }
   }, [posts, currentSlug, visibleCount]);
 
   const handleNext = () => {
-    if (!isTransitioning) {
-      setIsTransitioning(true);
-      setCurrentIndex((prev) => prev + 1);
-    }
+    setIsTransitioning(true);
+    setCurrentIndex((prev) => prev + 1);
   };
 
   const handlePrev = () => {
-    if (!isTransitioning) {
-      setIsTransitioning(true);
-      setCurrentIndex((prev) => prev - 1);
-    }
+    setIsTransitioning(true);
+    setCurrentIndex((prev) => prev - 1);
   };
 
   useEffect(() => {
@@ -860,7 +857,7 @@ const RandomPostList: React.FC<RandomPostListProps> = ({
               <Post
                 title={post.title || 'Untitled'}
                 slug={post.slug || ''}
-                date={post.created_time || 'Unknown Date'}
+                date={post.date || ''}
                 thumbnailUrl={post.thumbnailUrl || '/default_image.png'}
                 category={post.category || 'none'}
                 tags={post.tags || []}

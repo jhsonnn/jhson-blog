@@ -2,7 +2,7 @@ import PostList from '@/components/posts/PostList';
 import { fetchNotionPostsByPage } from '@/lib/notion/api/fetchNotionPostsbyPage';
 
 export default async function PostsPage() {
-  const { posts } = await fetchNotionPostsByPage(1, 10);
+  const { posts } = await fetchNotionPostsByPage(1, 11);
 
   return (
     <div>
