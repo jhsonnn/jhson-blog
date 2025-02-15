@@ -1,25 +1,28 @@
+//content page 스켈레톤
 import Skeleton from '@/components/ui/Skeleton';
 
 export default function Loading() {
   return (
     <div className="post-content-layout">
-      <div className="mb-10">
-        <Skeleton height="2rem" width="60%" className="rounded-xl mb-6" />
-        <Skeleton height="1.5rem" width="80%" className="rounded-xl mb-4" />
-        <Skeleton height="1.5rem" width="100%" className="rounded-xl mb-4" />
-        <Skeleton height="1.5rem" width="40%" className="rounded-xl mb-4" />
-        <Skeleton height="1.5rem" width="70%" className="rounded-xl mb-4" />
+      <div className="md:mb-8 lg:mb-10">
+        <Skeleton className="w-3/5 h-8 rounded-xl mb-4 md:mb-5 lg:mb-6" />
+        <Skeleton className="w-4/5 h-6 rounded-xl mb-2 md:mb-3 lg:mb-4" />
+        <Skeleton className="w-full h-6 rounded-xl mb-2 md:mb-3 lg:mb-4" />
+        <Skeleton className="w-2/5 h-6 rounded-xl mb-2 md:mb-3 lg:mb-4" />
+        <Skeleton className="w-3/5 h-6 rounded-xl mb-2 md:mb-3 lg:mb-4" />
       </div>
-      <div className="mb-10">
-        <Skeleton height="2rem" width="50%" className="rounded-xl mb-6" />
-        <Skeleton height="20rem" width="40%" className="rounded-xl mb-4" />
+
+      <div className="md:mb-8 lg:mb-10">
+        <Skeleton className="w-1/2 h-8 rounded-xl mb-4 md:mb-5 lg:mb-6" />
+        <Skeleton className="w-2/5 h-[13rem] md:h-[15rem] rounded-xl mb-3 md:mb-3 lg:mb-4" />
       </div>
-      <div className="mb-10">
-        <Skeleton height="2rem" width="60%" className="rounded-xl mb-6" />
-        <Skeleton height="1.5rem" width="30%" className="rounded-xl mb-4" />
-        <Skeleton height="1.5rem" width="70%" className="rounded-xl mb-4" />
-        <Skeleton height="1.5rem" width="90%" className="rounded-xl mb-4" />
-        <Skeleton height="1.5rem" width="70%" className="rounded-xl mb-4" />
+
+      <div className="md:mb-8 lg:mb-10">
+        <Skeleton className="w-3/5 h-8 rounded-xl mb-4 md:mb-5 lg:mb-6" />
+        <Skeleton className="w-1/3 h-6 rounded-xl mb-2 md:mb-3 lg:mb-4" />
+        <Skeleton className="w-3/4 h-6 rounded-xl mb-2 md:mb-3 lg:mb-4" />
+        <Skeleton className="w-5/6 h-6 rounded-xl mb-2 md:mb-3 lg:mb-4" />
+        <Skeleton className="w-3/5 h-6 rounded-xl mb-2 md:mb-3 lg:mb-4" />
       </div>
     </div>
   );

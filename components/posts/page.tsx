@@ -6,7 +6,7 @@ export default async function PostsPage() {
 
   return (
     <div>
-      <h1 className="text-3xl font-bold my-4">All Posts</h1>
+      <h1 className="text-2xl lg:text-3xl font-bold my-4">All Posts</h1>
       <PostList initialPosts={posts} basePath="/posts" />
     </div>
   );

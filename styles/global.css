@@ -29,7 +29,7 @@ body {
 }
 
 .notion-container p {
-  @apply mb-4 whitespace-pre-line
+  @apply mb-4 whitespace-pre-line p-0
 }
 
 .post-content-page {
@@ -37,7 +37,7 @@ body {
 }
 
 .post-content-layout {
-  @apply bg-neutral-50 dark:bg-neutral-700 px-20 py-7 rounded-xl 
+  @apply bg-neutral-50 dark:bg-neutral-700 lg:px-20 lg:py-7 md:px-16 md:py-5 rounded-xl 
 }
 
 .column-list {
