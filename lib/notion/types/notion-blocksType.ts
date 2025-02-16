@@ -1,5 +1,5 @@
 // import { BlockObjectResponse } from "@notionhq/client/build/src/api-endpoints";
-import { RichTextItemResponse } from "@notionhq/client/build/src/api-endpoints";
+import { BlockObjectResponse, BulletedListItemBlockObjectResponse, Heading1BlockObjectResponse, Heading2BlockObjectResponse, Heading3BlockObjectResponse, ParagraphBlockObjectResponse, RichTextItemResponse } from "@notionhq/client/build/src/api-endpoints";
 import { NotionBlockType, NotionRichTextItemResponse } from "./notion-apiType";
 
 export interface RichText {
@@ -112,3 +112,5 @@ export interface BlockWithChildren {
   };
   [key: string]: unknown;
 }
+
+

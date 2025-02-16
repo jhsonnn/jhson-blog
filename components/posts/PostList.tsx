@@ -35,13 +35,18 @@ const PostList: React.FC<PostListProps> = ({
       new Date(a.date ?? '0000-00-00').getTime()
   );
 
-  //필터링된 포스트 가져오기(필터링 후 정렬)
+  //필터링된 포스트 가져오기
   const filteredPosts = useFilteredPosts({
     posts: sortedPosts,
     searchKeyword,
     categoryFilter,
     tagFilter,
   });
+
+  //불필요한 포스트(category가 none이거나 tags가 없는 포스트) 필터링
+  const validFilteredPosts = filteredPosts.filter(
+    (post) => post.category !== 'none' && post.tags.length > 0
+  );
 
   useEffect(() => {
     const timer = setTimeout(() => setIsLoading(false), 1000);
@@ -56,9 +61,9 @@ const PostList: React.FC<PostListProps> = ({
 
       {isLoading ? (
         <SkeletonList />
-      ) : filteredPosts.length > 0 ? (
+      ) : validFilteredPosts.length > 0 ? (
         <ul className="grid grid-cols-1 gap-6">
-          {filteredPosts.map((post) => (
+          {validFilteredPosts.map((post) => (
             <li key={post.id} className="mb-4">
               <Post
                 title={post.title}
@@ -78,7 +83,6 @@ const PostList: React.FC<PostListProps> = ({
   );
 };
 
-//별도 컴포넌트로 분리 => PostList 내부 사용하면 렌더링 반복되므로
 const SkeletonList = ({ isRandomPosts = false }) => {
   return (
     <ul className="grid grid-cols-1 gap-6">
