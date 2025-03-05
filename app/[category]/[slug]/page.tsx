@@ -39,7 +39,7 @@ export default async function ContentPage({ params }: PageProps) {
     //resume 페이지 인지 확인(이미지 사이즈 조정 위해서)
     const isResumePage = category.toLowerCase() === 'resume';
 
-    //현재 포스트 제외한 랜덤 포스트 선택 (최소 3개 보장)
+    //현재 포스트 제외한 랜덤 포스트 선택 (최소 3개)
     let filteredPosts = allPosts.filter((post) => post.slug !== slug);
     if (filteredPosts.length < 3) {
       filteredPosts = allPosts.slice(0, 3);
@@ -47,7 +47,8 @@ export default async function ContentPage({ params }: PageProps) {
 
     const blocksResponse = await fetch(
       `${process.env.NEXT_PUBLIC_BASE_URL}/api/block/${pageData.id}`,
-      { cache: 'force-cache' }
+      // { cache: 'force-cache' }
+      { cache: 'no-store' }
     );
 
     if (!blocksResponse.ok) {
