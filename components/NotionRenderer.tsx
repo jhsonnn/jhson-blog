@@ -178,7 +178,7 @@ const renderParagraph = (block: BlockWithChildren) => {
           )
         )
       ) : (
-        // 🔹 빈 paragraph도 공간을 차지하도록 설정
+        //빈 paragraph도 공간을 차지하도록 설정(띄어쓰기 되도록)
         <span className="inline-block min-h-[1rem] w-full">&nbsp;</span>
       )}
     </p>
@@ -192,13 +192,13 @@ const renderHeading1 = (block: BlockWithChildren) => (
 );
 
 const renderHeading2 = (block: BlockWithChildren) => (
-  <h2 className="text-xl lg:text-2xl font-semibold my-3">
+  <h2 className="text-xl lg:text-2xl font-bold my-3">
     {block.heading_2?.rich_text?.map((text) => text.plain_text).join(' ')}
   </h2>
 );
 
 const renderHeading3 = (block: BlockWithChildren) => (
-  <h3 className="text-lg lg:text-xl font-medium my-2">
+  <h3 className="sm:text-base text-lg lg:text-xl font-bold my-2">
     {block.heading_3?.rich_text?.map((text) => text.plain_text).join(' ')}
   </h3>
 );
@@ -517,6 +517,99 @@ const renderHeading3 = (block: BlockWithChildren) => (
 //   );
 // };
 
+// const renderBulletedListItem = (
+//   block: BlockWithChildren,
+//   isSubItem = false
+// ) => {
+//   const hasText =
+//     block.bulleted_list_item?.rich_text?.length &&
+//     block.bulleted_list_item.rich_text.some(
+//       (text) => text.plain_text.trim() !== ''
+//     );
+
+//   const hasChildren = block.children && block.children.length > 0;
+
+//   return (
+//     <ul
+//       className={`${
+//         isSubItem ? 'list-[circle]' : 'list-disc'
+//       } pl-6 my-2 text-sm sm:text-base`}
+//     >
+//       {/* 빈 줄 유지하여여 공백 유지 */}
+//       <li className={`${hasText || hasChildren ? '' : 'min-h-[1.5rem] block'}`}>
+//         {hasText ? (
+//           block.bulleted_list_item?.rich_text?.map((text, index) =>
+//             text.href ? (
+//               <a
+//                 key={index}
+//                 href={text.href}
+//                 target="_blank"
+//                 rel="noopener noreferrer"
+//                 className="text-blue-700 dark:text-blue-400 hover:underline"
+//               >
+//                 {text.plain_text}
+//               </a>
+//             ) : (
+//               text.plain_text.split('\n').map((line, i) => (
+//                 <React.Fragment key={i}>
+//                   {i > 0 && <br />}
+//                   {line || (
+//                     <span className="inline-block min-h-[1.5rem] w-full">
+//                       &nbsp;
+//                     </span>
+//                   )}
+//                 </React.Fragment>
+//               ))
+//             )
+//           )
+//         ) : (
+//           <span className="block min-h-[1.5rem] w-full">&nbsp;</span>
+//         )}
+
+//         {/* 하위 요소(children) 렌더링 */}
+//         {hasChildren && (
+//           <ul className="pl-6 my-1">
+//             {block.children?.map((childBlock) =>
+//               childBlock.type === 'bulleted_list_item' ? (
+//                 <li key={childBlock.id}>
+//                   {renderBulletedListItem(childBlock, true)}
+//                 </li>
+//               ) : (
+//                 <p key={childBlock.id} className="pl-6">
+//                   {childBlock.paragraph?.rich_text?.map((text, index) =>
+//                     text.href ? (
+//                       <a
+//                         key={index}
+//                         href={text.href}
+//                         target="_blank"
+//                         rel="noopener noreferrer"
+//                         className="text-blue-700 dark:text-blue-400 hover:underline"
+//                       >
+//                         {text.plain_text}
+//                       </a>
+//                     ) : (
+//                       text.plain_text.split('\n').map((line, i) => (
+//                         <React.Fragment key={i}>
+//                           {i > 0 && <br />}
+//                           {line || (
+//                             <span className="inline-block min-h-[1.5rem] w-full">
+//                               &nbsp;
+//                             </span>
+//                           )}
+//                         </React.Fragment>
+//                       ))
+//                     )
+//                   )}
+//                 </p>
+//               )
+//             )}
+//           </ul>
+//         )}
+//       </li>
+//     </ul>
+//   );
+// };
+
 const renderBulletedListItem = (
   block: BlockWithChildren,
   isSubItem = false
@@ -530,12 +623,27 @@ const renderBulletedListItem = (
   const hasChildren = block.children && block.children.length > 0;
 
   return (
-    <ul className={`${isSubItem ? 'list-[circle]' : 'list-disc'} pl-6 my-2`}>
+    <ul
+      className={`${
+        isSubItem ? 'list-[circle]' : 'list-disc'
+      } pl-6 my-2 text-sm sm:text-base`}
+    >
       {/* 빈 줄 유지하여 공백 유지 */}
       <li className={`${hasText || hasChildren ? '' : 'min-h-[1.5rem] block'}`}>
         {hasText ? (
-          block.bulleted_list_item?.rich_text?.map((text, index) =>
-            text.href ? (
+          block.bulleted_list_item?.rich_text?.map((text, index) => {
+            const content = text.plain_text.split('\n').map((line, i) => (
+              <React.Fragment key={i}>
+                {i > 0 && <br />}
+                {line || (
+                  <span className="inline-block min-h-[1.5rem] w-full">
+                    &nbsp;
+                  </span>
+                )}
+              </React.Fragment>
+            ));
+
+            return text.href ? (
               <a
                 key={index}
                 href={text.href}
@@ -543,21 +651,14 @@ const renderBulletedListItem = (
                 rel="noopener noreferrer"
                 className="text-blue-700 dark:text-blue-400 hover:underline"
               >
-                {text.plain_text}
+                {text.annotations.bold ? <strong>{content}</strong> : content}
               </a>
+            ) : text.annotations.bold ? (
+              <strong key={index}>{content}</strong>
             ) : (
-              text.plain_text.split('\n').map((line, i) => (
-                <React.Fragment key={i}>
-                  {i > 0 && <br />}
-                  {line || (
-                    <span className="inline-block min-h-[1.5rem] w-full">
-                      &nbsp;
-                    </span>
-                  )}
-                </React.Fragment>
-              ))
-            )
-          )
+              <React.Fragment key={index}>{content}</React.Fragment>
+            );
+          })
         ) : (
           <span className="block min-h-[1.5rem] w-full">&nbsp;</span>
         )}
@@ -572,19 +673,10 @@ const renderBulletedListItem = (
                 </li>
               ) : (
                 <p key={childBlock.id} className="pl-6">
-                  {childBlock.paragraph?.rich_text?.map((text, index) =>
-                    text.href ? (
-                      <a
-                        key={index}
-                        href={text.href}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="text-blue-700 dark:text-blue-400 hover:underline"
-                      >
-                        {text.plain_text}
-                      </a>
-                    ) : (
-                      text.plain_text.split('\n').map((line, i) => (
+                  {childBlock.paragraph?.rich_text?.map((text, index) => {
+                    const content = text.plain_text
+                      .split('\n')
+                      .map((line, i) => (
                         <React.Fragment key={i}>
                           {i > 0 && <br />}
                           {line || (
@@ -593,9 +685,28 @@ const renderBulletedListItem = (
                             </span>
                           )}
                         </React.Fragment>
-                      ))
-                    )
-                  )}
+                      ));
+
+                    return text.href ? (
+                      <a
+                        key={index}
+                        href={text.href}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-blue-700 dark:text-blue-400 hover:underline"
+                      >
+                        {text.annotations.bold ? (
+                          <strong>{content}</strong>
+                        ) : (
+                          content
+                        )}
+                      </a>
+                    ) : text.annotations.bold ? (
+                      <strong key={index}>{content}</strong>
+                    ) : (
+                      <React.Fragment key={index}>{content}</React.Fragment>
+                    );
+                  })}
                 </p>
               )
             )}
