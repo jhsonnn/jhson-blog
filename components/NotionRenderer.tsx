@@ -25,6 +25,11 @@ const NotionRenderer: React.FC<NotionRendererProps> = ({
 
   return (
     <div className="notion-container">
+      {uniqueBlocks.map((block) => (
+        <div key={block.id} className="notion-block">
+          {renderBlock(block, pageType)}
+        </div>
+      ))}
       {videoUrl && videoUrl.trim() !== '' && (
         <div className="video-container my-4">
           <video
@@ -36,11 +41,6 @@ const NotionRenderer: React.FC<NotionRendererProps> = ({
           </video>
         </div>
       )}
-      {uniqueBlocks.map((block) => (
-        <div key={block.id} className="notion-block">
-          {renderBlock(block, pageType)}
-        </div>
-      ))}
     </div>
   );
 };
@@ -717,48 +717,96 @@ const renderBulletedListItem = (
   );
 };
 
+// const renderImage = (block: BlockWithChildren, pageType?: string) => {
+//   if (!block.image) {
+//     console.warn('Image block is missing the image property:', block);
+//     return null;
+//   }
+
+//   // console.log('Full Image Block:', block.image);
+
+//   const url =
+//     block.image?.type === 'file'
+//       ? block.image?.file?.url
+//       : block.image?.external?.url;
+
+//   if (!url) {
+//     console.warn('Image block is missing a valid URL:', block.image);
+//     return null;
+//   }
+
+//   const altText = block.image.caption?.[0]?.plain_text || 'Notion Image';
+
+//   const imageSize = {
+//     width: pageType === 'resume' ? 200 : 700,
+//     height: pageType === 'resume' ? 200 : 550,
+//   };
+
+//   // console.log(`Rendering image on ${pageType || 'default'} page`, imageSize);
+//   // console.log(`Image URL:`, url);
+
+//   return (
+//     <div className="my-3 max-w-full min-h-[200px] rounded-xl w-auto">
+//       <Image
+//         key={url}
+//         src={url}
+//         alt={altText}
+//         width={imageSize.width}
+//         height={imageSize.height}
+//         className="rounded-xl"
+//         loading="lazy"
+//         placeholder="blur"
+//         blurDataURL="/default_image.png"
+//         unoptimized //Next.js가 최적화하지 않도록 설정
+//       />
+//     </div>
+//   );
+// };
+
+//TEST: gif 렌더링 되도록
 const renderImage = (block: BlockWithChildren, pageType?: string) => {
   if (!block.image) {
     console.warn('Image block is missing the image property:', block);
     return null;
   }
 
-  // console.log('Full Image Block:', block.image);
-
-  const url =
+  const imageUrl =
     block.image?.type === 'file'
-      ? block.image?.file?.url
-      : block.image?.external?.url;
+      ? block.image.file?.url
+      : block.image.external?.url;
 
-  if (!url) {
+  if (!imageUrl) {
     console.warn('Image block is missing a valid URL:', block.image);
     return null;
   }
 
   const altText = block.image.caption?.[0]?.plain_text || 'Notion Image';
 
-  const imageSize = {
-    width: pageType === 'resume' ? 200 : 700,
-    height: pageType === 'resume' ? 200 : 550,
-  };
-
-  // console.log(`Rendering image on ${pageType || 'default'} page`, imageSize);
-  // console.log(`Image URL:`, url);
+  //GIF 여부 확인
+  const isGif = imageUrl.toLowerCase().endsWith('.gif');
 
   return (
     <div className="my-3 max-w-full min-h-[200px] rounded-xl w-auto">
-      <Image
-        key={url}
-        src={url}
-        alt={altText}
-        width={imageSize.width}
-        height={imageSize.height}
-        className="rounded-xl"
-        loading="lazy"
-        placeholder="blur"
-        blurDataURL="/default_image.png"
-        unoptimized //Next.js가 최적화하지 않도록 설정
-      />
+      {isGif ? (
+        <img
+          src={imageUrl}
+          alt={altText}
+          className="rounded-xl max-w-full h-auto"
+        />
+      ) : (
+        <Image
+          key={imageUrl}
+          src={imageUrl}
+          alt={altText}
+          width={pageType === 'resume' ? 200 : 700}
+          height={pageType === 'resume' ? 200 : 550}
+          className="rounded-xl"
+          loading="lazy"
+          placeholder="blur"
+          blurDataURL="/default_image.png"
+          unoptimized
+        />
+      )}
     </div>
   );
 };
