@@ -77,11 +77,11 @@ const Profile = () => {
         <div className="flex justify-center">
           <div className="relative w-40 h-40 overflow-hidden rounded-full mb-3">
             <Image
-              src={'/images/profile/profile_image.jpg'}
-              layout="fill"
-              objectFit="cover"
+              src="/images/profile/profile_image.jpg"
+              fill
               alt="profile image"
               loading="lazy"
+              style={{ objectFit: 'cover' }}
             />
           </div>
         </div>
