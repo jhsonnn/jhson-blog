@@ -1,86 +1,182 @@
+// import NotionRenderer from '@/components/NotionRenderer';
+// import RandomPostList from '@/components/posts/RandomPostList';
+// import { fetchNotionAllPosts } from '@/lib/notion/api/fetchNotionAllPosts';
+// import { fetchNotionPageBySlug } from '@/lib/notion/api/fetchNotionPageBySlug';
+// import { fetchVideoUrl } from '@/lib/notion/utils/fetchVideoUrl';
+// import { transformBlocks } from '@/lib/notion/utils/transformBlocks';
+
+// interface PageProps {
+//   params: { category: string; slug: string };
+// }
+
+// //ISR 적용 (60초마다 정적 페이지 재생성)
+// export const revalidate = 60;
+
+// //모든 포스트 경로 사전 생성(SSG)
+// export async function generateStaticParams() {
+//   const posts = await fetchNotionAllPosts();
+//   return posts.map((post) => ({
+//     category: post.category,
+//     slug: post.slug,
+//   }));
+// }
+
+// export default async function ContentPage({ params }: PageProps) {
+//   const { category, slug } = params;
+
+//   try {
+//     const [pageData, videoUrl, allPosts] = await Promise.all([
+//       fetchNotionPageBySlug(slug),
+//       fetchVideoUrl(slug),
+//       fetchNotionAllPosts(),
+//     ]);
+
+//     if (!pageData) {
+//       console.error('Page data not found');
+//       return <div>Error: Page not found</div>;
+//     }
+
+//     //resume 페이지 인지 확인(이미지 사이즈 조정 위해서)
+//     const isResumePage = category.toLowerCase() === 'resume';
+
+//     //현재 포스트 제외한 랜덤 포스트 선택 (최소 3개)
+//     let filteredPosts = allPosts.filter((post) => post.slug !== slug);
+//     if (filteredPosts.length < 3) {
+//       filteredPosts = allPosts.slice(0, 3);
+//     }
+
+//     const blocksResponse = await fetch(
+//       `${process.env.NEXT_PUBLIC_BASE_URL}/api/block/${pageData.id}`,
+//       // { cache: 'force-cache' }
+//       { cache: 'no-store' }
+//     );
+
+//     if (!blocksResponse.ok) {
+//       console.error(`Failed to fetch blocks for pageId: ${pageData.id}`);
+//       return <div>Error: Unable to fetch content</div>;
+//     }
+
+//     const rawBlocks = await blocksResponse.json();
+//     const blocks = await transformBlocks(rawBlocks);
+
+//     return (
+//       <div>
+//         <div className="post-content-layout">
+//           <NotionRenderer
+//             blocks={blocks}
+//             videoUrl={videoUrl}
+//             pageType={isResumePage ? 'resume' : undefined}
+//           />
+//         </div>
+//         {filteredPosts.length > 0 ? (
+//           <RandomPostList
+//             posts={filteredPosts}
+//             currentSlug={slug}
+//             basePath={`/${category}`}
+//           />
+//         ) : (
+//           <div>No related posts available.</div>
+//         )}
+//       </div>
+//     );
+//   } catch (error) {
+//     console.error('Error loading content:', error);
+//     return <div className="w-full text-center">Error loading content.</div>;
+//   }
+// }
+
+//test
+'use client';
+
+import { useQuery } from '@tanstack/react-query';
 import NotionRenderer from '@/components/NotionRenderer';
 import RandomPostList from '@/components/posts/RandomPostList';
-import { fetchNotionAllPosts } from '@/lib/notion/api/fetchNotionAllPosts';
 import { fetchNotionPageBySlug } from '@/lib/notion/api/fetchNotionPageBySlug';
 import { fetchVideoUrl } from '@/lib/notion/utils/fetchVideoUrl';
+import { fetchNotionAllPosts } from '@/lib/notion/api/fetchNotionAllPosts';
 import { transformBlocks } from '@/lib/notion/utils/transformBlocks';
+import { BlockWithChildren } from '@/lib/notion/types';
 
 interface PageProps {
   params: { category: string; slug: string };
 }
 
-//ISR 적용 (60초마다 정적 페이지 재생성)
-export const revalidate = 60;
+export const revalidate = 60; // ISR 적용 (60초마다 정적 페이지 재생성)
 
-//모든 포스트 경로 사전 생성(SSG)
-export async function generateStaticParams() {
-  const posts = await fetchNotionAllPosts();
-  return posts.map((post) => ({
-    category: post.category,
-    slug: post.slug,
-  }));
-}
-
-export default async function ContentPage({ params }: PageProps) {
+export default function ContentPage({ params }: PageProps) {
   const { category, slug } = params;
 
-  try {
-    const [pageData, videoUrl, allPosts] = await Promise.all([
-      fetchNotionPageBySlug(slug),
-      fetchVideoUrl(slug),
-      fetchNotionAllPosts(),
-    ]);
+  // 📌 React Query 최신 문법 적용
+  const pageQuery = useQuery({
+    queryKey: ['notionPage', slug],
+    queryFn: () => fetchNotionPageBySlug(slug),
+    gcTime: 1000 * 60 * 10,
+    staleTime: 1000 * 60 * 5,
+  });
 
-    if (!pageData) {
-      console.error('Page data not found');
-      return <div>Error: Page not found</div>;
-    }
+  const videoQuery = useQuery({
+    queryKey: ['videoUrl', slug],
+    queryFn: () => fetchVideoUrl(slug),
+    staleTime: 1000 * 60 * 5,
+  });
 
-    //resume 페이지 인지 확인(이미지 사이즈 조정 위해서)
-    const isResumePage = category.toLowerCase() === 'resume';
+  const allPostsQuery = useQuery({
+    queryKey: ['allPosts'],
+    queryFn: fetchNotionAllPosts,
+    staleTime: 1000 * 60 * 10,
+  });
 
-    //현재 포스트 제외한 랜덤 포스트 선택 (최소 3개)
-    let filteredPosts = allPosts.filter((post) => post.slug !== slug);
-    if (filteredPosts.length < 3) {
-      filteredPosts = allPosts.slice(0, 3);
-    }
+  const blocksQuery = useQuery<BlockWithChildren[]>({
+    queryKey: ['notionBlocks', pageQuery.data?.id],
+    queryFn: async () => {
+      const res = await fetch(`/api/block/${pageQuery.data?.id}`, {
+        cache: 'no-store',
+      });
+      if (!res.ok) throw new Error('Failed to fetch blocks');
+      const json = await res.json();
+      return transformBlocks(json); // 🚀 transformBlocks 적용하여 데이터 변환
+    },
+    enabled: !!pageQuery.data,
+    staleTime: 1000 * 60 * 5,
+    initialData: [], // ✅ 빈 배열을 초기값으로 설정하여 타입 오류 방지
+  });
 
-    const blocksResponse = await fetch(
-      `${process.env.NEXT_PUBLIC_BASE_URL}/api/block/${pageData.id}`,
-      // { cache: 'force-cache' }
-      { cache: 'no-store' }
-    );
-
-    if (!blocksResponse.ok) {
-      console.error(`Failed to fetch blocks for pageId: ${pageData.id}`);
-      return <div>Error: Unable to fetch content</div>;
-    }
-
-    const rawBlocks = await blocksResponse.json();
-    const blocks = await transformBlocks(rawBlocks);
-
-    return (
-      <div>
-        <div className="post-content-layout">
-          <NotionRenderer
-            blocks={blocks}
-            videoUrl={videoUrl}
-            pageType={isResumePage ? 'resume' : undefined}
-          />
-        </div>
-        {filteredPosts.length > 0 ? (
-          <RandomPostList
-            posts={filteredPosts}
-            currentSlug={slug}
-            basePath={`/${category}`}
-          />
-        ) : (
-          <div>No related posts available.</div>
-        )}
-      </div>
-    );
-  } catch (error) {
-    console.error('Error loading content:', error);
+  if (pageQuery.isError || blocksQuery.isError) {
     return <div className="w-full text-center">Error loading content.</div>;
   }
+
+  if (pageQuery.isLoading || blocksQuery.isLoading) {
+    return <div className="w-full text-center">Loading...</div>;
+  }
+
+  const blocks = blocksQuery.data ?? []; // ✅ undefined 방지
+  const isResumePage = category.toLowerCase() === 'resume';
+
+  // 📌 현재 포스트 제외한 랜덤 포스트 선택 (최소 3개)
+  let filteredPosts =
+    allPostsQuery.data?.filter((post) => post.slug !== slug) || [];
+  if (filteredPosts.length < 3) {
+    filteredPosts = allPostsQuery.data?.slice(0, 3) || [];
+  }
+
+  return (
+    <div>
+      <div className="post-content-layout">
+        <NotionRenderer
+          blocks={blocks}
+          videoUrl={videoQuery.data ?? ''}
+          pageType={isResumePage ? 'resume' : undefined}
+        />
+      </div>
+      {filteredPosts.length > 0 ? (
+        <RandomPostList
+          posts={filteredPosts}
+          currentSlug={slug}
+          basePath={`/${category}`}
+        />
+      ) : (
+        <div>No related posts available.</div>
+      )}
+    </div>
+  );
 }
