@@ -4,8 +4,8 @@ export async function fetchChildren(blockId: string): Promise<BlockObjectRespons
   const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000';
 
   try {
-    const response = await fetch(`${baseUrl}/api/block/${blockId}`, { cache: 'no-store' });
-    
+    const response = await fetch(`${baseUrl}/api/block/${blockId}`, { cache: 'force-cache' });
+
     if (!response.ok) {
       console.error(`Failed to fetch children for blockId: ${blockId}`);
       return [];

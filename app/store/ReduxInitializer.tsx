@@ -1,8 +1,9 @@
 'use client';
 
 import { useEffect } from 'react';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { setTags } from '@/app/store/layoutSlice';
+import { RootState } from '@/app/store/index';
 
 const fetchTags = async (): Promise<string[]> => {
   try {
@@ -23,9 +24,12 @@ const fetchTags = async (): Promise<string[]> => {
 
 const ReduxInitializer = () => {
   const dispatch = useDispatch();
+  const tags = useSelector((state: RootState) => state.layout.tags); // 기존 태그 상태 확인
 
   useEffect(() => {
     const initializeTags = async () => {
+      if (tags.length > 0) return; //기존 태그가 있으면 API 호출 생략함
+
       try {
         const fetchedTags = await fetchTags();
         if (fetchedTags.length > 0) {
@@ -37,7 +41,7 @@ const ReduxInitializer = () => {
     };
 
     initializeTags();
-  }, [dispatch]);
+  }, [dispatch, tags]);
 
   return null;
 };
