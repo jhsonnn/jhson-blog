@@ -1,3 +1,54 @@
+// 'use client';
+
+// import { useEffect } from 'react';
+// import { useDispatch, useSelector } from 'react-redux';
+// import { setTags } from '@/app/store/layoutSlice';
+// import { RootState } from '@/app/store/index';
+
+// const fetchTags = async (): Promise<string[]> => {
+//   try {
+//     const response = await fetch('/api/notion/fetchTags', {
+//       method: 'POST',
+//     });
+
+//     if (!response.ok) {
+//       throw new Error(`Failed to fetch tags: ${response.status}`);
+//     }
+
+//     return await response.json();
+//   } catch (error) {
+//     console.error('Error fetching tags:', error);
+//     return [];
+//   }
+// };
+
+// const ReduxInitializer = () => {
+//   const dispatch = useDispatch();
+//   const tags = useSelector((state: RootState) => state.layout.tags); // 기존 태그 상태 확인
+
+//   useEffect(() => {
+//     const initializeTags = async () => {
+//       if (tags.length > 0) return; //기존 태그가 있으면 API 호출 생략함
+
+//       try {
+//         const fetchedTags = await fetchTags();
+//         if (fetchedTags.length > 0) {
+//           dispatch(setTags(fetchedTags));
+//         }
+//       } catch (error) {
+//         console.error('Error fetching tags:', error);
+//       }
+//     };
+
+//     initializeTags();
+//   }, [dispatch, tags]);
+
+//   return null;
+// };
+
+// export default ReduxInitializer;
+
+//TEST: Next.js API 프록시 사용, 최신 url 유지하면서 캐싱 적용
 'use client';
 
 import { useEffect } from 'react';
@@ -6,41 +57,22 @@ import { setTags } from '@/app/store/layoutSlice';
 import { RootState } from '@/app/store/index';
 
 const fetchTags = async (): Promise<string[]> => {
-  try {
-    const response = await fetch('/api/notion/fetchTags', {
-      method: 'POST',
-    });
-
-    if (!response.ok) {
-      throw new Error(`Failed to fetch tags: ${response.status}`);
-    }
-
-    return await response.json();
-  } catch (error) {
-    console.error('Error fetching tags:', error);
-    return [];
-  }
+  const response = await fetch('/api/notion/fetchTags', { method: 'POST' });
+  return response.ok ? await response.json() : [];
 };
 
 const ReduxInitializer = () => {
   const dispatch = useDispatch();
-  const tags = useSelector((state: RootState) => state.layout.tags); // 기존 태그 상태 확인
+  const tags = useSelector((state: RootState) => state.layout.tags);
 
   useEffect(() => {
-    const initializeTags = async () => {
-      if (tags.length > 0) return; //기존 태그가 있으면 API 호출 생략함
+    if (tags.length > 0) return; //Redux에 태그가 있으면 요청 안함
 
-      try {
-        const fetchedTags = await fetchTags();
-        if (fetchedTags.length > 0) {
-          dispatch(setTags(fetchedTags));
-        }
-      } catch (error) {
-        console.error('Error fetching tags:', error);
+    fetchTags().then((fetchedTags) => {
+      if (fetchedTags.length > 0) {
+        dispatch(setTags(fetchedTags));
       }
-    };
-
-    initializeTags();
+    });
   }, [dispatch, tags]);
 
   return null;
