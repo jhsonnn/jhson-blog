@@ -70,74 +70,6 @@ const renderBlock = (block: BlockWithChildren, pageType?: string) => {
   }
 };
 
-// const renderParagraph = (block: BlockWithChildren) => (
-//   <p>{block.paragraph?.rich_text?.map((text) => text.plain_text).join(' ')}</p>
-// );
-
-// const renderParagraph = (block: BlockWithChildren) => (
-//   <p>
-//     {block.paragraph?.rich_text?.map((text, index) =>
-//       text.href ? (
-//         <a
-//           key={index}
-//           href={text.href}
-//           target="_blank"
-//           rel="noopener noreferrer"
-//           className="text-blue-500 hover:underline"
-//         >
-//           {text.plain_text}
-//         </a>
-//       ) : (
-//         <span key={index}>{text.plain_text}</span>
-//       )
-//     )}
-//   </p>
-// );
-
-// const renderParagraph = (block: BlockWithChildren) => {
-//   if (!block.paragraph?.rich_text || block.paragraph.rich_text.length === 0) {
-//     return <p className="leading-relaxed min-h-[1rem]">&nbsp;</p>; // 빈 paragraph도 공간을 차지하도록 설정
-//   }
-
-//   return (
-//     <p className="leading-relaxed">
-//       {block.paragraph.rich_text.map((text, index) =>
-//         text.href ? (
-//           <a
-//             key={index}
-//             href={text.href}
-//             target="_blank"
-//             rel="noopener noreferrer"
-//             className="text-blue-600 dark:text-blue-400 underline"
-//           >
-//             {text.plain_text.split('\n').map((line, i) => (
-//               <React.Fragment key={i}>
-//                 {i > 0 && <br />}
-//                 {line.trim() === '' ? (
-//                   <span className="inline-block min-h-[1rem]">&nbsp;</span>
-//                 ) : (
-//                   line
-//                 )}
-//               </React.Fragment>
-//             ))}
-//           </a>
-//         ) : (
-//           text.plain_text.split('\n').map((line, i) => (
-//             <React.Fragment key={i}>
-//               {i > 0 && <br />}
-//               {line.trim() === '' ? (
-//                 <span className="inline-block min-h-[1rem]">&nbsp;</span>
-//               ) : (
-//                 line
-//               )}
-//             </React.Fragment>
-//           ))
-//         )
-//       )}
-//     </p>
-//   );
-// };
-
 const renderParagraph = (block: BlockWithChildren) => {
   const richTextArray = block.paragraph?.rich_text ?? []; // rich_text가 undefined면 빈 배열 반환
 
@@ -146,10 +78,33 @@ const renderParagraph = (block: BlockWithChildren) => {
     richTextArray.some((text) => text.plain_text.trim() !== '');
 
   return (
-    <p className={`leading-relaxed ${hasText ? '' : 'min-h-[1rem]'}`}>
+    <p
+      className={`whitespace-pre-wrap leading-relaxed${
+        hasText ? '' : ' min-h-[1rem]'
+      }`}
+    >
       {hasText ? (
-        richTextArray.map((text, index) =>
-          text.href ? (
+        richTextArray.map((text, index) => {
+          let content = text.plain_text;
+
+          //문장 앞 공백 `&nbsp;`로 변환
+          if (content.startsWith(' ')) {
+            const leadingSpaces = content.match(/^(\s+)/)?.[0] || '';
+            const nonSpaceContent = content.trimStart();
+            content = '\u00A0'.repeat(leadingSpaces.length) + nonSpaceContent;
+          }
+
+          //줄바꿈이면 <span>으로 처리
+          const formattedContent = content.split('\n').map((line, i) => (
+            <React.Fragment key={i}>
+              {i > 0 && <span className="block h-[1rem]">&nbsp;</span>}
+              {line || (
+                <span className="inline-block min-h-[1rem]">&nbsp;</span>
+              )}
+            </React.Fragment>
+          ));
+
+          return text.href ? (
             <a
               key={index}
               href={text.href}
@@ -157,29 +112,21 @@ const renderParagraph = (block: BlockWithChildren) => {
               rel="noopener noreferrer"
               className="text-blue-600 dark:text-blue-400 underline"
             >
-              {text.plain_text.split('\n').map((line, i) => (
-                <React.Fragment key={i}>
-                  {i > 0 && <br />}
-                  {line || (
-                    <span className="inline-block min-h-[1rem]">&nbsp;</span>
-                  )}
-                </React.Fragment>
-              ))}
+              {text.annotations.bold ? (
+                <strong>{formattedContent}</strong>
+              ) : (
+                formattedContent
+              )}
             </a>
+          ) : text.annotations.bold ? (
+            <strong key={index}>{formattedContent}</strong>
           ) : (
-            text.plain_text.split('\n').map((line, i) => (
-              <React.Fragment key={i}>
-                {i > 0 && <br />}
-                {line || (
-                  <span className="inline-block min-h-[1rem]">&nbsp;</span>
-                )}
-              </React.Fragment>
-            ))
-          )
-        )
+            <React.Fragment key={index}>{formattedContent}</React.Fragment>
+          );
+        })
       ) : (
-        //빈 paragraph도 공간을 차지하도록 설정(띄어쓰기 되도록)
-        <span className="inline-block min-h-[1rem] w-full">&nbsp;</span>
+        //빈 paragraph 줄바꿈 되도록
+        <span className="inline-block min-h-[0.5rem] w-full">&nbsp;</span>
       )}
     </p>
   );
@@ -258,7 +205,7 @@ const renderBulletedListItem = (
 
         {/* children 렌더링 */}
         {hasChildren && (
-          <ul className="pl-6 my-1">
+          <ul>
             {block.children?.map((childBlock) =>
               childBlock.type === 'bulleted_list_item' ? (
                 <li key={childBlock.id}>

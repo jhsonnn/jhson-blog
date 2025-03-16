@@ -29,7 +29,7 @@ body {
 }
 
 .notion-container p {
-  @apply mb-4 whitespace-pre-line p-0
+  @apply mb-2 whitespace-pre-line p-0
 }
 
 .post-content-page {

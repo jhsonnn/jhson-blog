@@ -101,8 +101,8 @@ interface PageProps {
   params: { category: string; slug: string };
 }
 
-//ISR 적용(60초마다 재생성)
-export const revalidate = 60;
+//ISR 적용(60초마다 재생성) //test
+export const revalidate = 0;
 
 //모든 포스트 사전 생성(SSG)
 export async function generateStaticParams() {
@@ -130,7 +130,8 @@ export default async function ContentPage({ params }: PageProps) {
     //Notion 블록 데이터 가져오기(캐싱 적용)
     const blocksResponse = await fetch(
       `${process.env.NEXT_PUBLIC_BASE_URL}/api/block/${pageData.id}`,
-      { cache: 'force-cache' }
+      // { cache: 'force-cache' }
+      { cache: 'no-store' }
     );
 
     if (!blocksResponse.ok) {
