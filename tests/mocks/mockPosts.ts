@@ -8,6 +8,7 @@ export const mockPost: PostType = {
   tags: ['React', 'TypeScript'],
   date: '2023-01-01',
   thumbnailUrl: '/images/mock-thumbnail-1.png',
+  status: { name: "private" },
 };
 
 export const mockPosts: PostType[] = [
@@ -20,5 +21,6 @@ export const mockPosts: PostType[] = [
     tags: ['Next.js', 'JavaScript'],
     date: '2023-01-02',
     thumbnailUrl: '/images/mock-thumbnail-2.png',
+    status: { name: "public" },
   },
 ];
