@@ -19,7 +19,7 @@ export default async function CategoryPage({
   }
 
   //모든 포스트 가져오기
-  const allPosts = await fetchNotionAllPosts();
+  const { posts: allPosts } = await fetchNotionAllPosts();
 
   //카테고리 및 태그 필터링
   const filteredPosts = allPosts.filter(

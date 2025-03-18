@@ -2,8 +2,6 @@ import { notionClient } from '@/lib/notion/client';
 import { isPageObjectResponse, Post } from '@/lib/notion/types';
 
 export async function fetchNotionAllPosts() {
-  console.log('Fetching all posts from Notion...');
-
   let posts: Post[] = [];
   let cursor: string | null | undefined = undefined;
 
@@ -20,7 +18,7 @@ export async function fetchNotionAllPosts() {
         const notionDate =
           post.properties.date?.type === 'date' && post.properties.date.date?.start
             ? new Date(post.properties.date.date.start).toISOString().split('T')[0]
-            : null;
+            : '';
 
         return {
           id: post.id,
@@ -30,11 +28,11 @@ export async function fetchNotionAllPosts() {
           slug: post.properties.slug?.type === 'rich_text'
               ? post.properties.slug.rich_text[0]?.plain_text || ''
               : '',
-          category: post.properties.category?.type === 'select'
-              ? post.properties.category.select?.name || ''
-              : '',
+          category: post.properties.category?.type === 'select' && post.properties.category.select?.name
+              ? post.properties.category.select.name
+              : 'none',
           tags: post.properties.tags?.type === 'multi_select'
-              ? post.properties.tags.multi_select.map((tag) => tag.name)
+              ? post.properties.tags.multi_select.map((tag) => tag.name).filter(tag => tag !== 'none')
               : [],
           thumbnailUrl: post.properties.thumbnailUrl?.type === 'files' &&
             post.properties.thumbnailUrl.files.length > 0
@@ -44,7 +42,12 @@ export async function fetchNotionAllPosts() {
                 ? post.properties.thumbnailUrl.files[0].external.url
                 : '/default_image.png'
               : '/default_image.png',
-          date: notionDate!,
+          date: notionDate,
+          status:
+            post.properties.status?.type === "status" &&
+            post.properties.status.status?.name
+              ? { name: post.properties.status.status.name }
+              : { name: "private" },
         };
       });
 
@@ -52,10 +55,12 @@ export async function fetchNotionAllPosts() {
     cursor = response.next_cursor ?? undefined;
   } while (cursor);
 
-  //none 카테고리, tags 가 없는 포스트 제거
-  posts = posts.filter((post) => post.category !== 'none' && post.tags.length > 0);
+  //status 가 public 인 포스트만 필터링링
+  posts = posts.filter((post) => post.status.name === 'public' && post.category !== 'none' && post.tags.length > 0);
 
-  // console.log('Posts fetched:', posts.length);
-  // console.log("Fetched Posts:", posts);
-  return posts;
+  //category, tags에서 none 제거
+  const allCategories = Array.from(new Set(posts.map((post) => post.category))).filter(category => category !== 'none') || [];
+  const allTags = Array.from(new Set(posts.flatMap((post) => post.tags))).filter(tag => tag !== 'none') || [];
+
+  return { posts, allCategories, allTags };
 }

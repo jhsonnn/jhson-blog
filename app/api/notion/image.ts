@@ -1,4 +1,3 @@
-//TEST: Next.js API 프록시 사용, 최신 url 유지하면서 캐싱 적용
 import { NextApiRequest, NextApiResponse } from 'next';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {

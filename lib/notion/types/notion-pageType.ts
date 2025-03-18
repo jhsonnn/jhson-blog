@@ -36,6 +36,7 @@ export interface Post {
   date?: string;
   // created_time: string;
   thumbnailUrl: string;
+  status: { name: string };
 }
 
 // export interface ApiResponse {

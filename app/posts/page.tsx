@@ -7,7 +7,13 @@ export default async function PostsPage() {
   return (
     <div>
       <h1 className="text-3xl font-bold my-4">All Posts</h1>
-      <PostList initialPosts={posts} basePath="/posts" />
+      <PostList
+        initialPosts={posts.map((post) => ({
+          ...post,
+          status: { name: post.status.name ?? 'private' },
+        }))}
+        basePath="/posts"
+      />
     </div>
   );
 }
