@@ -31,8 +31,8 @@ export interface Post {
   id: string;
   title: string;
   slug: string;
-  category: string;
-  tags: string[];
+  category: { name: string; color: string };
+  tags: { name: string; color: string }[]; 
   date?: string;
   // created_time: string;
   thumbnailUrl: string;

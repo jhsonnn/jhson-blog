@@ -22,19 +22,32 @@ export async function fetchNotionAllPosts() {
 
         return {
           id: post.id,
-          title: post.properties.title?.type === 'title'
+          title:
+            post.properties.title?.type === 'title'
               ? post.properties.title.title[0]?.plain_text || ''
               : '',
-          slug: post.properties.slug?.type === 'rich_text'
+          slug:
+            post.properties.slug?.type === 'rich_text'
               ? post.properties.slug.rich_text[0]?.plain_text || ''
               : '',
-          category: post.properties.category?.type === 'select' && post.properties.category.select?.name
-              ? post.properties.category.select.name
-              : 'none',
-          tags: post.properties.tags?.type === 'multi_select'
-              ? post.properties.tags.multi_select.map((tag) => tag.name).filter(tag => tag !== 'none')
+           category:
+            post.properties.category?.type === 'select' && post.properties.category.select
+              ? {
+                  name: post.properties.category.select.name,
+                  color: post.properties.category.select.color || 'default',
+                }
+              : { name: 'none', color: 'default' },
+          tags:
+            post.properties.tags?.type === 'multi_select'
+              ? post.properties.tags.multi_select
+                  .filter((tag) => tag.name !== 'none') // 'none' 태그 제외
+                  .map((tag) => ({
+                    name: tag.name,
+                    color: tag.color || 'default',
+                  }))
               : [],
-          thumbnailUrl: post.properties.thumbnailUrl?.type === 'files' &&
+          thumbnailUrl:
+            post.properties.thumbnailUrl?.type === 'files' &&
             post.properties.thumbnailUrl.files.length > 0
               ? post.properties.thumbnailUrl.files[0].type === 'file'
                 ? post.properties.thumbnailUrl.files[0].file.url
@@ -43,11 +56,12 @@ export async function fetchNotionAllPosts() {
                 : '/default_image.png'
               : '/default_image.png',
           date: notionDate,
-          status:
-            post.properties.status?.type === "status" &&
-            post.properties.status.status?.name
-              ? { name: post.properties.status.status.name }
-              : { name: "private" },
+          status: {
+            name:
+              post.properties.status?.type === 'status' && post.properties.status.status?.name
+                ? post.properties.status.status.name
+                : 'private',
+          },
         };
       });
 
@@ -55,12 +69,14 @@ export async function fetchNotionAllPosts() {
     cursor = response.next_cursor ?? undefined;
   } while (cursor);
 
-  //status 가 public 인 포스트만 필터링링
-  posts = posts.filter((post) => post.status.name === 'public' && post.category !== 'none' && post.tags.length > 0);
+  //status가 public 인인 포스트만 유지
+  posts = posts.filter((post) => post.status.name === 'public');
 
-  //category, tags에서 none 제거
-  const allCategories = Array.from(new Set(posts.map((post) => post.category))).filter(category => category !== 'none') || [];
-  const allTags = Array.from(new Set(posts.flatMap((post) => post.tags))).filter(tag => tag !== 'none') || [];
+  //category 및 tags에서 none 제거
+  const allCategories = Array.from(new Set(posts.map((post) => post.category.name))).filter(
+    (category) => category !== 'none'
+  );
+  const allTags = Array.from(new Set(posts.flatMap((post) => post.tags.map((tag) => tag.name))));
 
   return { posts, allCategories, allTags };
 }

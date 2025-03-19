@@ -9,8 +9,8 @@ type PostProps = {
   slug: string;
   date?: string;
   thumbnailUrl: string;
-  category: string;
-  tags: string[];
+  category: { name: string; color: string };
+  tags: { name: string; color: string }[];
   isRandomPosts?: boolean;
 };
 
@@ -24,12 +24,12 @@ const Post: React.FC<PostProps> = ({
   isRandomPosts = false,
 }) => {
   //none 카테고리 or 태그 없는 경우 렌더링 제외
-  if (category === 'none' || tags.length === 0) return null;
+  if (category.name === 'none' || tags.length === 0) return null;
 
   return (
-    <Link href={`/${category}/${slug}`} passHref>
+    <Link href={`/${category.name}/${slug}`} passHref>
       <div
-        className={`relative min-w-full max-w-xl mx-auto bg-neutral-100 dark:bg-neutral-700 rounded-3xl shadow-lg overflow-hidden transition-transform duration-300 hover:scale-[1.01] hover:shadow-xl flex flex-col 
+        className={`relative min-w-full max-w-xl mx-auto bg-neutral-100 dark:bg-neutral-700 rounded-3xl shadow-lg overflow-hidden transition-transform duration-300 hover:scale-[1.01] hover:shadow-xl flex flex-col
         ${
           isRandomPosts
             ? 'h-56 sm:h-60 md:h-60 lg:h-[260px]'
@@ -84,26 +84,26 @@ const Post: React.FC<PostProps> = ({
           </p>
           <div className="flex flex-wrap gap-1 sm:gap-2 mt-1">
             <span
-              className={`bg-[var(--sk-fill-tertiary)] text-[var(--sk-glyph-gray-secondary)] font-medium px-2 py-1 rounded-full bg-neutral-200 dark:bg-neutral-800 dark:text-neutral-400 border border-neutral-200 dark:border-neutral-800 
+              className={`bg-[var(--sk-fill-tertiary)] text-[var(--sk-glyph-gray-secondary)] font-medium px-2 py-1 rounded-full bg-neutral-200 dark:bg-neutral-800 dark:text-neutral-400 border border-neutral-200 dark:border-neutral-800
               ${
                 isRandomPosts
                   ? 'text-[10px] sm:text-[10px] md:text-[10px] px-1 py-0.5'
                   : 'text-[10px] sm:text-xs'
               }`}
             >
-              {category}
+              {category.name}
             </span>
             {tags.map((tag) => (
               <span
-                key={tag}
-                className={`bg-[var(--sk-fill-tertiary)] text-[var(--sk-glyph-gray-secondary)] font-medium px-2 py-1 rounded-full bg-neutral-200 dark:bg-neutral-800 dark:text-neutral-400 border border-neutral-200 dark:border-neutral-800 
+                key={tag.name}
+                className={`bg-[var(--sk-fill-tertiary)] text-[var(--sk-glyph-gray-secondary)] font-medium px-2 py-1 rounded-full bg-neutral-200 dark:bg-neutral-800 dark:text-neutral-400 border border-neutral-200 dark:border-neutral-800
                   ${
                     isRandomPosts
                       ? 'text-[10px] sm:text-[10px] md:text-[10px] px-1 py-0.5'
                       : 'text-[10px] sm:text-xs px-2 py-1'
                   }`}
               >
-                {tag}
+                {tag.name}
               </span>
             ))}
           </div>

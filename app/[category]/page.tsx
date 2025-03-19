@@ -24,8 +24,8 @@ export default async function CategoryPage({
   //카테고리 및 태그 필터링
   const filteredPosts = allPosts.filter(
     (post) =>
-      post.category.toLowerCase() === category.toLowerCase() &&
-      (!tag || post.tags?.includes(tag))
+      post.category.name.toLowerCase() === category.toLowerCase() &&
+      (!tag || post.tags.map((t) => t.name).includes(tag))
   );
 
   const title = tag
