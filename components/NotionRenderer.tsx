@@ -144,9 +144,35 @@ const renderHeading2 = (block: BlockWithChildren) => (
   </h2>
 );
 
+// const renderHeading3 = (block: BlockWithChildren) => (
+//   <h3 className="sm:text-base text-lg lg:text-xl font-bold my-2">
+//     {block.heading_3?.rich_text?.map((text) => text.plain_text).join(' ')}
+//   </h3>
+// );
+
 const renderHeading3 = (block: BlockWithChildren) => (
   <h3 className="sm:text-base text-lg lg:text-xl font-bold my-2">
-    {block.heading_3?.rich_text?.map((text) => text.plain_text).join(' ')}
+    {block.heading_3?.rich_text?.map((text, index) => {
+      return text.href ? (
+        <a
+          key={index}
+          href={text.href}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="text-blue-600 dark:text-blue-400 underline inline-block pointer-events-auto"
+        >
+          {text.annotations.bold ? (
+            <strong>{text.plain_text}</strong>
+          ) : (
+            text.plain_text
+          )}
+        </a>
+      ) : text.annotations.bold ? (
+        <strong key={index}>{text.plain_text}</strong>
+      ) : (
+        <React.Fragment key={index}>{text.plain_text}</React.Fragment>
+      );
+    })}
   </h3>
 );
 
