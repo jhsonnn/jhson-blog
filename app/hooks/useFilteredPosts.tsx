@@ -30,7 +30,6 @@
 
 //   return filteredPosts;
 // }
-
 import { useMemo } from 'react';
 import { Post as PostType } from '@/lib/notion/types';
 
@@ -49,26 +48,29 @@ export function useFilteredPosts({
 }: UseFilteredPostsProps) {
   const filteredPosts = useMemo(() => {
     return posts.filter((post) => {
+      const categoryFilterName =
+        typeof categoryFilter === 'string'
+          ? categoryFilter
+          : categoryFilter.name;
+
       if (
-        categoryFilter !== 'all' &&
-        typeof categoryFilter === 'string' &&
-        post.category.name !== categoryFilter
+        categoryFilterName !== 'all' &&
+        post.category.name !== categoryFilterName
       )
         return false;
-      // if (
-      //   tagFilter !== 'all' &&
-      //   !post.tags.some((tag) => tag.name === tagFilter)
-      // )
+
       if (
         tagFilter !== 'all' &&
         !post.tags.map((tag) => tag.name).includes(tagFilter)
       )
         return false;
+
       if (
         searchKeyword &&
         !post.title.toLowerCase().includes(searchKeyword.toLowerCase())
       )
         return false;
+
       return true;
     });
   }, [posts, searchKeyword, categoryFilter, tagFilter]);
