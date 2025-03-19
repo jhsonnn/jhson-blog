@@ -153,6 +153,20 @@ interface PageProps {
 //ISR 적용 (60초마다 재생성)
 export const revalidate = 60;
 
+//Notion 색상 매핑
+const notionColorMap: { [key: string]: string } = {
+  default: 'bg-gray-200 dark:bg-gray-800 text-gray-700 dark:text-gray-200',
+  gray: 'bg-gray-200 text-gray-800 dark:bg-gray-700 dark:text-gray-200',
+  brown: 'bg-yellow-700 text-yellow-500',
+  orange: 'bg-orange-200 text-orange-500',
+  yellow: 'bg-yellow-300 text-yellow-700',
+  green: 'bg-green-300 text-green-600',
+  blue: 'bg-blue-200 text-blue-500',
+  purple: 'bg-purple-200 text-purple-500',
+  pink: 'bg-pink-200 text-pink-500',
+  red: 'bg-red-200 text-red-500',
+};
+
 //모든 포스트 사전 생성 (SSG)
 export async function generateStaticParams() {
   const { posts } = await fetchNotionAllPosts();
@@ -201,6 +215,40 @@ export default async function ContentPage({ params }: PageProps) {
     return (
       <div>
         <div className="post-content-layout">
+          <div className="flex items-center gap-2 mb-4">
+            <span
+              className={`px-3 py-1 rounded-full text-sm font-semibold ${
+                notionColorMap[pageData.category.color] ||
+                notionColorMap.default
+              }`}
+            >
+              {pageData.category.name}
+            </span>
+          </div>
+          <h1 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
+            {pageData.title}
+          </h1>
+          <div className="flex items-center text-gray-600 dark:text-gray-300 text-sm mb-4">
+            <span className="mr-2">Jihyeong Son</span> •{' '}
+            <span className="ml-2">
+              {pageData.date
+                ? new Date(pageData.date).toLocaleDateString('ko-KR')
+                : 'no date'}
+            </span>
+          </div>
+          <div className="flex flex-wrap gap-2 mb-6">
+            {pageData.tags.map((tag) => (
+              <span
+                key={tag.name}
+                className={`px-2 py-1 text-xs rounded-full ${
+                  notionColorMap[tag.color] || notionColorMap.default
+                }`}
+              >
+                {tag.name}
+              </span>
+            ))}
+          </div>
+
           <NotionRenderer
             blocks={blocks}
             videoUrl={videoUrl}
@@ -209,8 +257,6 @@ export default async function ContentPage({ params }: PageProps) {
             }
           />
         </div>
-
-        {/* 랜덤 포스트 목록 */}
         {filteredPosts.length > 0 ? (
           <RandomPostList
             posts={filteredPosts}
