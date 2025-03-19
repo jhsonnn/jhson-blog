@@ -2,6 +2,10 @@ import { fetchPosts } from '@/lib/notion/fetchPosts';
 import Post from '@/components/posts/Post';
 
 const TagPostsPage = async ({ params }: { params: { tags: string } }) => {
+  if (!params.tags) {
+    return <p className="text-gray-600 text-center">Invalid tag.</p>;
+  }
+
   const posts = await fetchPosts({ tag: params.tags });
 
   return (
