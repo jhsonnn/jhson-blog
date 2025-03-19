@@ -18,7 +18,7 @@ export const mockPosts: PostType[] = [
     title: 'Mock Post 2',
     slug: 'mock-post-2',
     category: { name: 'blog', color: 'green' },
-  tags: [{name: "tag2", color: "blue"}],
+    tags: [{name: "tag2", color: "blue"}],
     date: '2023-01-02',
     thumbnailUrl: '/images/mock-thumbnail-2.png',
     status: { name: "public" },

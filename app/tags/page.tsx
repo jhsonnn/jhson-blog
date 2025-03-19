@@ -1,3 +1,4 @@
+//특정 태그의 포스트 목록 페이지
 import { fetchPosts } from '@/lib/notion/fetchPosts';
 import Post from '@/components/posts/Post';
 
@@ -6,6 +7,7 @@ const TagPostsPage = async ({ params }: { params: { tags: string } }) => {
     return <p className="text-gray-600 text-center">Invalid tag.</p>;
   }
 
+  //특정 태그로 필터링된 포스트 데이터 가져오기
   const posts = await fetchPosts({ tag: params.tags });
 
   return (
