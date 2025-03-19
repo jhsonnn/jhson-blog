@@ -9,7 +9,7 @@
     "dev:local": "cross-env NODE_ENV=development next dev",
     "build:prod": "cross-env NODE_ENV=production next build",
     "start:prod": "cross-env NODE_ENV=production next start",
-    "lint": "next lint",
+    "lint": "eslint . --ext .ts,.tsx,.js,.jsx --fix",
     "test": "jest"
   },
   "dependencies": {
