@@ -6,6 +6,13 @@ export default async function PostsPage() {
   const normalizedPosts = posts.map((post) => ({
     ...post,
     status: { name: post.status.name ?? 'private' },
+    category:
+      typeof post.category === 'string'
+        ? { name: post.category, color: 'default' }
+        : post.category,
+    tags: post.tags.map((tag) =>
+      typeof tag === 'string' ? { name: tag, color: 'default' } : tag
+    ),
   }));
 
   return (
