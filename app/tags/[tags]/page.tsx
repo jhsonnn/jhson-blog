@@ -3,10 +3,6 @@ import { fetchPosts } from '@/lib/notion/fetchPosts';
 import Post from '@/components/posts/Post';
 
 const TagPostsPage = async ({ params }: { params: { tags: string } }) => {
-  if (!params.tags) {
-    return <p className="text-gray-600 text-center">Invalid tag.</p>;
-  }
-
   //특정 태그로 필터링된 포스트 데이터 가져오기
   const posts = await fetchPosts({ tag: params.tags });
 
@@ -31,7 +27,7 @@ const TagPostsPage = async ({ params }: { params: { tags: string } }) => {
         </div>
       ) : (
         <p className="text-gray-600 text-center">
-          No posts available for this tag.
+          이 태그에 해당되는 포스트가 없습니다.
         </p>
       )}
     </div>
