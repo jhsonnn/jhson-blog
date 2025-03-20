@@ -140,6 +140,7 @@ import { fetchNotionPageBySlug } from '@/lib/notion/api/fetchNotionPageBySlug';
 import { fetchVideoUrl } from '@/lib/notion/utils/fetchVideoUrl';
 import { transformBlocks } from '@/lib/notion/utils/transformBlocks';
 import Loading from './loading';
+import Image from 'next/image';
 
 const NotionRenderer = dynamic(() => import('@/components/NotionRenderer'), {
   loading: () => <Loading />,
@@ -215,38 +216,50 @@ export default async function ContentPage({ params }: PageProps) {
     return (
       <div>
         <div className="post-content-layout">
-          <div className="flex items-center gap-2 mb-4">
-            <span
-              className={`px-3 py-1 rounded-full text-sm font-semibold ${
-                notionColorMap[pageData.category.color] ||
-                notionColorMap.default
-              }`}
-            >
-              {pageData.category.name}
-            </span>
-          </div>
-          <h1 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
-            {pageData.title}
-          </h1>
-          <div className="flex items-center text-gray-600 dark:text-gray-300 text-sm mb-4">
-            <span className="mr-2">Jihyeong Son</span> •{' '}
-            <span className="ml-2">
-              {pageData.date
-                ? new Date(pageData.date).toLocaleDateString('ko-KR')
-                : 'no date'}
-            </span>
-          </div>
-          <div className="flex flex-wrap gap-2 mb-6">
-            {pageData.tags.map((tag) => (
+          <div>
+            <div className="flex items-center gap-2 mb-4">
               <span
-                key={tag.name}
-                className={`px-2 py-1 text-xs rounded-full ${
-                  notionColorMap[tag.color] || notionColorMap.default
+                className={`px-3 py-1 rounded-full text-sm font-semibold ${
+                  notionColorMap[pageData.category.color] ||
+                  notionColorMap.default
                 }`}
               >
-                {tag.name}
+                {pageData.category.name}
               </span>
-            ))}
+            </div>
+            <h1 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
+              {pageData.title}
+            </h1>
+            <div className="flex items-center text-gray-600 dark:text-gray-300 text-sm mb-4">
+              <span className="mr-2">Jihyeong Son</span> •{' '}
+              <span className="ml-2">
+                {pageData.date
+                  ? new Date(pageData.date).toLocaleDateString('ko-KR')
+                  : 'no date'}
+              </span>
+            </div>
+            <div className="flex flex-wrap gap-2 mb-6">
+              {pageData.tags.map((tag) => (
+                <span
+                  key={tag.name}
+                  className={`px-2 py-1 text-xs rounded-full ${
+                    notionColorMap[tag.color] || notionColorMap.default
+                  }`}
+                >
+                  {tag.name}
+                </span>
+              ))}
+            </div>
+            <div>
+              <Image
+                src={pageData.thumbnailUrl}
+                alt={pageData.title}
+                layout="intrinsic"
+                width={600}
+                height={0}
+                className="my-5 max-w-screen-md min-h-[150px] rounded-xl w-auto"
+              />
+            </div>
           </div>
 
           <NotionRenderer

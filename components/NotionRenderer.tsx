@@ -35,7 +35,7 @@ const NotionRenderer: React.FC<NotionRendererProps> = ({
           <video
             controls
             src={videoUrl}
-            className="w-full max-w-screen-md rounded-xl"
+            className="w-full max-w-screen-md rounded-xl mb-10"
           >
             Your browser does not support the video tag.
           </video>
@@ -292,6 +292,8 @@ const renderImage = (block: BlockWithChildren, pageType?: string) => {
     console.warn('Image block is missing a valid URL:', block.image);
     return null;
   }
+
+  console.log('✅ Image URL:', imageUrl);
 
   const altText = block.image.caption?.[0]?.plain_text || 'Notion Image';
 
