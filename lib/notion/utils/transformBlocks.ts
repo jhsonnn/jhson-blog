@@ -1,5 +1,4 @@
-//ISR 테스트
-// utils/transformBlocks.ts
+//ISR
 import { BlockObjectResponse } from "@notionhq/client/build/src/api-endpoints";
 import { BlockWithChildren, NotionBlockType } from "../types";
 import { fetchChildren } from "./fetchChildren";
@@ -9,7 +8,7 @@ export async function transformBlocks(blocks: BlockObjectResponse[]): Promise<Bl
 
   return Promise.all(
     uniqueBlocks.map(async (block) => {
-      console.log(`Transforming block: ${block.id} (${block.type})`);
+      // console.log(`Transforming block: ${block.id} (${block.type})`);
 
       const transformedBlock: BlockWithChildren = {
         id: block.id,
