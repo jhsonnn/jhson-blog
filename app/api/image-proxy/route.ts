@@ -1,9 +1,22 @@
 import { NextRequest, NextResponse } from 'next/server';
 
 //URL 재발급을 위한 helper 함수(노션 페이지 정보 다시 조회)
+// async function fetchNewPresignedUrl(slug: string): Promise<string | null> {
+//   try {
+//     const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/page/${slug}`);
+//     const data = await res.json();
+//     return data?.thumbnailUrl || null;
+//   } catch (err) {
+//     console.error('Failed to re-fetch presigned URL:', err);
+//     return null;
+//   }
+// }
+// image-proxy.ts 내부
 async function fetchNewPresignedUrl(slug: string): Promise<string | null> {
   try {
-    const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/page/${slug}`);
+    const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/page/${slug}`, {
+      cache: 'no-store', // 이거 중요
+    });
     const data = await res.json();
     return data?.thumbnailUrl || null;
   } catch (err) {
@@ -11,6 +24,7 @@ async function fetchNewPresignedUrl(slug: string): Promise<string | null> {
     return null;
   }
 }
+
 
 export async function GET(req: NextRequest) {
   const { searchParams } = new URL(req.url);

@@ -4,8 +4,9 @@ export async function fetchChildren(blockId: string): Promise<BlockObjectRespons
   const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000';
 
   try {
-    //test
-    const response = await fetch(`${baseUrl}/api/block/${blockId}`, { cache: 'force-cache' });
+      //TEST: 노션 수정 중
+
+    const response = await fetch(`${baseUrl}/api/block/${blockId}`,{ next: { revalidate: 60 } });
     //const response = await fetch(`${baseUrl}/api/block/${blockId}`, { cache: 'no-store' });
 
     if (!response.ok) {

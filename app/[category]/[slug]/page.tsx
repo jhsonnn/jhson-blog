@@ -55,7 +55,8 @@ export default async function ContentPage({ params }: PageProps) {
 
     const blocksResponse = await fetch(
       `${process.env.NEXT_PUBLIC_BASE_URL}/api/block/${pageData.id}`,
-      { cache: 'force-cache', next: { revalidate: 60 } }
+      //TEST: 노션 수정중
+      { next: { revalidate: 60 } }
     );
 
     if (!blocksResponse.ok) {
