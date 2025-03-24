@@ -309,7 +309,11 @@ const renderImage = (block: BlockWithChildren, pageType?: string) => {
         <img
           src={proxiedImageUrl}
           alt={altText}
-          className="rounded-xl max-w-full h-auto"
+          className={
+            pageType === 'resume'
+              ? 'rounded-xl w-[200px] h-[200px] object-cover'
+              : 'rounded-xl w-[80%] max-w-[700px] min-w-[160px] h-auto object-cover'
+          }
         />
       ) : (
         <Image
@@ -318,7 +322,11 @@ const renderImage = (block: BlockWithChildren, pageType?: string) => {
           alt={altText}
           width={pageType === 'resume' ? 200 : 700}
           height={pageType === 'resume' ? 200 : 550}
-          className="rounded-xl"
+          className={
+            pageType === 'resume'
+              ? 'rounded-xl object-cover w-[200px] h-[200px]'
+              : 'rounded-xl object-cover w-[70%] max-w-[700px] min-w-[160px] h-auto'
+          }
           loading="lazy"
           placeholder="blur"
           blurDataURL="/default_image.png"
@@ -335,9 +343,12 @@ const renderColumnList = (block: BlockWithChildren, pageType?: string) => {
   if (!block.children?.length) return null;
 
   return (
-    <div className="flex gap-4 my-4">
+    <div className="flex flex-col sm:flex-row items-start gap-6 my-4 w-full">
       {block.children.map((column) => (
-        <div key={column.id} className="flex-1">
+        <div
+          key={column.id}
+          className="w-full sm:w-1/2 flex-shrink-0 flex-grow"
+        >
           {renderBlock(column, pageType)}
         </div>
       ))}
@@ -347,8 +358,9 @@ const renderColumnList = (block: BlockWithChildren, pageType?: string) => {
 
 const renderColumn = (block: BlockWithChildren, pageType?: string) => {
   if (!block.children?.length) return null;
+
   return (
-    <div className="flex-1">
+    <div className="w-full">
       {block.children.map((childBlock) => renderBlock(childBlock, pageType))}
     </div>
   );
