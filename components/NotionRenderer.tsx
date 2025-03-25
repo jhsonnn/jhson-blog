@@ -35,7 +35,7 @@ const NotionRenderer: React.FC<NotionRendererProps> = ({
           <video
             controls
             src={videoUrl}
-            className="w-full max-w-screen-md rounded-xl"
+            className="w-full max-w-screen-md rounded-xl mb-10"
           >
             Your browser does not support the video tag.
           </video>
@@ -71,7 +71,7 @@ const renderBlock = (block: BlockWithChildren, pageType?: string) => {
 };
 
 const renderParagraph = (block: BlockWithChildren) => {
-  const richTextArray = block.paragraph?.rich_text ?? []; // rich_text가 undefined면 빈 배열 반환
+  const richTextArray = block.paragraph?.rich_text ?? [];
 
   const hasText =
     richTextArray.length > 0 &&
@@ -94,7 +94,7 @@ const renderParagraph = (block: BlockWithChildren) => {
             content = '\u00A0'.repeat(leadingSpaces.length) + nonSpaceContent;
           }
 
-          //줄바꿈이면 <span>으로 처리
+          //줄바꿈이면 <span>으로 줄바꿈되도록 처리
           const formattedContent = content.split('\n').map((line, i) => (
             <React.Fragment key={i}>
               {i > 0 && <span className="block h-[1rem]">&nbsp;</span>}
@@ -289,37 +289,50 @@ const renderImage = (block: BlockWithChildren, pageType?: string) => {
     return null;
   }
 
-  const imageUrl =
-    block.image?.type === 'file'
-      ? block.image.file?.url
-      : block.image.external?.url;
+  let originalImageUrl: string | null = null;
 
-  if (!imageUrl) {
+  if (block.image.type === 'file' && block.image.file) {
+    originalImageUrl = block.image.file.url;
+  } else if (block.image.type === 'external' && block.image.external) {
+    originalImageUrl = block.image.external.url;
+  }
+
+  if (!originalImageUrl) {
     console.warn('Image block is missing a valid URL:', block.image);
     return null;
   }
 
+  const proxiedImageUrl = `/api/image-proxy?url=${encodeURIComponent(
+    originalImageUrl
+  )}`;
+  const decodedUrl = decodeURIComponent(proxiedImageUrl.split('url=')[1] || '');
+  const isGif = decodedUrl.toLowerCase().endsWith('.gif');
   const altText = block.image.caption?.[0]?.plain_text || 'Notion Image';
-
-  //gif인지 확인인
-  const isGif = imageUrl.toLowerCase().endsWith('.gif');
 
   return (
     <div className="my-3 max-w-full min-h-[200px] rounded-xl w-auto">
       {isGif ? (
         <img
-          src={imageUrl}
+          src={proxiedImageUrl}
           alt={altText}
-          className="rounded-xl max-w-full h-auto"
+          className={
+            pageType === 'resume'
+              ? 'rounded-xl w-[200px] h-[200px] object-cover'
+              : 'rounded-xl w-[80%] max-w-[700px] min-w-[160px] h-auto object-cover'
+          }
         />
       ) : (
         <Image
-          key={imageUrl}
-          src={imageUrl}
+          key={block.id}
+          src={proxiedImageUrl}
           alt={altText}
           width={pageType === 'resume' ? 200 : 700}
           height={pageType === 'resume' ? 200 : 550}
-          className="rounded-xl"
+          className={
+            pageType === 'resume'
+              ? 'rounded-xl object-cover w-[200px] h-[200px]'
+              : 'rounded-xl object-cover w-[70%] max-w-[700px] min-w-[160px] h-auto'
+          }
           loading="lazy"
           placeholder="blur"
           blurDataURL="/default_image.png"
@@ -336,9 +349,12 @@ const renderColumnList = (block: BlockWithChildren, pageType?: string) => {
   if (!block.children?.length) return null;
 
   return (
-    <div className="flex gap-4 my-4">
+    <div className="flex flex-col sm:flex-row items-start gap-6 my-4 w-full">
       {block.children.map((column) => (
-        <div key={column.id} className="flex-1">
+        <div
+          key={column.id}
+          className="w-full sm:w-1/2 flex-shrink-0 flex-grow"
+        >
           {renderBlock(column, pageType)}
         </div>
       ))}
@@ -348,8 +364,9 @@ const renderColumnList = (block: BlockWithChildren, pageType?: string) => {
 
 const renderColumn = (block: BlockWithChildren, pageType?: string) => {
   if (!block.children?.length) return null;
+
   return (
-    <div className="flex-1">
+    <div className="w-full">
       {block.children.map((childBlock) => renderBlock(childBlock, pageType))}
     </div>
   );

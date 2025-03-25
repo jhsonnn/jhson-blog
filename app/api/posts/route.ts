@@ -26,7 +26,7 @@ export async function GET() {
               })()
             : '/default_image.png';
 
-        console.log('Raw Date Property:', properties.date);
+        //console.log('Raw Date Property:', properties.date);
 
         const date =
           properties.date?.type === "date" && properties.date.date?.start
