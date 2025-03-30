@@ -3,7 +3,6 @@ import { NextRequest, NextResponse } from 'next/server';
 import { isPageObjectResponse, SelectPropertyResponse } from '@/lib/notion/types';
 import { notionClient } from '@/lib/notion/client';
 
-
 export async function GET(_req: NextRequest) {
   try {
     const response = await notionClient.databases.query({
@@ -14,8 +13,9 @@ export async function GET(_req: NextRequest) {
     const categories = response.results
       .filter(isPageObjectResponse) //page 객체 필터링
       .map((page) => page.properties.category) // category 속성 추출
-      .filter((property): property is SelectPropertyResponse =>
-        property && property.type === 'select' && property.select !== null
+      .filter(
+        (property): property is SelectPropertyResponse =>
+          property && property.type === 'select' && property.select !== null
       )
       .map((property) => property.select!.name) //타입 확인 후 name 추출
       .filter((name): name is string => !!name && name.toLowerCase() !== 'none'); // none 제거 및 유효성 검사
@@ -26,9 +26,6 @@ export async function GET(_req: NextRequest) {
     return NextResponse.json(uniqueCategories);
   } catch (error) {
     console.error('Error fetching categories:', error);
-    return NextResponse.json(
-      { error: 'Failed to fetch categories' },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: 'Failed to fetch categories' }, { status: 500 });
   }
 }

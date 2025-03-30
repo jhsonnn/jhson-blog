@@ -1,16 +1,16 @@
 /* eslint-disable @typescript-eslint/no-require-imports */
 
-import type { Config } from "tailwindcss";
-import plugin from "tailwindcss/plugin";
+import type { Config } from 'tailwindcss';
+import plugin from 'tailwindcss/plugin';
 
 const config: Config = {
-  darkMode: ["class"],
+  darkMode: ['class'],
   content: [
-    "./pages/**/*.{js,ts,jsx,tsx}",
-    "./components/**/*.{js,ts,jsx,tsx}",
-    "./app/**/*.{js,ts,jsx,tsx}",
-    "./public/**/*.{html,js,ts,jsx,tsx}",
-    "./src/**/*.{js,ts,jsx,tsx}",
+    './pages/**/*.{js,ts,jsx,tsx}',
+    './components/**/*.{js,ts,jsx,tsx}',
+    './app/**/*.{js,ts,jsx,tsx}',
+    './public/**/*.{html,js,ts,jsx,tsx}',
+    './src/**/*.{js,ts,jsx,tsx}',
   ],
   theme: {
     extend: {
@@ -18,59 +18,58 @@ const config: Config = {
         'max-sm': { max: '640px' },
       },
       borderRadius: {
-        lg: "var(--radius)",
-        md: "calc(var(--radius) - 2px)",
-        sm: "calc(var(--radius) - 4px)",
+        lg: 'var(--radius)',
+        md: 'calc(var(--radius) - 2px)',
+        sm: 'calc(var(--radius) - 4px)',
       },
       colors: {
-        background: "hsl(var(--background))",
-        foreground: "hsl(var(--foreground))",
+        background: 'hsl(var(--background))',
+        foreground: 'hsl(var(--foreground))',
         card: {
-          DEFAULT: "hsl(var(--card))",
-          foreground: "hsl(var(--card-foreground))",
+          DEFAULT: 'hsl(var(--card))',
+          foreground: 'hsl(var(--card-foreground))',
         },
         popover: {
-          DEFAULT: "hsl(var(--popover))",
-          foreground: "hsl(var(--popover-foreground))",
+          DEFAULT: 'hsl(var(--popover))',
+          foreground: 'hsl(var(--popover-foreground))',
         },
         primary: {
-          DEFAULT: "hsl(var(--primary))",
-          foreground: "hsl(var(--primary-foreground))",
+          DEFAULT: 'hsl(var(--primary))',
+          foreground: 'hsl(var(--primary-foreground))',
         },
         secondary: {
-          DEFAULT: "hsl(var(--secondary))",
-          foreground: "hsl(var(--secondary-foreground))",
+          DEFAULT: 'hsl(var(--secondary))',
+          foreground: 'hsl(var(--secondary-foreground))',
         },
         muted: {
-          DEFAULT: "hsl(var(--muted))",
-          foreground: "hsl(var(--muted-foreground))",
+          DEFAULT: 'hsl(var(--muted))',
+          foreground: 'hsl(var(--muted-foreground))',
         },
         accent: {
-          DEFAULT: "hsl(var(--accent))",
-          foreground: "hsl(var(--accent-foreground))",
+          DEFAULT: 'hsl(var(--accent))',
+          foreground: 'hsl(var(--accent-foreground))',
         },
         destructive: {
-          DEFAULT: "hsl(var(--destructive))",
-          foreground: "hsl(var(--destructive-foreground))",
+          DEFAULT: 'hsl(var(--destructive))',
+          foreground: 'hsl(var(--destructive-foreground))',
         },
-        border: "hsl(var(--border))",
-        input: "hsl(var(--input))",
-        ring: "hsl(var(--ring))",
+        border: 'hsl(var(--border))',
+        input: 'hsl(var(--input))',
+        ring: 'hsl(var(--ring))',
         chart: {
-          "1": "hsl(var(--chart-1))",
-          "2": "hsl(var(--chart-2))",
-          "3": "hsl(var(--chart-3))",
-          "4": "hsl(var(--chart-4))",
-          "5": "hsl(var(--chart-5))",
+          '1': 'hsl(var(--chart-1))',
+          '2': 'hsl(var(--chart-2))',
+          '3': 'hsl(var(--chart-3))',
+          '4': 'hsl(var(--chart-4))',
+          '5': 'hsl(var(--chart-5))',
         },
         width: {
-          '36': "144px",
-        }
+          '36': '144px',
+        },
       },
       backgroundImage: {
-        "gradient-radial": "radial-gradient(var(--tw-gradient-stops))",
-        "gradient-conic":
-          "conic-gradient(from 180deg at 50% 50%, var(--tw-gradient-stops))",
+        'gradient-radial': 'radial-gradient(var(--tw-gradient-stops))',
+        'gradient-conic': 'conic-gradient(from 180deg at 50% 50%, var(--tw-gradient-stops))',
       },
 
       container: {
@@ -84,8 +83,8 @@ const config: Config = {
         },
       },
       animation: {
-        'shimmer': 'shimmer 3s infinite',
-        'fade': 'fade 3s infinite',
+        shimmer: 'shimmer 3s infinite',
+        fade: 'fade 3s infinite',
       },
       keyframes: {
         shimmer: {
@@ -93,7 +92,7 @@ const config: Config = {
           '100%': { backgroundPosition: '200% 0' },
         },
         fade: {
-          '0%, 100%': { opacity: '0.3'},
+          '0%, 100%': { opacity: '0.3' },
           '50%': { opacity: '1' },
         },
         'shimmer-slow': {
@@ -104,16 +103,16 @@ const config: Config = {
     },
   },
   plugins: [
-    require("@tailwindcss/typography"),
-    require("tailwindcss-animate"),
+    require('@tailwindcss/typography'),
+    require('tailwindcss-animate'),
     plugin(function ({ addUtilities }) {
       addUtilities({
-        ".no-scrollbar": {
-          "-ms-overflow-style": "none", // IE and Edge
-          "scrollbar-width": "none", // Firefox
+        '.no-scrollbar': {
+          '-ms-overflow-style': 'none', // IE and Edge
+          'scrollbar-width': 'none', // Firefox
         },
-        ".no-scrollbar::-webkit-scrollbar": {
-          display: "none", // Chrome, Safari, Edge
+        '.no-scrollbar::-webkit-scrollbar': {
+          display: 'none', // Chrome, Safari, Edge
         },
       });
     }),

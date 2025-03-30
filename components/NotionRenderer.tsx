@@ -8,14 +8,9 @@ interface NotionRendererProps {
   pageType?: string;
 }
 
-const NotionRenderer: React.FC<NotionRendererProps> = ({
-  blocks,
-  videoUrl,
-  pageType,
-}) => {
+const NotionRenderer: React.FC<NotionRendererProps> = ({ blocks, videoUrl, pageType }) => {
   const uniqueBlocks = useMemo(
-    () =>
-      Array.from(new Map(blocks.map((block) => [block.id, block])).values()),
+    () => Array.from(new Map(blocks.map((block) => [block.id, block])).values()),
     [blocks]
   );
 
@@ -32,11 +27,7 @@ const NotionRenderer: React.FC<NotionRendererProps> = ({
       ))}
       {videoUrl && videoUrl.trim() !== '' && (
         <div className="video-container my-4">
-          <video
-            controls
-            src={videoUrl}
-            className="w-full max-w-screen-md rounded-xl mb-10"
-          >
+          <video controls src={videoUrl} className="w-full max-w-screen-md rounded-xl mb-10">
             Your browser does not support the video tag.
           </video>
         </div>
@@ -74,15 +65,10 @@ const renderParagraph = (block: BlockWithChildren) => {
   const richTextArray = block.paragraph?.rich_text ?? [];
 
   const hasText =
-    richTextArray.length > 0 &&
-    richTextArray.some((text) => text.plain_text.trim() !== '');
+    richTextArray.length > 0 && richTextArray.some((text) => text.plain_text.trim() !== '');
 
   return (
-    <p
-      className={`whitespace-pre-wrap leading-relaxed${
-        hasText ? '' : ' min-h-[1rem]'
-      }`}
-    >
+    <p className={`whitespace-pre-wrap leading-relaxed${hasText ? '' : ' min-h-[1rem]'}`}>
       {hasText ? (
         richTextArray.map((text, index) => {
           let content = text.plain_text;
@@ -98,9 +84,7 @@ const renderParagraph = (block: BlockWithChildren) => {
           const formattedContent = content.split('\n').map((line, i) => (
             <React.Fragment key={i}>
               {i > 0 && <span className="block h-[1rem]">&nbsp;</span>}
-              {line || (
-                <span className="inline-block min-h-[1rem]">&nbsp;</span>
-              )}
+              {line || <span className="inline-block min-h-[1rem]">&nbsp;</span>}
             </React.Fragment>
           ));
 
@@ -112,11 +96,7 @@ const renderParagraph = (block: BlockWithChildren) => {
               rel="noopener noreferrer"
               className="text-blue-600 dark:text-blue-400 underline"
             >
-              {text.annotations.bold ? (
-                <strong>{formattedContent}</strong>
-              ) : (
-                formattedContent
-              )}
+              {text.annotations.bold ? <strong>{formattedContent}</strong> : formattedContent}
             </a>
           ) : text.annotations.bold ? (
             <strong key={index}>{formattedContent}</strong>
@@ -161,11 +141,7 @@ const renderHeading3 = (block: BlockWithChildren) => (
           rel="noopener noreferrer"
           className="text-blue-600 dark:text-blue-400 underline inline-block pointer-events-auto"
         >
-          {text.annotations.bold ? (
-            <strong>{text.plain_text}</strong>
-          ) : (
-            text.plain_text
-          )}
+          {text.annotations.bold ? <strong>{text.plain_text}</strong> : text.plain_text}
         </a>
       ) : text.annotations.bold ? (
         <strong key={index}>{text.plain_text}</strong>
@@ -176,24 +152,15 @@ const renderHeading3 = (block: BlockWithChildren) => (
   </h3>
 );
 
-const renderBulletedListItem = (
-  block: BlockWithChildren,
-  isSubItem = false
-) => {
+const renderBulletedListItem = (block: BlockWithChildren, isSubItem = false) => {
   const hasText =
     block.bulleted_list_item?.rich_text?.length &&
-    block.bulleted_list_item.rich_text.some(
-      (text) => text.plain_text.trim() !== ''
-    );
+    block.bulleted_list_item.rich_text.some((text) => text.plain_text.trim() !== '');
 
   const hasChildren = block.children && block.children.length > 0;
 
   return (
-    <ul
-      className={`${
-        isSubItem ? 'list-[circle]' : 'list-disc'
-      } pl-6 my-2 text-sm sm:text-base`}
-    >
+    <ul className={`${isSubItem ? 'list-[circle]' : 'list-disc'} pl-6 my-2 text-sm sm:text-base`}>
       {/* 빈 줄 유지하여 공백 유지 */}
       <li className={`${hasText || hasChildren ? '' : 'min-h-[1.5rem] block'}`}>
         {hasText ? (
@@ -201,11 +168,7 @@ const renderBulletedListItem = (
             const content = text.plain_text.split('\n').map((line, i) => (
               <React.Fragment key={i}>
                 {i > 0 && <br />}
-                {line || (
-                  <span className="inline-block min-h-[1.5rem] w-full">
-                    &nbsp;
-                  </span>
-                )}
+                {line || <span className="inline-block min-h-[1.5rem] w-full">&nbsp;</span>}
               </React.Fragment>
             ));
 
@@ -234,24 +197,16 @@ const renderBulletedListItem = (
           <ul>
             {block.children?.map((childBlock) =>
               childBlock.type === 'bulleted_list_item' ? (
-                <li key={childBlock.id}>
-                  {renderBulletedListItem(childBlock, true)}
-                </li>
+                <li key={childBlock.id}>{renderBulletedListItem(childBlock, true)}</li>
               ) : (
                 <p key={childBlock.id} className="pl-6">
                   {childBlock.paragraph?.rich_text?.map((text, index) => {
-                    const content = text.plain_text
-                      .split('\n')
-                      .map((line, i) => (
-                        <React.Fragment key={i}>
-                          {i > 0 && <br />}
-                          {line || (
-                            <span className="inline-block min-h-[1.5rem] w-full">
-                              &nbsp;
-                            </span>
-                          )}
-                        </React.Fragment>
-                      ));
+                    const content = text.plain_text.split('\n').map((line, i) => (
+                      <React.Fragment key={i}>
+                        {i > 0 && <br />}
+                        {line || <span className="inline-block min-h-[1.5rem] w-full">&nbsp;</span>}
+                      </React.Fragment>
+                    ));
 
                     return text.href ? (
                       <a
@@ -261,11 +216,7 @@ const renderBulletedListItem = (
                         rel="noopener noreferrer"
                         className="text-blue-700 dark:text-blue-400 hover:underline"
                       >
-                        {text.annotations.bold ? (
-                          <strong>{content}</strong>
-                        ) : (
-                          content
-                        )}
+                        {text.annotations.bold ? <strong>{content}</strong> : content}
                       </a>
                     ) : text.annotations.bold ? (
                       <strong key={index}>{content}</strong>
@@ -302,9 +253,7 @@ const renderImage = (block: BlockWithChildren, pageType?: string) => {
     return null;
   }
 
-  const proxiedImageUrl = `/api/image-proxy?url=${encodeURIComponent(
-    originalImageUrl
-  )}`;
+  const proxiedImageUrl = `/api/image-proxy?url=${encodeURIComponent(originalImageUrl)}`;
   const decodedUrl = decodeURIComponent(proxiedImageUrl.split('url=')[1] || '');
   const isGif = decodedUrl.toLowerCase().endsWith('.gif');
   const altText = block.image.caption?.[0]?.plain_text || 'Notion Image';
@@ -351,10 +300,7 @@ const renderColumnList = (block: BlockWithChildren, pageType?: string) => {
   return (
     <div className="flex flex-col sm:flex-row items-start gap-6 my-4 w-full">
       {block.children.map((column) => (
-        <div
-          key={column.id}
-          className="w-full sm:w-1/2 flex-shrink-0 flex-grow"
-        >
+        <div key={column.id} className="w-full sm:w-1/2 flex-shrink-0 flex-grow">
           {renderBlock(column, pageType)}
         </div>
       ))}

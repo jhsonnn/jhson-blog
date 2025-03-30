@@ -38,9 +38,7 @@ export default async function CategoryPage({
       initialPosts={filteredPosts}
       basePath={`/${category}`}
       noPostsMessage={
-        tag
-          ? `No posts found for tag: "${tag}"`
-          : `No posts found for category: "${category}"`
+        tag ? `No posts found for tag: "${tag}"` : `No posts found for category: "${category}"`
       }
     />
   );

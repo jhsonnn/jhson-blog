@@ -19,8 +19,6 @@
 //   transformIgnorePatterns: ['/node_modules/'],
 // };
 
-
-
 module.exports = {
   preset: 'ts-jest/presets/js-with-ts-esm', // ESM과 TypeScript 지원
   testEnvironment: 'jest-environment-jsdom',

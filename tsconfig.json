@@ -1,14 +1,7 @@
 {
   "compilerOptions": {
-    "types": [
-      "@testing-library/jest-dom",
-      "@testing-library/react"
-    ],
-    "lib": [
-      "dom",
-      "dom.iterable",
-      "esnext"
-    ],
+    "types": ["@testing-library/jest-dom", "@testing-library/react"],
+    "lib": ["dom", "dom.iterable", "esnext"],
     // "allowJs": true,
     "allowJs": true,
     "allowSyntheticDefaultImports": true,
@@ -33,27 +26,13 @@
       }
     ],
     "paths": {
-      "@/*": [
-        "./*"
-      ],
-      "@/app/*": [
-        "./app/*"
-      ],
-      "@/components/*": [
-        "./components/*"
-      ],
-      "@/utils/*": [
-        "./utils/*"
-      ],
-      "@/styles/*": [
-        "./styles/*"
-      ],
-      "@/public/*": [
-        "./public/*"
-      ],
-      "@/lib/*": [
-        "./lib/*"
-      ]
+      "@/*": ["./*"],
+      "@/app/*": ["./app/*"],
+      "@/components/*": ["./components/*"],
+      "@/utils/*": ["./utils/*"],
+      "@/styles/*": ["./styles/*"],
+      "@/public/*": ["./public/*"],
+      "@/lib/*": ["./lib/*"]
     },
     "target": "esnext"
   },
@@ -66,10 +45,5 @@
     ".next/types/**/*.ts",
     "notion-api-test.mjs"
   ],
-  "exclude": [
-    "node_modules",
-    "dist",
-    "**/*.test.ts",
-    "**/*.spec.ts"
-  ]
+  "exclude": ["node_modules", "dist", "**/*.test.ts", "**/*.spec.ts"]
 }

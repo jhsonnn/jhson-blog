@@ -1,5 +1,5 @@
-import { notionClient } from "@/lib/notion/client";
-import { NextRequest, NextResponse } from "next/server";
+import { notionClient } from '@/lib/notion/client';
+import { NextRequest, NextResponse } from 'next/server';
 
 export async function POST(req: NextRequest) {
   try {
@@ -30,7 +30,7 @@ export async function POST(req: NextRequest) {
     //결과를 평탄화(flat)해서 반환
     return NextResponse.json(blocks.flat());
   } catch (error) {
-    console.error("Error in /api/blocks:", error);
-    return NextResponse.json({ error: "Failed to fetch blocks." }, { status: 500 });
+    console.error('Error in /api/blocks:', error);
+    return NextResponse.json({ error: 'Failed to fetch blocks.' }, { status: 500 });
   }
 }

@@ -59,9 +59,7 @@ const Post: React.FC<PostProps> = ({
         {/* 텍스트 영역 */}
         <div
           className={`p-3 sm:p-3 md:p-4 lg:p-4 flex flex-col ${
-            isRandomPosts
-              ? 'h-[80px] sm:h-[80px] md:h-[80px] lg:h-[90px]'
-              : 'h-auto'
+            isRandomPosts ? 'h-[80px] sm:h-[80px] md:h-[80px] lg:h-[90px]' : 'h-auto'
           }`}
         >
           <h2
@@ -75,9 +73,7 @@ const Post: React.FC<PostProps> = ({
           </h2>
           <p
             className={`text-[var(--sk-glyph-gray-secondary)] transition-colors duration-300 ${
-              isRandomPosts
-                ? 'text-xs sm:text-xs md:text-xs'
-                : 'text-xs sm:text-sm md:text-sm'
+              isRandomPosts ? 'text-xs sm:text-xs md:text-xs' : 'text-xs sm:text-sm md:text-sm'
             }`}
           >
             {date ?? 'Unknown Date'}
