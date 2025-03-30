@@ -25,7 +25,6 @@ async function fetchNewPresignedUrl(slug: string): Promise<string | null> {
   }
 }
 
-
 export async function GET(req: NextRequest) {
   const { searchParams } = new URL(req.url);
   let imageUrl = searchParams.get('url');

@@ -45,9 +45,7 @@ test('renders loading skeleton initially', () => {
     </Provider>
   );
 
-  expect(
-    screen.getByText(/검색어와 일치하는 포스트가 없습니다./i)
-  ).toBeInTheDocument();
+  expect(screen.getByText(/검색어와 일치하는 포스트가 없습니다./i)).toBeInTheDocument();
 });
 
 //포스트 목록 렌더링 테스트 (로딩 완료 후)
@@ -93,8 +91,6 @@ test('displays no posts message when no posts are available', async () => {
   );
 
   await waitFor(() => {
-    expect(
-      screen.getByText(/검색어와 일치하는 포스트가 없습니다./i)
-    ).toBeInTheDocument();
+    expect(screen.getByText(/검색어와 일치하는 포스트가 없습니다./i)).toBeInTheDocument();
   });
 });

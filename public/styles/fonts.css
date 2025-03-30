@@ -1,4 +1,4 @@
-@import "../fonts/static/pretendard.css";
+@import '../fonts/static/pretendard.css';
 
 html,
 body,
@@ -6,8 +6,15 @@ select,
 input,
 button,
 textarea {
-  font-family: "Pretendard", -apple-system, BlinkMacSystemFont, "Malgun Gothic",
-    "맑은 고딕", helvetica, "Apple SD Gothic Neo", sans-serif;
+  font-family:
+    'Pretendard',
+    -apple-system,
+    BlinkMacSystemFont,
+    'Malgun Gothic',
+    '맑은 고딕',
+    helvetica,
+    'Apple SD Gothic Neo',
+    sans-serif;
   font-style: normal;
   word-break: keep-all;
   word-wrap: normal;

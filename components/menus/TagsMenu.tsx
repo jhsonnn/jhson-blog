@@ -6,11 +6,7 @@ type TagsMenuProps = {
   onTagChange: (tag: string) => void;
 };
 
-export default function TagsMenu({
-  tags,
-  currentTag,
-  onTagChange,
-}: TagsMenuProps) {
+export default function TagsMenu({ tags, currentTag, onTagChange }: TagsMenuProps) {
   return (
     <div className="font-bold text-sm flex flex-wrap gap-3 lg:flex-col sm:flex-row justify-start items-start">
       {tags.map((tag) => (

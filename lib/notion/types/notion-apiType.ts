@@ -1,6 +1,4 @@
-import {
-  RichTextItemResponse as NotionRichTextItemResponse,
-} from '@notionhq/client/build/src/api-endpoints';
+import { RichTextItemResponse as NotionRichTextItemResponse } from '@notionhq/client/build/src/api-endpoints';
 
 export type { NotionRichTextItemResponse };
 
@@ -34,12 +32,12 @@ export type NotionBlockType =
   | 'audio'
   | 'code'
   | 'equation'
-  | "embed"
-  | "table_of_contents"
-  | "bookmark"
-  | "pdf"
-  | "link_preview"
-  | "unsupported"; 
+  | 'embed'
+  | 'table_of_contents'
+  | 'bookmark'
+  | 'pdf'
+  | 'link_preview'
+  | 'unsupported';
 
 export type SelectColor =
   | 'default'
@@ -65,15 +63,14 @@ export type ApiColor =
   | 'pink_background'
   | 'red_background';
 
-
 export type FileObject = {
-  type: "file";
+  type: 'file';
   file: { url: string; expiry_time: string };
   name: string;
 };
 
 export type ExternalObject = {
-  type: "external";
+  type: 'external';
   external: { url: string };
   name: string;
 };

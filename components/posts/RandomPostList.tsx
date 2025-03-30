@@ -12,10 +12,7 @@ interface RandomPostListProps {
   basePath: string;
 }
 
-const RandomPostList: React.FC<RandomPostListProps> = ({
-  posts,
-  currentSlug,
-}) => {
+const RandomPostList: React.FC<RandomPostListProps> = ({ posts, currentSlug }) => {
   const [randomPosts, setRandomPosts] = useState<PostType[]>([]);
   const [currentIndex, setCurrentIndex] = useState(1);
   const [visibleCount, setVisibleCount] = useState(3);
@@ -110,31 +107,18 @@ const RandomPostList: React.FC<RandomPostListProps> = ({
           className="flex transition-transform mb-10"
           style={{
             transform: `translateX(-${
-              (currentIndex - Math.floor(visibleCount / 2)) *
-              (100 / visibleCount)
+              (currentIndex - Math.floor(visibleCount / 2)) * (100 / visibleCount)
             }%)`,
-            transition: isTransitioning
-              ? `transform ${transitionDurationTime}ms ease`
-              : 'none',
+            transition: isTransitioning ? `transform ${transitionDurationTime}ms ease` : 'none',
           }}
         >
           {randomPosts.map((post, index) => (
             <div
               key={`${post.id}-${index}`}
               className={`flex-shrink-0 px-2 ${
-                visibleCount === 1
-                  ? 'w-full h-[13rem] sm:h-[14rem] md:h-[16rem]'
-                  : ''
-              } ${
-                visibleCount === 2
-                  ? 'w-1/2 h-[220px] sm:h-[240px] md:h-[260px]'
-                  : ''
-              }
-                 ${
-                   visibleCount === 3
-                     ? 'w-1/3 h-[240px] sm:h-[260px] md:h-[280px]'
-                     : ''
-                 }`}
+                visibleCount === 1 ? 'w-full h-[13rem] sm:h-[14rem] md:h-[16rem]' : ''
+              } ${visibleCount === 2 ? 'w-1/2 h-[220px] sm:h-[240px] md:h-[260px]' : ''}
+                 ${visibleCount === 3 ? 'w-1/3 h-[240px] sm:h-[260px] md:h-[280px]' : ''}`}
             >
               <Post {...post} isRandomPosts />
             </div>

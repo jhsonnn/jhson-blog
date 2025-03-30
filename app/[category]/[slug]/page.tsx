@@ -60,9 +60,7 @@ export default async function ContentPage({ params }: PageProps) {
     );
 
     if (!blocksResponse.ok) {
-      return (
-        <div className="w-full text-center">Error: Unable to fetch content</div>
-      );
+      return <div className="w-full text-center">Error: Unable to fetch content</div>;
     }
 
     const rawBlocks = await blocksResponse.json();
@@ -80,8 +78,7 @@ export default async function ContentPage({ params }: PageProps) {
             <div className="flex items-center gap-2 mb-4">
               <span
                 className={`px-3 py-1 rounded-full text-sm font-semibold ${
-                  notionColorMap[pageData.category.color] ||
-                  notionColorMap.default
+                  notionColorMap[pageData.category.color] || notionColorMap.default
                 }`}
               >
                 {pageData.category.name}
@@ -93,9 +90,7 @@ export default async function ContentPage({ params }: PageProps) {
             <div className="flex items-center text-gray-600 dark:text-gray-300 text-sm mb-4">
               <span className="mr-2">Jihyeong Son</span> •{' '}
               <span className="ml-2">
-                {pageData.date
-                  ? new Date(pageData.date).toLocaleDateString('ko-KR')
-                  : 'no date'}
+                {pageData.date ? new Date(pageData.date).toLocaleDateString('ko-KR') : 'no date'}
               </span>
             </div>
             <div className="flex flex-wrap gap-2 mb-6">
@@ -123,17 +118,11 @@ export default async function ContentPage({ params }: PageProps) {
           <NotionRenderer
             blocks={blocks}
             videoUrl={videoUrl}
-            pageType={
-              category.toLowerCase() === 'resume' ? 'resume' : undefined
-            }
+            pageType={category.toLowerCase() === 'resume' ? 'resume' : undefined}
           />
         </div>
         {filteredPosts.length > 0 ? (
-          <RandomPostList
-            posts={filteredPosts}
-            currentSlug={slug}
-            basePath={`/${category}`}
-          />
+          <RandomPostList posts={filteredPosts} currentSlug={slug} basePath={`/${category}`} />
         ) : (
           <div>No related posts available.</div>
         )}

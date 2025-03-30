@@ -35,29 +35,35 @@ export async function fetchNotionPageBySlug(slug: string): Promise<Post | null> 
 
   return {
     id: post.id,
-    title: post.properties.title?.type === 'title'
-      ? post.properties.title.title[0]?.plain_text || ''
-      : '',
-    slug: post.properties.slug?.type === 'rich_text'
-      ? post.properties.slug.rich_text[0]?.plain_text || ''
-      : '',
-    category: post.properties.category?.type === 'select' && post.properties.category.select
-      ? { name: post.properties.category.select.name, color: post.properties.category.select.color }
-      : { name: 'none', color: 'default' },
-    tags: post.properties.tags?.type === 'multi_select'
-      ? post.properties.tags.multi_select.map((tag) => ({
-          name: tag.name,
-          color: tag.color,
-        }))
-      : [],
+    title:
+      post.properties.title?.type === 'title'
+        ? post.properties.title.title[0]?.plain_text || ''
+        : '',
+    slug:
+      post.properties.slug?.type === 'rich_text'
+        ? post.properties.slug.rich_text[0]?.plain_text || ''
+        : '',
+    category:
+      post.properties.category?.type === 'select' && post.properties.category.select
+        ? {
+            name: post.properties.category.select.name,
+            color: post.properties.category.select.color,
+          }
+        : { name: 'none', color: 'default' },
+    tags:
+      post.properties.tags?.type === 'multi_select'
+        ? post.properties.tags.multi_select.map((tag) => ({
+            name: tag.name,
+            color: tag.color,
+          }))
+        : [],
     thumbnailUrl: proxiedUrl,
     date: post.properties.date?.type === 'date' ? post.properties.date.date?.start || '' : '',
     status: {
-      name: post.properties.status?.type === 'select' && post.properties.status.select?.name
-        ? post.properties.status.select.name
-        : 'private',
+      name:
+        post.properties.status?.type === 'select' && post.properties.status.select?.name
+          ? post.properties.status.select.name
+          : 'private',
     },
-    
   };
-  
 }

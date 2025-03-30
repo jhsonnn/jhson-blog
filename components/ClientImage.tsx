@@ -11,12 +11,7 @@ interface ClientImageProps {
   height?: number;
 }
 
-export default function ClientImage({
-  src,
-  alt,
-  width,
-  height,
-}: ClientImageProps) {
+export default function ClientImage({ src, alt, width, height }: ClientImageProps) {
   const [imgSrc, setImgSrc] = useState(src);
 
   //gif 파일인지 확인

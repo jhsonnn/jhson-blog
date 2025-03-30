@@ -12,9 +12,7 @@ const TagPostsPage = async ({ params }: { params: { tags: string } }) => {
 
   return (
     <div className="p-4">
-      <h1 className="text-2xl font-bold mb-4 text-center">
-        Tag: {params.tags}
-      </h1>
+      <h1 className="text-2xl font-bold mb-4 text-center">Tag: {params.tags}</h1>
       {posts.length > 0 ? (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {posts.map((post) => (
@@ -30,9 +28,7 @@ const TagPostsPage = async ({ params }: { params: { tags: string } }) => {
           ))}
         </div>
       ) : (
-        <p className="text-gray-600 text-center">
-          No posts available for this tag.
-        </p>
+        <p className="text-gray-600 text-center">No posts available for this tag.</p>
       )}
     </div>
   );

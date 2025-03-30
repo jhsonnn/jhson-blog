@@ -6,12 +6,11 @@ import {
   PageObjectResponse,
   PartialBlockObjectResponse,
 } from '@notionhq/client/build/src/api-endpoints';
-import { SelectProperty } from "./notion-pageType";
+import { SelectProperty } from './notion-pageType';
 import { BlockWithChildren } from './notion-blocksType';
 import { ExternalObject, FileObject, FileValue } from './notion-apiType';
 
-type Property =
-  PageObjectResponse['properties'][keyof PageObjectResponse['properties']];
+type Property = PageObjectResponse['properties'][keyof PageObjectResponse['properties']];
 
 export function isPropertyOfType<T extends Property>(
   property: Property | undefined,
@@ -71,9 +70,7 @@ export function isVideoBlock(
   return block.type === 'video' && !!block.video;
 }
 
-export function isPageObjectResponse(
-  value: unknown
-): value is NotionPageObjectResponse {
+export function isPageObjectResponse(value: unknown): value is NotionPageObjectResponse {
   return (
     typeof value === 'object' &&
     value !== null &&
@@ -94,19 +91,15 @@ export function isBlockObjectResponse(
   block: PartialBlockObjectResponse | BlockObjectResponse
 ): block is BlockObjectResponse {
   return (
-    "type" in block &&
-    typeof block.type === "string" &&
-    "has_children" in block &&
-    typeof block.has_children === "boolean"
+    'type' in block &&
+    typeof block.type === 'string' &&
+    'has_children' in block &&
+    typeof block.has_children === 'boolean'
   );
 }
 
-
 export function isSelectProperty(
-  property:
-    | PageObjectResponse['properties'][string]
-    | SelectProperty
-    | undefined
+  property: PageObjectResponse['properties'][string] | SelectProperty | undefined
 ): property is SelectProperty {
   return property?.type === 'select' && 'select' in property;
 }
@@ -116,18 +109,17 @@ export function isCategoryProperty(result: NotionPageObjectResponse): boolean {
   return isSelectProperty(categoryProperty) && !!categoryProperty.select?.name;
 }
 
-
 // export function isFileProperty(file: FileValue): file is FileObject {
 //   return file.type === "file";
 // }
 
 export function isFileProperty(file: FileValue): file is FileObject {
   return (
-    typeof file === "object" &&
+    typeof file === 'object' &&
     file !== null &&
-    file.type === "file" &&
+    file.type === 'file' &&
     file.file !== undefined &&
-    typeof file.file.url === "string"
+    typeof file.file.url === 'string'
   );
 }
 
@@ -137,10 +129,10 @@ export function isFileProperty(file: FileValue): file is FileObject {
 
 export function isExternalProperty(file: FileValue): file is ExternalObject {
   return (
-    typeof file === "object" &&
+    typeof file === 'object' &&
     file !== null &&
-    file.type === "external" &&
+    file.type === 'external' &&
     file.external !== undefined &&
-    typeof file.external.url === "string"
+    typeof file.external.url === 'string'
   );
 }
