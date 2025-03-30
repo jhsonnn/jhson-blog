@@ -1,7 +1,7 @@
 //최적화 테스트
-import { notionClient } from "../client";
-import { BlockWithChildren, isBlockObjectResponse } from "../types";
-import { fetchChildren } from "./fetchChildren";
+import { notionClient } from '../client';
+import { BlockWithChildren, isBlockObjectResponse } from '../types';
+import { fetchChildren } from './fetchChildren';
 
 export const fetchBlockTree = async (blockIds: string | string[]): Promise<BlockWithChildren[]> => {
   const ids = Array.isArray(blockIds) ? blockIds : [blockIds];
@@ -22,7 +22,7 @@ export const fetchBlockTree = async (blockIds: string | string[]): Promise<Block
             if (!isBlockObjectResponse(block)) {
               return {
                 id: block.id,
-                type: "unsupported",
+                type: 'unsupported',
                 has_children: false,
                 children: [],
               } as BlockWithChildren;

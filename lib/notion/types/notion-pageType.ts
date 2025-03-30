@@ -1,4 +1,4 @@
-import { NotionRichTextItemResponse, SelectColor } from "./notion-apiType";
+import { NotionRichTextItemResponse, SelectColor } from './notion-apiType';
 
 export interface NotionPageItem {
   slug: string;
@@ -32,7 +32,7 @@ export interface Post {
   title: string;
   slug: string;
   category: { name: string; color: string };
-  tags: { name: string; color: string }[]; 
+  tags: { name: string; color: string }[];
   date?: string;
   // created_time: string;
   thumbnailUrl: string;

@@ -10,8 +10,15 @@
 
 html,
 body {
-  font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, 'Malgun Gothic',
-    '맑은 고딕', helvetica, 'Apple SD Gothic Neo', sans-serif;
+  font-family:
+    'Pretendard',
+    -apple-system,
+    BlinkMacSystemFont,
+    'Malgun Gothic',
+    '맑은 고딕',
+    helvetica,
+    'Apple SD Gothic Neo',
+    sans-serif;
   word-break: keep-all;
   word-wrap: normal;
   -webkit-font-smoothing: antialiased;
@@ -19,7 +26,9 @@ body {
 }
 
 body {
-  transition: background-color 0.3s ease, color 0.3s ease;
+  transition:
+    background-color 0.3s ease,
+    color 0.3s ease;
 }
 
 .text-balance {
@@ -29,11 +38,11 @@ body {
 }
 
 .notion-container p {
-  @apply mb-2 whitespace-pre-line p-0
+  @apply mb-2 whitespace-pre-line p-0;
 }
 
 .post-content-page {
-  @apply container mx-auto
+  @apply container mx-auto;
 }
 
 .post-content-layout {
@@ -42,5 +51,5 @@ body {
 }
 
 .column-list {
-  @apply flex flex-wrap gap-4
+  @apply flex flex-wrap gap-4;
 }

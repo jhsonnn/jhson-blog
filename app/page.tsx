@@ -13,11 +13,7 @@ export default async function Home({
   searchParams: { category?: string; tag?: string };
 }) {
   const { category = 'all', tag = 'all' } = searchParams;
-  const {
-    posts: initialPosts,
-    allCategories,
-    allTags,
-  } = await fetchNotionAllPosts();
+  const { posts: initialPosts, allCategories, allTags } = await fetchNotionAllPosts();
 
   return (
     <div className="container mx-auto">
@@ -35,10 +31,7 @@ export default async function Home({
 
         {/* 메인 콘텐츠 */}
         <main className="flex-grow lg:w-[62%]">
-          <CategoryMenuWrapper
-            categories={allCategories}
-            currentCategory={category}
-          />
+          <CategoryMenuWrapper categories={allCategories} currentCategory={category} />
           <SearchBar />
           <PostList
             initialPosts={initialPosts}
@@ -57,10 +50,7 @@ export default async function Home({
       {/* 작은 화면 레이아웃 */}
       <div className="block lg:hidden">
         <div className="flex flex-col gap-4 mb-6 lg:mb-2">
-          <CategoryMenuWrapper
-            categories={allCategories}
-            currentCategory={category}
-          />
+          <CategoryMenuWrapper categories={allCategories} currentCategory={category} />
           <Suspense fallback={<div>Loading tags...</div>}>
             {allTags.length > 0 ? (
               <TagsMenuWrapperClient tags={allTags} currentTag={tag} />

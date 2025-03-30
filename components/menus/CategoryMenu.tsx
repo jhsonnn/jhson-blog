@@ -21,10 +21,7 @@ export default function CategoryMenu({
 }: CategoryMenuProps) {
   return (
     <div className="w-36 lg:mb-4">
-      <Select
-        value={selectedCategory}
-        onValueChange={(value) => onCategoryChange(value)}
-      >
+      <Select value={selectedCategory} onValueChange={(value) => onCategoryChange(value)}>
         {/* 트리거 버튼 */}
         <SelectTrigger className="!bg-amber-400 px-3 py-2 rounded-xl text-neutral-50 border dark:border-neutral-500 border-neutral2300 hover:!text-neutral-50 focus:outline-none focus:ring-2 focus:ring-amber-400 font-bold">
           <SelectValue placeholder="All Categories" />
@@ -35,9 +32,7 @@ export default function CategoryMenu({
           <SelectItem
             value="all"
             className={`px-3 py-2 rounded-full cursor-pointer font-medium transition bg-transparent hover:bg-amber-400 hover:text-neutral-50 hover:font-bold data-[highlighted]:bg-amber-400 data-[highlighted]:text-neutral-50 ${
-              selectedCategory === 'all'
-                ? 'bg-amber-400 text-neutral-50 font-bold'
-                : 'font-normal'
+              selectedCategory === 'all' ? 'bg-amber-400 text-neutral-50 font-bold' : 'font-normal'
             }`}
           >
             All Categories

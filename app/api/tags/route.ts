@@ -2,7 +2,6 @@ import { NextResponse } from 'next/server';
 import { isPageObjectResponse } from '@/lib/notion/types';
 import { notionClient } from '@/lib/notion/client';
 
-
 export async function GET() {
   try {
     const response = await notionClient.databases.query({
@@ -25,9 +24,6 @@ export async function GET() {
     return NextResponse.json(uniqueTags);
   } catch (error) {
     console.error('Error fetching tags:', error);
-    return NextResponse.json(
-      { error: 'Failed to fetch tags' },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: 'Failed to fetch tags' }, { status: 500 });
   }
 }

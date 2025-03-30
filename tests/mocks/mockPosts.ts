@@ -5,10 +5,10 @@ export const mockPost: PostType = {
   title: 'Mock Post 1',
   slug: 'mock-post-1',
   category: { name: 'projects', color: 'blue' },
-  tags: [{name: "tag1", color: "green"}],
+  tags: [{ name: 'tag1', color: 'green' }],
   date: '2023-01-01',
   thumbnailUrl: '/images/mock-thumbnail-1.png',
-  status: { name: "private" },
+  status: { name: 'private' },
 };
 
 export const mockPosts: PostType[] = [
@@ -18,9 +18,9 @@ export const mockPosts: PostType[] = [
     title: 'Mock Post 2',
     slug: 'mock-post-2',
     category: { name: 'blog', color: 'green' },
-    tags: [{name: "tag2", color: "blue"}],
+    tags: [{ name: 'tag2', color: 'blue' }],
     date: '2023-01-02',
     thumbnailUrl: '/images/mock-thumbnail-2.png',
-    status: { name: "public" },
+    status: { name: 'public' },
   },
 ];

@@ -1,8 +1,5 @@
 //포스트 컨텐츠 렌더링
-import {
-  BlockWithChildren,
-  LocalRichTextItemResponse,
-} from '@/lib/notion/types';
+import { BlockWithChildren, LocalRichTextItemResponse } from '@/lib/notion/types';
 import Image from 'next/image';
 import React from 'react';
 
@@ -62,17 +59,13 @@ const ParagraphBlock: React.FC<{ block: BlockWithChildren }> = ({ block }) => {
   return <p>{text}</p>;
 };
 
-const BulletedListItemBlock: React.FC<{ block: BlockWithChildren }> = ({
-  block,
-}) => {
+const BulletedListItemBlock: React.FC<{ block: BlockWithChildren }> = ({ block }) => {
   const text = renderRichText(block.bulleted_list_item?.rich_text);
   return (
     <ul>
       <li>{text}</li>
       {block.children &&
-        block.children.map((child) => (
-          <BlockRenderer key={child.id} block={child} />
-        ))}
+        block.children.map((child) => <BlockRenderer key={child.id} block={child} />)}
     </ul>
   );
 };
@@ -83,10 +76,7 @@ const ImageBlock: React.FC<{ block: BlockWithChildren }> = ({ block }) => {
     return null;
   }
 
-  const url =
-    block.image.type === 'file'
-      ? block.image.file?.url
-      : block.image.external?.url;
+  const url = block.image.type === 'file' ? block.image.file?.url : block.image.external?.url;
 
   if (!url) {
     console.warn('Image block is missing a valid URL:', block);
@@ -113,10 +103,7 @@ const VideoBlock: React.FC<{ block: BlockWithChildren }> = ({ block }) => {
     return null;
   }
 
-  const url =
-    block.video.type === 'file'
-      ? block.video.file?.url
-      : block.video.external?.url;
+  const url = block.video.type === 'file' ? block.video.file?.url : block.video.external?.url;
 
   if (!url) {
     console.warn(`Video block is missing a valid URL: ${block.id}`);
@@ -124,20 +111,13 @@ const VideoBlock: React.FC<{ block: BlockWithChildren }> = ({ block }) => {
   }
 
   return (
-    <video
-      key={block.id}
-      controls
-      src={url}
-      className="my-4 w-full max-w-screen-lg rounded-xl"
-    >
+    <video key={block.id} controls src={url} className="my-4 w-full max-w-screen-lg rounded-xl">
       Your browser does not support the video tag.
     </video>
   );
 };
 
-const renderRichText = (
-  richTextArray?: LocalRichTextItemResponse[]
-): string => {
+const renderRichText = (richTextArray?: LocalRichTextItemResponse[]): string => {
   if (!richTextArray) return '';
   return richTextArray.map((item) => item.plain_text).join('');
 };

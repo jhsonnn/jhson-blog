@@ -28,11 +28,5 @@ export default function TagsMenuWrapperClient({
     return <div>Loading Tags...</div>;
   }
 
-  return (
-    <TagsMenu
-      tags={tags}
-      currentTag={currentTag}
-      onTagChange={handleTagChange}
-    />
-  );
+  return <TagsMenu tags={tags} currentTag={currentTag} onTagChange={handleTagChange} />;
 }

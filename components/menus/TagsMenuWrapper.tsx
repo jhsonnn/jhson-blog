@@ -9,10 +9,7 @@ export type TagsMenuWrapperProps = {
   currentTag: string;
 };
 
-export default function TagsMenuWrapper({
-  tags,
-  currentTag,
-}: TagsMenuWrapperProps) {
+export default function TagsMenuWrapper({ tags, currentTag }: TagsMenuWrapperProps) {
   const router = useRouter();
   const searchParams = useSearchParams();
 
@@ -37,11 +34,5 @@ export default function TagsMenuWrapper({
     router.push(`/?${params.toString()}`);
   };
 
-  return (
-    <TagsMenu
-      tags={tags}
-      currentTag={selectedTag}
-      onTagChange={handleTagChange}
-    />
-  );
+  return <TagsMenu tags={tags} currentTag={selectedTag} onTagChange={handleTagChange} />;
 }

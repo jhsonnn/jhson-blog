@@ -49,26 +49,14 @@ export function useFilteredPosts({
   const filteredPosts = useMemo(() => {
     return posts.filter((post) => {
       const categoryFilterName =
-        typeof categoryFilter === 'string'
-          ? categoryFilter
-          : categoryFilter.name;
+        typeof categoryFilter === 'string' ? categoryFilter : categoryFilter.name;
 
-      if (
-        categoryFilterName !== 'all' &&
-        post.category.name !== categoryFilterName
-      )
+      if (categoryFilterName !== 'all' && post.category.name !== categoryFilterName) return false;
+
+      if (tagFilter !== 'all' && !post.tags.map((tag) => tag.name).includes(tagFilter))
         return false;
 
-      if (
-        tagFilter !== 'all' &&
-        !post.tags.map((tag) => tag.name).includes(tagFilter)
-      )
-        return false;
-
-      if (
-        searchKeyword &&
-        !post.title.toLowerCase().includes(searchKeyword.toLowerCase())
-      )
+      if (searchKeyword && !post.title.toLowerCase().includes(searchKeyword.toLowerCase()))
         return false;
 
       return true;

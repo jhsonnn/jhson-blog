@@ -4,9 +4,9 @@ const nextConfig = {
   images: {
     remotePatterns: [
       {
-        protocol: "https",
-        hostname: "prod-files-secure.s3.us-west-2.amazonaws.com",
-        pathname: "/**",
+        protocol: 'https',
+        hostname: 'prod-files-secure.s3.us-west-2.amazonaws.com',
+        pathname: '/**',
       },
       {
         protocol: 'https',
@@ -28,31 +28,31 @@ const nextConfig = {
   webpack: (config, { isServer }) => {
     // 서버에서 Webpack 실행 여부를 확인
     if (isServer) {
-      console.log("Webpack is running on the server...");
+      console.log('Webpack is running on the server...');
     }
 
     // Framer Motion 및 Emotion 관련 alias 추가
     config.resolve.alias = {
       ...config.resolve.alias,
-      "react-lazy-images": false,
-      "framer-motion": require.resolve("framer-motion"),
-      "@emotion/react": require.resolve("@emotion/react"),
-      "@emotion/is-prop-valid": require.resolve("@emotion/is-prop-valid"),
+      'react-lazy-images': false,
+      'framer-motion': require.resolve('framer-motion'),
+      '@emotion/react': require.resolve('@emotion/react'),
+      '@emotion/is-prop-valid': require.resolve('@emotion/is-prop-valid'),
     };
 
     // Fallback 설정
     config.resolve.fallback = {
       ...config.resolve.fallback,
-      "react-lazy-images": false,
+      'react-lazy-images': false,
     };
 
     return config;
   },
-    async rewrites() {
+  async rewrites() {
     return [
       {
-        source: "/api/notion/:path*",
-        destination: "https://api.notion.com/v1/:path*",
+        source: '/api/notion/:path*',
+        destination: 'https://api.notion.com/v1/:path*',
       },
     ];
   },

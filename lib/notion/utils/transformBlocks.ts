@@ -1,7 +1,7 @@
 //ISR
-import { BlockObjectResponse } from "@notionhq/client/build/src/api-endpoints";
-import { BlockWithChildren, NotionBlockType } from "../types";
-import { fetchChildren } from "./fetchChildren";
+import { BlockObjectResponse } from '@notionhq/client/build/src/api-endpoints';
+import { BlockWithChildren, NotionBlockType } from '../types';
+import { fetchChildren } from './fetchChildren';
 
 export async function transformBlocks(blocks: BlockObjectResponse[]): Promise<BlockWithChildren[]> {
   const uniqueBlocks = Array.from(new Map(blocks.map((block) => [block.id, block])).values());
@@ -18,40 +18,44 @@ export async function transformBlocks(blocks: BlockObjectResponse[]): Promise<Bl
       };
 
       switch (block.type) {
-        case "paragraph":
+        case 'paragraph':
           transformedBlock.paragraph = { rich_text: block.paragraph?.rich_text || [] };
           break;
-        case "heading_1":
+        case 'heading_1':
           transformedBlock.heading_1 = { rich_text: block.heading_1?.rich_text || [] };
           break;
-        case "heading_2":
+        case 'heading_2':
           transformedBlock.heading_2 = { rich_text: block.heading_2?.rich_text || [] };
           break;
-        case "heading_3":
+        case 'heading_3':
           transformedBlock.heading_3 = { rich_text: block.heading_3?.rich_text || [] };
           break;
-        case "bulleted_list_item":
-          transformedBlock.bulleted_list_item = { rich_text: block.bulleted_list_item?.rich_text || [] };
+        case 'bulleted_list_item':
+          transformedBlock.bulleted_list_item = {
+            rich_text: block.bulleted_list_item?.rich_text || [],
+          };
           break;
-        case "numbered_list_item":
-          transformedBlock.numbered_list_item = { rich_text: block.numbered_list_item?.rich_text || [] };
+        case 'numbered_list_item':
+          transformedBlock.numbered_list_item = {
+            rich_text: block.numbered_list_item?.rich_text || [],
+          };
           break;
-        case "divider":
+        case 'divider':
           transformedBlock.divider = {};
           break;
-        case "image":
+        case 'image':
           transformedBlock.image = {
             type: block.image.type,
-            file: block.image.type === "file" ? block.image.file : undefined,
-            external: block.image.type === "external" ? block.image.external : undefined,
+            file: block.image.type === 'file' ? block.image.file : undefined,
+            external: block.image.type === 'external' ? block.image.external : undefined,
             caption: block.image.caption || [],
           };
           break;
-        case "video":
+        case 'video':
           transformedBlock.video = {
             type: block.video.type,
-            file: block.video.type === "file" ? block.video.file : undefined,
-            external: block.video.type === "external" ? block.video.external : undefined,
+            file: block.video.type === 'file' ? block.video.file : undefined,
+            external: block.video.type === 'external' ? block.video.external : undefined,
           };
           break;
         default:
