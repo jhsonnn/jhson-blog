@@ -22,8 +22,8 @@ export const Default: Story = {
       color: 'blue',
     },
     tags: [
-      { name: 'Next.js', color: 'green' },
-      { name: 'Notion', color: 'gray' },
+      { name: '인턴', color: 'green' },
+      { name: '개인프로젝트', color: 'gray' },
     ],
   },
 };

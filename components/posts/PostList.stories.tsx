@@ -71,7 +71,7 @@ export const LongTitleAndMultipleTags: Story = {
     title: 'long title post list long title post list long title post list',
     initialPosts: mockPosts.map((post) => ({
       ...post,
-      tags: [...post.tags, { name: 'React', color: 'red' }, { name: 'Storybook', color: 'purple' }],
+      tags: [...post.tags, { name: '인턴', color: 'red' }, { name: 'Storybook', color: 'purple' }],
     })),
     basePath: '/posts',
   },
