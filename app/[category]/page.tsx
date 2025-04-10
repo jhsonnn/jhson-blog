@@ -36,6 +36,7 @@ export default async function CategoryPage({
     <PostList
       title={title}
       initialPosts={filteredPosts}
+      initialNextCursor={null}
       basePath={`/${category}`}
       noPostsMessage={
         tag ? `No posts found for tag: "${tag}"` : `No posts found for category: "${category}"`

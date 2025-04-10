@@ -34,11 +34,6 @@ const notionColorMap: { [key: string]: string } = {
 export async function generateStaticParams() {
   const { posts } = await fetchNotionAllPosts();
 
-  // return posts.map((post) => ({
-  //   category: post.category.name,
-  //   slug: post.slug,
-  // }));
-  //TEST: 빌드에러 수정
   return posts
     .filter((post) => post.category.name.toLowerCase() !== 'none')
     .map((post) => ({
