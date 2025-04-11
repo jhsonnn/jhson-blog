@@ -69,6 +69,7 @@ yarn dev
 
 This project is licensed under the MIT License.  
 You are free to use, modify, and distribute it for both personal and commercial purposes.
+
 이 프로젝트는 MIT 라이센스 하에 배포됩니다.
 개인적 혹은 상업적인 목적으로 자유롭게 사용, 수정, 배포할 수 있습니다.
 
