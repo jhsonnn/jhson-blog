@@ -11,7 +11,6 @@ import { Post as PostType } from '@/lib/notion/types';
 export interface PostListProps {
   title?: string;
   initialPosts: PostType[];
-  initialNextCursor: string | null;
   basePath: string;
   noPostsMessage?: string;
   categoryFilter?: string;
