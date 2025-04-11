@@ -9,7 +9,7 @@ export async function fetchNotionAllPosts() {
     const response = await notionClient.databases.query({
       database_id: process.env.NOTION_DATABASE_ID!,
       start_cursor: cursor,
-      page_size: 15,
+      page_size: 10,
     });
 
     const newPosts = response.results.filter(isPageObjectResponse).map((post) => {

@@ -11,6 +11,7 @@ const config: Config = {
     './app/**/*.{js,ts,jsx,tsx}',
     './public/**/*.{html,js,ts,jsx,tsx}',
     './src/**/*.{js,ts,jsx,tsx}',
+    './.storybook/**/*.{js,ts,jsx,tsx}',
   ],
   theme: {
     extend: {

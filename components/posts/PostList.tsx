@@ -8,7 +8,7 @@ import Post from '@/components/posts/Post';
 import Skeleton from '@/components/ui/Skeleton';
 import { Post as PostType } from '@/lib/notion/types';
 
-interface PostListProps {
+export interface PostListProps {
   title?: string;
   initialPosts: PostType[];
   basePath: string;
