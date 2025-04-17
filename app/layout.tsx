@@ -17,10 +17,10 @@ export default async function RootLayout({ children }: RootLayoutProps) {
     <html lang="en" className={`w-full h-full no-scrollbar ${initialTheme}`}>
       <head>
         <meta charSet="UTF-8" />
-        <title>jhsonnn | 손지형의 블로그</title>
+        <title>jhsonnn | 손지형의 포트폴리오</title>
         <meta
           name="description"
-          content="프론트엔드 개발자로의 전향을 준비하며 개인 프로젝트로 만든 블로그 입니다. 블로그를 통해 프론트엔드 개발을 공부하면서 진행했던 프로젝트들을 소개하고자 하였습니다. 뿐만 아니라 제가 어떻게 살아오고 어떠한 경험들을 해왔는지 스스로의 인생을 돌아볼 수 있는 소중한 시간이었습니다."
+          content="프론트엔드 개발자로의 전향을 준비하며 개인 프로젝트로 만든 포트폴리오 및 블로그 입니다. 해당 사이트를를 통해 프론트엔드 개발을 공부하면서 진행했던 프로젝트들을 소개하고자 하였습니다. 뿐만 아니라 제가 어떻게 살아오고 어떠한 경험들을 해왔는지 스스로의 인생을 돌아볼 수 있는 소중한 시간이었습니다."
           key="desc"
         />
         <meta
