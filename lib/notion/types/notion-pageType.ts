@@ -36,6 +36,7 @@ export interface Post {
   date?: string;
   // created_time: string;
   thumbnailUrl: string;
+  originalThumbnailUrl: string;
   status: { name: string };
 }
 

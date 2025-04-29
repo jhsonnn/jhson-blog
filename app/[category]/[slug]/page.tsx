@@ -111,7 +111,8 @@ export default async function ContentPage({ params }: PageProps) {
             <div>
               <ClientImage
                 // src={pageData.thumbnailUrl}
-                src={`/api/image-proxy?url=${encodeURIComponent(pageData.thumbnailUrl)}&slug=${encodeURIComponent(slug)}`}
+                src={`/api/image-proxy?url=${encodeURIComponent(pageData.originalThumbnailUrl)}&slug=${encodeURIComponent(slug)}`}
+                // src={`/api/image-proxy?url=${encodeURIComponent(pageData.thumbnailUrl)}&slug=${encodeURIComponent(slug)}`}
                 alt={pageData.title}
                 width={600}
                 height={400}
