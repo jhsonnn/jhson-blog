@@ -1,3 +1,7 @@
+//presigned URL 받아서 이미지로 fetch 해주고
+//만료됐으면 slug로 다시 Notion 페이지 조회해서 새 presigned URL 발급받아 요청함
+//실패하면 /default_image.png로 fallback
+
 import { NextRequest, NextResponse } from 'next/server';
 
 //URL 재발급을 위한 helper 함수(노션 페이지 정보 다시 조회)
@@ -15,7 +19,7 @@ import { NextRequest, NextResponse } from 'next/server';
 async function fetchNewPresignedUrl(slug: string): Promise<string | null> {
   try {
     const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/page/${slug}`, {
-      cache: 'no-store', // 이거 중요
+      cache: 'no-store',
     });
     const data = await res.json();
     return data?.thumbnailUrl || null;
@@ -55,9 +59,20 @@ export async function GET(req: NextRequest) {
   }
 
   const buffer = await response.arrayBuffer();
+  const contentType = response.headers.get('content-type') || '';
+  
+  // return new Response(buffer, {
+  //   headers: {
+  //     'Content-Type': response.headers.get('content-type') || 'image/png',
+  //   },
+  // });
+
+   const headers = new Headers();
+   if (contentType) {
+    headers.set('Content-Type', contentType);
+  }
+
   return new Response(buffer, {
-    headers: {
-      'Content-Type': response.headers.get('content-type') || 'image/png',
-    },
+    headers,
   });
 }

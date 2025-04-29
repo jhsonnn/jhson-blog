@@ -58,6 +58,7 @@ export async function fetchNotionPageBySlug(slug: string): Promise<Post | null> 
           }))
         : [],
     thumbnailUrl: proxiedUrl,
+    originalThumbnailUrl: originalImageUrl,
     date: post.properties.date?.type === 'date' ? post.properties.date.date?.start || '' : '',
     status: {
       name:
