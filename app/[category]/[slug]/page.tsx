@@ -58,7 +58,6 @@ export default async function ContentPage({ params }: PageProps) {
 
     const blocksResponse = await fetch(
       `${process.env.NEXT_PUBLIC_BASE_URL}/api/block/${pageData.id}`,
-      //TEST: 노션 수정중
       { next: { revalidate: 60 } }
     );
 
@@ -110,7 +109,7 @@ export default async function ContentPage({ params }: PageProps) {
             </div>
             <div>
               <ClientImage
-                src={pageData.thumbnailUrl}
+                src={`/api/image-proxy?url=${encodeURIComponent(pageData.originalThumbnailUrl)}&slug=${encodeURIComponent(slug)}`}
                 alt={pageData.title}
                 width={600}
                 height={400}
