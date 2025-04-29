@@ -59,9 +59,20 @@ export async function GET(req: NextRequest) {
   }
 
   const buffer = await response.arrayBuffer();
+  const contentType = response.headers.get('content-type') || '';
+  
+  // return new Response(buffer, {
+  //   headers: {
+  //     'Content-Type': response.headers.get('content-type') || 'image/png',
+  //   },
+  // });
+
+   const headers = new Headers();
+   if (contentType) {
+    headers.set('Content-Type', contentType);
+  }
+
   return new Response(buffer, {
-    headers: {
-      'Content-Type': response.headers.get('content-type') || 'image/png',
-    },
+    headers,
   });
 }
