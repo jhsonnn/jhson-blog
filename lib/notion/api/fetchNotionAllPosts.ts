@@ -18,6 +18,24 @@ export async function fetchNotionAllPosts() {
           ? new Date(post.properties.date.date.start).toISOString().split('T')[0]
           : '';
 
+      
+      let originalThumbnailUrl = `${process.env.NEXT_PUBLIC_BASE_URL?.replace(/\/$/, '')}/default_image.png`;
+      
+       if (post.properties.thumbnailUrl?.type === 'files' && post.properties.thumbnailUrl.files.length > 0) {
+        const file = post.properties.thumbnailUrl.files[0];
+        if (file.type === 'file' && file.file?.url) {
+          originalThumbnailUrl = file.file.url;
+        } else if (file.type === 'external' && file.external?.url) {
+          originalThumbnailUrl = file.external.url;
+        }
+       }
+      
+      const proxiedThumbnailUrl = `/api/image-proxy?url=${encodeURIComponent(originalThumbnailUrl)}&slug=${encodeURIComponent(
+        post.properties.slug?.type === 'rich_text' && post.properties.slug.rich_text.length > 0
+          ? post.properties.slug.rich_text[0].plain_text
+          : 'no-slug'
+      )}`;
+
       return {
         id: post.id,
         title:
@@ -38,21 +56,14 @@ export async function fetchNotionAllPosts() {
         tags:
           post.properties.tags?.type === 'multi_select'
             ? post.properties.tags.multi_select
-                .filter((tag) => tag.name !== 'none') // 'none' 태그 제외
+                .filter((tag) => tag.name !== 'none') //'none' 태그 제외
                 .map((tag) => ({
                   name: tag.name,
                   color: tag.color || 'default',
                 }))
             : [],
-        thumbnailUrl:
-          post.properties.thumbnailUrl?.type === 'files' &&
-          post.properties.thumbnailUrl.files.length > 0
-            ? post.properties.thumbnailUrl.files[0].type === 'file'
-              ? post.properties.thumbnailUrl.files[0].file.url
-              : post.properties.thumbnailUrl.files[0].type === 'external'
-                ? post.properties.thumbnailUrl.files[0].external.url
-                : '/default_image.png'
-            : '/default_image.png',
+        thumbnailUrl: proxiedThumbnailUrl,
+        originalThumbnailUrl: originalThumbnailUrl,
         date: notionDate,
         status: {
           name:
