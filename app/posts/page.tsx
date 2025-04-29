@@ -10,6 +10,7 @@ export default async function PostsPage() {
     category:
       typeof post.category === 'string' ? { name: post.category, color: 'default' } : post.category,
     tags: post.tags.map((tag) => (typeof tag === 'string' ? { name: tag, color: 'default' } : tag)),
+    originalThumbnailUrl: post.originalThumbnailUrl,
   }));
 
   return (

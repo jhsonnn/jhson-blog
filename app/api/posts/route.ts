@@ -13,15 +13,34 @@ export async function GET() {
       .map((post) => {
         const properties = post.properties;
 
-        const thumbnailUrl =
-          properties.thumbnailUrl?.type === 'files' && properties.thumbnailUrl.files.length > 0
-            ? (() => {
-                const file = properties.thumbnailUrl.files[0];
-                if (file.type === 'file' && file.file) return file.file.url;
-                if (file.type === 'external' && file.external) return file.external.url;
-                return '/default_image.png';
-              })()
-            : '/default_image.png';
+        const defaultImageUrl = `${process.env.NEXT_PUBLIC_BASE_URL?.replace(/\/$/, '')}/default_image.png`;
+
+        let originalThumbnailUrl = defaultImageUrl;
+
+        // const thumbnailUrl =
+        //   properties.thumbnailUrl?.type === 'files' && properties.thumbnailUrl.files.length > 0
+        //     ? (() => {
+        //         const file = properties.thumbnailUrl.files[0];
+        //         if (file.type === 'file' && file.file) return file.file.url;
+        //         if (file.type === 'external' && file.external) return file.external.url;
+        //         return '/default_image.png';
+        //       })()
+        //     : '/default_image.png';
+
+        if (properties.thumbnailUrl?.type === 'files' && properties.thumbnailUrl.files.length > 0) {
+          const file = properties.thumbnailUrl.files[0];
+          if (file.type === 'file' && file.file) {
+            originalThumbnailUrl = file.file.url;
+          } else if (file.type === 'external' && file.external) {
+            originalThumbnailUrl = file.external.url;
+          }
+        }
+
+        const proxiedThumbnailUrl = `/api/image-proxy?url=${encodeURIComponent(originalThumbnailUrl)}&slug=${encodeURIComponent(
+          properties.slug?.type === 'rich_text' && properties.slug.rich_text.length > 0
+            ? properties.slug.rich_text[0].plain_text
+            : 'no-slug'
+        )}`;
 
         //console.log('Raw Date Property:', properties.date);
 
@@ -49,8 +68,8 @@ export async function GET() {
               ? properties.tags.multi_select.map((tag) => tag.name)
               : [],
           date,
-          thumbnailUrl,
-          originalThumbnailUrl: thumbnailUrl,
+         thumbnailUrl: proxiedThumbnailUrl,
+          originalThumbnailUrl: originalThumbnailUrl,
         };
       })
       .filter((post) => post.category !== 'none');
