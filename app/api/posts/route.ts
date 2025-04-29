@@ -50,6 +50,7 @@ export async function GET() {
               : [],
           date,
           thumbnailUrl,
+          originalThumbnailUrl: thumbnailUrl,
         };
       })
       .filter((post) => post.category !== 'none');
