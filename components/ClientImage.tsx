@@ -98,13 +98,13 @@ import { useEffect, useState } from 'react';
 
 interface ClientImageProps {
   src: string;
-  slug: string;
+  // slug: string;
   alt: string;
   width?: number;
   height?: number;
 }
 
-export default function ClientImage({ src, slug, alt, width, height }: ClientImageProps) {
+export default function ClientImage({ src, alt, width, height }: ClientImageProps) {
   const [imgSrc, setImgSrc] = useState(src);
 
   //gif인 경우 일반 <img>사용 (proxy를 거쳐도 gif 최적화가 되지 않음)
