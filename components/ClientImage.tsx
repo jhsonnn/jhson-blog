@@ -45,24 +45,74 @@
 //   );
 // }
 
+// 'use client';
+
+// import Image from 'next/image';
+// import { useState } from 'react';
+
+// interface ClientImageProps {
+//   src: string; //originalThumbnailUrl
+//   alt: string;
+//   slug: string; //image-proxy가 재발급 시 사용할 값
+//   width?: number;
+//   height?: number;
+// }
+
+// export default function ClientImage({ src, slug, alt, width, height }: ClientImageProps) {
+//   const initialProxyUrl = `/api/image-proxy?url=${encodeURIComponent(src)}&slug=${encodeURIComponent(slug)}`;
+//   const [imgSrc, setImgSrc] = useState(initialProxyUrl);
+
+//   const isGif = imgSrc.toLowerCase().endsWith('.gif');
+
+//   if (isGif) {
+//     return (
+//       <img
+//         src={imgSrc}
+//         alt={alt}
+//         width={width}
+//         height={height}
+//         className="my-5 max-w-screen-md min-h-[150px] rounded-xl w-auto"
+//         onError={() => setImgSrc('/default_image.png')}
+//       />
+//     );
+//   }
+
+//   return (
+//     <Image
+//       key={imgSrc}
+//       src={imgSrc}
+//       alt={alt}
+//       width={width}
+//       height={height}
+//       className="mt-5 mb-10 w-full max-w-2xl h-auto rounded-xl object-contain"
+//       onError={() => setImgSrc('/default_image.png')}
+//       unoptimized
+//     />
+//   );
+// }
+
 'use client';
 
 import Image from 'next/image';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 interface ClientImageProps {
-  src: string; // originalThumbnailUrl
-  slug: string; // Notion 페이지 slug
+  src: string;
+  slug: string;
   alt: string;
   width?: number;
   height?: number;
 }
 
 export default function ClientImage({ src, slug, alt, width, height }: ClientImageProps) {
-  const initialProxyUrl = `/api/image-proxy?url=${encodeURIComponent(src)}&slug=${encodeURIComponent(slug)}`;
-  const [imgSrc, setImgSrc] = useState(initialProxyUrl);
+  const [imgSrc, setImgSrc] = useState(src);
 
-  const isGif = imgSrc.toLowerCase().endsWith('.gif');
+  //gif인 경우 일반 <img>사용 (proxy를 거쳐도 gif 최적화가 되지 않음)
+  const isGif = imgSrc.toLowerCase().includes('.gif');
+
+  useEffect(() => {
+    setImgSrc(src); // lug가 변경될 경우 새 presigned URL을 적용
+  }, [src]);
 
   if (isGif) {
     return (
@@ -86,7 +136,7 @@ export default function ClientImage({ src, slug, alt, width, height }: ClientIma
       height={height}
       className="mt-5 mb-10 w-full max-w-2xl h-auto rounded-xl object-contain"
       onError={() => setImgSrc('/default_image.png')}
-      unoptimized
+      unoptimized //presigned URL이 최적화 서버와 충돌할 수 있으므로
     />
   );
 }

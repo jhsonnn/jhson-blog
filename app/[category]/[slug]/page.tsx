@@ -108,11 +108,18 @@ export default async function ContentPage({ params }: PageProps) {
               ))}
             </div>
             <div>
-              <ClientImage
+              {/* <ClientImage
                 // src={`/api/image-proxy?url=${encodeURIComponent(pageData.originalThumbnailUrl)}&slug=${encodeURIComponent(slug)}`}
                 src={pageData.originalThumbnailUrl}
                 slug={slug}
                 alt={pageData.title}
+                width={600}
+                height={400}
+              /> */}
+              <ClientImage
+                src={`/api/image-proxy?url=${encodeURIComponent(pageData.originalThumbnailUrl)}&slug=${encodeURIComponent(slug)}`}
+                alt={pageData.title}
+                slug={slug}
                 width={600}
                 height={400}
               />
