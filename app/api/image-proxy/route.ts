@@ -133,7 +133,6 @@
 //     return NextResponse.redirect('/default_image.png');
 //   }
 // }
-
 import { NextRequest, NextResponse } from 'next/server';
 
 async function fetchNewPresignedUrl(slug: string): Promise<string | null> {
@@ -141,14 +140,10 @@ async function fetchNewPresignedUrl(slug: string): Promise<string | null> {
     const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/page/${slug}`, {
       cache: 'no-store',
     });
-    if (!res.ok) {
-      console.error(`Failed to re-fetch presigned URL. Status: ${res.status}`);
-      return null;
-    }
+    if (!res.ok) return null;
     const data = await res.json();
     return data?.originalThumbnailUrl || null;
-  } catch (err) {
-    console.error('Error fetching new presigned URL:', err);
+  } catch {
     return null;
   }
 }
@@ -158,10 +153,7 @@ async function tryFetchImage(url: string, maxRetries = 2): Promise<Response | nu
     try {
       const res = await fetch(url);
       if (res.ok) return res;
-      console.warn(`Image fetch failed (attempt ${i + 1}): ${res.status}`);
-    } catch (err) {
-      console.error(`Image fetch error (attempt ${i + 1}):`, err);
-    }
+    } catch {}
   }
   return null;
 }
@@ -172,16 +164,14 @@ export async function GET(req: NextRequest) {
   const slug = searchParams.get('slug');
 
   if (!imageUrl || !imageUrl.startsWith('http')) {
-    console.error('Invalid or missing imageUrl:', imageUrl);
     return NextResponse.redirect('/default_image.png');
   }
 
   let response = await tryFetchImage(imageUrl);
 
   if (!response && slug) {
-    console.warn('Original presigned URL failed. Attempting to get a new one...');
     const newUrl = await fetchNewPresignedUrl(slug);
-    if (newUrl) {
+    if (newUrl && newUrl !== imageUrl) {
       response = await tryFetchImage(newUrl);
     }
   }
@@ -196,11 +186,8 @@ export async function GET(req: NextRequest) {
     const contentType = response.headers.get('content-type') || 'image/png';
     const headers = new Headers({ 'Content-Type': contentType });
     return new Response(buffer, { headers });
-  } catch (err) {
-    console.error('Failed to convert image to buffer:', err);
+  } catch (error) {
+    console.error('Image buffer error:', error); 
     return NextResponse.redirect('/default_image.png');
   }
 }
-
-
-
