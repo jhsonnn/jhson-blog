@@ -98,7 +98,6 @@ import { useEffect, useState } from 'react';
 
 interface ClientImageProps {
   src: string;
-  // slug: string;
   alt: string;
   width?: number;
   height?: number;
@@ -111,7 +110,7 @@ export default function ClientImage({ src, alt, width, height }: ClientImageProp
   const isGif = imgSrc.toLowerCase().includes('.gif');
 
   useEffect(() => {
-    setImgSrc(src); // lug가 변경될 경우 새 presigned URL을 적용
+    setImgSrc(src); //slug가 변경될 경우 새 presigned URL을 적용
   }, [src]);
 
   if (isGif) {
