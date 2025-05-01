@@ -197,49 +197,64 @@
 
 import { NextRequest, NextResponse } from 'next/server';
 
-async function fetchNewPresignedUrl(slug: string): Promise<string | null> {
+async function tryFetch(url: string, label: string): Promise<Response | null> {
   try {
-    const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/image-proxy-refresh?slug=${slug}`, {
-      cache: 'no-store',
-    });
-    if (!res.ok) return null;
-    const data = await res.json();
-    return data?.url || null;
-  } catch {
-    return null;
-  }
-}
-
-async function tryFetchImage(url: string, maxRetries = 2): Promise<Response | null> {
-  for (let i = 0; i <= maxRetries; i++) {
-    try {
-      const res = await fetch(url);
-      if (res.ok) return res;
-    } catch {}
+    const res = await fetch(url, { cache: 'no-store' });
+    if (res.ok) return res;
+    console.warn(`[${label}] Fetch failed: status=${res.status}, url=${url}`);
+  } catch (err) {
+    console.error(`[${label}] Fetch error:`, err);
   }
   return null;
 }
 
+async function fetchNewPresignedUrl(slug: string): Promise<string | null> {
+  try {
+    const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/image-proxy-refresh/${slug}`, {
+      cache: 'no-store',
+    });
+    if (!res.ok) {
+      console.warn(`[Refresh] Failed to fetch new presigned URL. Status=${res.status}`);
+      return null;
+    }
+    const data = await res.json();
+    return data.originalThumbnailUrl || null;
+  } catch (err) {
+    console.error('[Refresh] Error while fetching new presigned URL:', err);
+    return null;
+  }
+}
+
 export async function GET(req: NextRequest) {
   const { searchParams } = new URL(req.url);
-  let imageUrl = searchParams.get('url');
+  const url = searchParams.get('url');
   const slug = searchParams.get('slug');
+  const fallback = searchParams.get('fallback');
 
-  if (!imageUrl || !imageUrl.startsWith('http')) {
+  if (!url || !url.startsWith('http')) {
+    console.error('[Initial] Invalid or missing "url" param');
     return NextResponse.redirect('/default_image.png');
   }
 
-  let response = await tryFetchImage(imageUrl);
+  // 1차 시도: 원본 presigned URL
+  let response = await tryFetch(url, 'Initial');
 
+  // 2차 시도: /api/image-proxy-refresh에서 presigned 새로 받기
   if (!response && slug) {
-    const newUrl = await fetchNewPresignedUrl(slug);
-    if (newUrl && newUrl !== imageUrl) {
-      response = await tryFetchImage(newUrl);
+    const refreshedUrl = await fetchNewPresignedUrl(slug);
+    if (refreshedUrl && refreshedUrl !== url) {
+      response = await tryFetch(refreshedUrl, 'Refreshed');
     }
   }
 
-  if (!response || !response.ok) {
-    console.error('All fetch attempts failed. Falling back to default image.');
+  // 3차 시도: fallback(Notion proxy URL)
+  if (!response && fallback) {
+    response = await tryFetch(fallback, 'Fallback');
+  }
+
+  // 최종 실패: default 이미지 반환
+  if (!response) {
+    console.error('[Final] All attempts failed. Using default image.');
     return NextResponse.redirect('/default_image.png');
   }
 
@@ -248,9 +263,8 @@ export async function GET(req: NextRequest) {
     const contentType = response.headers.get('content-type') || 'image/png';
     const headers = new Headers({ 'Content-Type': contentType });
     return new Response(buffer, { headers });
-  } catch (error) {
-    console.error('Image buffer error:', error);
-    console.error('Final image fetch failed. Original and fallback URLs both failed.');
+  } catch (err) {
+    console.error('[Buffer] Failed to convert image to buffer:', err);
     return NextResponse.redirect('/default_image.png');
   }
 }
