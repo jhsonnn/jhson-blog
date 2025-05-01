@@ -248,7 +248,7 @@ export default function ClientImage({
         alt={alt}
         width={width}
         height={height}
-        className={className}
+        className="mt-5 mb-10 w-full max-w-2xl h-auto rounded-xl object-contain"
         onError={handleError}
       />
     );
