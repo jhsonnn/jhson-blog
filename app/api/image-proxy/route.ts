@@ -194,7 +194,6 @@
 
 
 // /app/api/image-proxy/route.ts
-
 import { NextRequest, NextResponse } from 'next/server';
 
 async function tryFetch(url: string, label: string): Promise<Response | null> {
