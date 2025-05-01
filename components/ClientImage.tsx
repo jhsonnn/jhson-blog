@@ -181,13 +181,14 @@
 //     />
 //   );
 // }
+
 'use client';
 
 import Image from 'next/image';
 import { useEffect, useState } from 'react';
 
 interface ClientImageProps {
-  src: string; // proxied URL (with presigned)
+  src: string;
   slug: string;
   alt: string;
   width?: number;
@@ -215,10 +216,7 @@ export default function ClientImage({
   }, [src]);
 
   const handleError = async () => {
-    if (!slug) {
-      setImgSrc('/default_image.png');
-      return;
-    }
+    if (!slug) return setImgSrc('/default_image.png');
 
     try {
       const res = await fetch(`/api/image-proxy-refresh/${slug}`, { cache: 'no-store' });
@@ -248,9 +246,26 @@ export default function ClientImage({
         alt={alt}
         width={width}
         height={height}
-        className="mt-5 mb-10 w-full max-w-2xl h-auto rounded-xl object-contain"
+        className={className}
         onError={handleError}
       />
+    );
+  }
+
+  if (fill) {
+    return (
+      <div className={`relative w-full h-full overflow-hidden ${className}`}>
+        <Image
+          key={imgSrc}
+          src={imgSrc}
+          alt={alt}
+          fill
+          priority={priority}
+          unoptimized
+          className="object-cover rounded-xl"
+          onError={handleError}
+        />
+      </div>
     );
   }
 
@@ -261,10 +276,9 @@ export default function ClientImage({
       alt={alt}
       width={width}
       height={height}
-      fill={fill}
       priority={priority}
       unoptimized
-      className={className}
+      className={`${className} rounded-xl`}
       onError={handleError}
     />
   );
