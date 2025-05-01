@@ -238,7 +238,7 @@ export async function GET(req: NextRequest) {
     }
   }
 
-  if (!response) {
+  if (!response || !response.ok) {
     console.error('All fetch attempts failed. Falling back to default image.');
     return NextResponse.redirect('/default_image.png');
   }
@@ -250,6 +250,7 @@ export async function GET(req: NextRequest) {
     return new Response(buffer, { headers });
   } catch (error) {
     console.error('Image buffer error:', error);
+    console.error('Final image fetch failed. Original and fallback URLs both failed.');
     return NextResponse.redirect('/default_image.png');
   }
 }
