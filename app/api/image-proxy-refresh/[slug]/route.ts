@@ -1,5 +1,3 @@
-// /app/api/image-proxy-refresh/[slug]/route.ts
-
 import { NextRequest, NextResponse } from 'next/server';
 import { fetchNotionPageBySlug } from '@/lib/notion/api/fetchNotionPageBySlug';
 
@@ -16,7 +14,7 @@ export async function GET(
   }
 
   return NextResponse.json({
-    originalThumbnailUrl: page.originalThumbnailUrl ?? '',
-    fallbackThumbnailUrl: page.fallbackThumbnailUrl ?? '',
+    url: page.originalThumbnailUrl ?? '',
+    fallback: page.fallbackThumbnailUrl ?? '',
   });
 }

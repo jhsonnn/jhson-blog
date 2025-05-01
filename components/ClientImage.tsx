@@ -116,20 +116,97 @@
 //   );
 // }
 
+// 'use client';
+
+// import Image from 'next/image';
+// import { useEffect, useState } from 'react';
+
+// interface ClientImageProps {
+//   src: string; // notion proxy url 우선
+//   slug: string;
+//   alt: string;
+//   width?: number;
+//   height?: number;
+// }
+
+// export default function ClientImage({ src, slug, alt, width, height }: ClientImageProps) {
+//   const [imgSrc, setImgSrc] = useState(src);
+//   const isGif = imgSrc.toLowerCase().endsWith('.gif');
+
+//   useEffect(() => {
+//     setImgSrc(src);
+//   }, [src]);
+
+//   const handleError = async () => {
+//     if (!slug) return setImgSrc('/default_image.png');
+//     try {
+//       const res = await fetch(`/api/image-proxy-refresh?slug=${slug}`, { cache: 'no-store' });
+//       if (res.ok) {
+//         const data = await res.json();
+//         if (data?.url) {
+//           const proxyUrl = `/api/image-proxy?url=${encodeURIComponent(data.url)}&slug=${slug}`;
+//           setImgSrc(proxyUrl);
+//           return;
+//         }
+//       }
+//     } catch (e) {
+//       console.error('Presigned fetch fallback failed:', e);
+//     }
+//     setImgSrc('/default_image.png');
+//   };
+
+//   if (isGif) {
+//     return (
+//       <img
+//         src={imgSrc}
+//         alt={alt}
+//         width={width}
+//         height={height}
+//         className="rounded-xl my-4 max-w-full"
+//         onError={handleError}
+//       />
+//     );
+//   }
+
+//   return (
+//     <Image
+//       key={imgSrc}
+//       src={imgSrc}
+//       alt={alt}
+//       width={width}
+//       height={height}
+//       unoptimized
+//       className="mt-5 mb-10 w-full max-w-2xl h-auto rounded-xl object-contain"
+//       onError={handleError}
+//     />
+//   );
+// }
 'use client';
 
 import Image from 'next/image';
 import { useEffect, useState } from 'react';
 
 interface ClientImageProps {
-  src: string; // notion proxy url 우선
+  src: string; // proxied URL (with presigned)
   slug: string;
   alt: string;
   width?: number;
   height?: number;
+  fill?: boolean;
+  className?: string;
+  priority?: boolean;
 }
 
-export default function ClientImage({ src, slug, alt, width, height }: ClientImageProps) {
+export default function ClientImage({
+  src,
+  slug,
+  alt,
+  width,
+  height,
+  fill = false,
+  className = '',
+  priority = false,
+}: ClientImageProps) {
   const [imgSrc, setImgSrc] = useState(src);
   const isGif = imgSrc.toLowerCase().endsWith('.gif');
 
@@ -138,20 +215,29 @@ export default function ClientImage({ src, slug, alt, width, height }: ClientIma
   }, [src]);
 
   const handleError = async () => {
-    if (!slug) return setImgSrc('/default_image.png');
+    if (!slug) {
+      setImgSrc('/default_image.png');
+      return;
+    }
+
     try {
-      const res = await fetch(`/api/image-proxy-refresh?slug=${slug}`, { cache: 'no-store' });
+      const res = await fetch(`/api/image-proxy-refresh/${slug}`, { cache: 'no-store' });
       if (res.ok) {
         const data = await res.json();
-        if (data?.url) {
-          const proxyUrl = `/api/image-proxy?url=${encodeURIComponent(data.url)}&slug=${slug}`;
+        if (data?.originalThumbnailUrl) {
+          const proxyUrl = `/api/image-proxy?url=${encodeURIComponent(
+            data.originalThumbnailUrl
+          )}&slug=${encodeURIComponent(slug)}&fallback=${encodeURIComponent(
+            data.fallbackThumbnailUrl ?? ''
+          )}`;
           setImgSrc(proxyUrl);
           return;
         }
       }
     } catch (e) {
-      console.error('Presigned fetch fallback failed:', e);
+      console.error('Presigned URL fetch failed:', e);
     }
+
     setImgSrc('/default_image.png');
   };
 
@@ -162,7 +248,7 @@ export default function ClientImage({ src, slug, alt, width, height }: ClientIma
         alt={alt}
         width={width}
         height={height}
-        className="rounded-xl my-4 max-w-full"
+        className={className}
         onError={handleError}
       />
     );
@@ -175,8 +261,10 @@ export default function ClientImage({ src, slug, alt, width, height }: ClientIma
       alt={alt}
       width={width}
       height={height}
+      fill={fill}
+      priority={priority}
       unoptimized
-      className="mt-5 mb-10 w-full max-w-2xl h-auto rounded-xl object-contain"
+      className={className}
       onError={handleError}
     />
   );
