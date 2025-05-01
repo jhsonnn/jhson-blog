@@ -93,11 +93,12 @@
 
 'use client';
 
-import Image from 'next/image';
+// import Image from 'next/image';
 import { useEffect, useState } from 'react';
 
 interface ClientImageProps {
   src: string;
+  // slug: string;
   alt: string;
   width?: number;
   height?: number;
@@ -127,15 +128,23 @@ export default function ClientImage({ src, alt, width, height }: ClientImageProp
   }
 
   return (
-    <Image
-      key={imgSrc}
+    // <Image
+    //   key={imgSrc}
+    //   src={imgSrc}
+    //   alt={alt}
+    //   width={width}
+    //   height={height}
+    //   className="mt-5 mb-10 w-full max-w-2xl h-auto rounded-xl object-contain"
+    //   onError={() => setImgSrc('/default_image.png')}
+    //   unoptimized //presigned URL이 최적화 서버와 충돌할 수 있으므로
+    // />
+    <img
       src={imgSrc}
       alt={alt}
       width={width}
       height={height}
       className="mt-5 mb-10 w-full max-w-2xl h-auto rounded-xl object-contain"
       onError={() => setImgSrc('/default_image.png')}
-      unoptimized //presigned URL이 최적화 서버와 충돌할 수 있으므로
     />
   );
 }
