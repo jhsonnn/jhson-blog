@@ -139,7 +139,6 @@
 //     />
 //   );
 // }
-
 'use client';
 
 import Image from 'next/image';
@@ -153,13 +152,36 @@ interface ClientImageProps {
   height?: number;
 }
 
-export default function ClientImage({ src, alt, width, height }: ClientImageProps) {
+export default function ClientImage({ src, slug, alt, width, height }: ClientImageProps) {
   const [imgSrc, setImgSrc] = useState(src);
   const isGif = imgSrc.toLowerCase().endsWith('.gif');
 
   useEffect(() => {
     setImgSrc(src);
   }, [src]);
+
+  const handleError = async () => {
+    // slug가 있을 경우에만 재시도
+    if (!slug) return setImgSrc('/default_image.png');
+
+    try {
+      const res = await fetch(`/api/image-proxy-refresh?slug=${slug}`, { cache: 'no-store' });
+      if (res.ok) {
+        const data = await res.json();
+        if (data?.url) {
+          // 새 presigned URL로 재시도
+          setImgSrc(
+            `/api/image-proxy?url=${encodeURIComponent(data.url)}&slug=${encodeURIComponent(slug)}`
+          );
+          return;
+        }
+      }
+    } catch (e) {
+      console.error('Failed to fetch new presigned URL:', e);
+    }
+
+    setImgSrc('/default_image.png');
+  };
 
   if (isGif) {
     return (
@@ -169,20 +191,21 @@ export default function ClientImage({ src, alt, width, height }: ClientImageProp
         width={width}
         height={height}
         className="rounded-xl my-4 max-w-full"
-        onError={() => setImgSrc('/default_image.png')}
+        onError={handleError}
       />
     );
   }
 
   return (
     <Image
+      key={imgSrc}
       src={imgSrc}
       alt={alt}
       width={width}
       height={height}
       unoptimized
       className="mt-5 mb-10 w-full max-w-2xl h-auto rounded-xl object-contain"
-      onError={() => setImgSrc('/default_image.png')}
+      onError={handleError}
     />
   );
 }
