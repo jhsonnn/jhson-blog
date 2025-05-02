@@ -192,78 +192,45 @@
 //   }
 // }
 
-
-// /app/api/image-proxy/route.ts
 import { NextRequest, NextResponse } from 'next/server';
 
-async function tryFetch(url: string, label: string): Promise<Response | null> {
+async function tryFetchImage(url: string): Promise<Response | null> {
   try {
-    const res = await fetch(url, { cache: 'no-store' });
+    const res = await fetch(url);
     if (res.ok) return res;
-    console.warn(`[${label}] Fetch failed: status=${res.status}, url=${url}`);
-  } catch (err) {
-    console.error(`[${label}] Fetch error:`, err);
+  } catch (e) {
+    console.error('Image fetch failed:', e);
   }
   return null;
-}
-
-async function fetchNewPresignedUrl(slug: string): Promise<string | null> {
-  try {
-    const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/image-proxy-refresh/${slug}`, {
-      cache: 'no-store',
-    });
-    if (!res.ok) {
-      console.warn(`[Refresh] Failed to fetch new presigned URL. Status=${res.status}`);
-      return null;
-    }
-    const data = await res.json();
-    return data.originalThumbnailUrl || null;
-  } catch (err) {
-    console.error('[Refresh] Error while fetching new presigned URL:', err);
-    return null;
-  }
 }
 
 export async function GET(req: NextRequest) {
   const { searchParams } = new URL(req.url);
   const url = searchParams.get('url');
-  const slug = searchParams.get('slug');
   const fallback = searchParams.get('fallback');
 
-  if (!url || !url.startsWith('http')) {
-    console.error('[Initial] Invalid or missing "url" param');
-    return NextResponse.redirect('/default_image.png');
+  if (!url) return NextResponse.redirect('/default_image.png');
+
+  // 1차 시도: presigned URL
+  const res = await tryFetchImage(url);
+  if (res) {
+    const buffer = await res.arrayBuffer();
+    return new Response(buffer, {
+      headers: { 'Content-Type': res.headers.get('content-type') || 'image/png' },
+    });
   }
 
-  // 1차 시도: 원본 presigned URL
-  let response = await tryFetch(url, 'Initial');
-
-  // 2차 시도: /api/image-proxy-refresh에서 presigned 새로 받기
-  if (!response && slug) {
-    const refreshedUrl = await fetchNewPresignedUrl(slug);
-    if (refreshedUrl && refreshedUrl !== url) {
-      response = await tryFetch(refreshedUrl, 'Refreshed');
+  // 2차 시도: Notion proxy fallback
+  if (fallback) {
+    const fallbackRes = await tryFetchImage(fallback);
+    if (fallbackRes) {
+      const buffer = await fallbackRes.arrayBuffer();
+      return new Response(buffer, {
+        headers: { 'Content-Type': fallbackRes.headers.get('content-type') || 'image/png' },
+      });
     }
   }
 
-  // 3차 시도: fallback(Notion proxy URL)
-  if (!response && fallback) {
-    response = await tryFetch(fallback, 'Fallback');
-  }
-
-  // 최종 실패: default 이미지 반환
-  if (!response) {
-    console.error('[Final] All attempts failed. Using default image.');
-    return NextResponse.redirect('/default_image.png');
-  }
-
-  try {
-    const buffer = await response.arrayBuffer();
-    const contentType = response.headers.get('content-type') || 'image/png';
-    const headers = new Headers({ 'Content-Type': contentType });
-    return new Response(buffer, { headers });
-  } catch (err) {
-    console.error('[Buffer] Failed to convert image to buffer:', err);
-    return NextResponse.redirect('/default_image.png');
-  }
+  // 최종 실패
+  return NextResponse.redirect('/default_image.png');
 }
