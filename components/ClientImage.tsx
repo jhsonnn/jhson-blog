@@ -216,7 +216,10 @@ export default function ClientImage({
   }, [src]);
 
   const handleError = async () => {
-    if (!slug) return setImgSrc('/default_image.png');
+    if (!slug) {
+      setImgSrc('/default_image.png');
+      return;
+    }
 
     try {
       const res = await fetch(`/api/image-proxy-refresh/${slug}`, { cache: 'no-store' });
@@ -227,7 +230,7 @@ export default function ClientImage({
             data.originalThumbnailUrl
           )}&slug=${encodeURIComponent(slug)}&fallback=${encodeURIComponent(
             data.fallbackThumbnailUrl ?? ''
-          )}`;
+          )}&ts=${Date.now()}`;
           setImgSrc(proxyUrl);
           return;
         }
