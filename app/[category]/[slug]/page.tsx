@@ -144,8 +144,6 @@
 //   }
 // }
 
-// /app/[category]/[slug]/page.tsx
-
 import dynamic from 'next/dynamic';
 import RandomPostList from '@/components/posts/RandomPostList';
 import { fetchNotionAllPosts } from '@/lib/notion/api/fetchNotionAllPosts';
