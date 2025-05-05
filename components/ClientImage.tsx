@@ -645,6 +645,7 @@ function ClientImage({
   }, [src]);
 
   const handleError = async () => {
+    console.log('ClientImage Error');
     if (!slug) {
       setImgSrc('/default_image.png');
       return;
