@@ -639,7 +639,9 @@ function ClientImage({
   const isGif = imgSrc.toLowerCase().endsWith('.gif');
 
   useEffect(() => {
-    setImgSrc(src);
+    if (src !== imgSrc) {
+      setImgSrc(src);
+    }
   }, [src]);
 
   const handleError = async () => {
