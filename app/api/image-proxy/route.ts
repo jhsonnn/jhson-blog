@@ -25,7 +25,7 @@ export async function GET(req: NextRequest) {
     return new Response(buffer, {
       headers: {
         'Content-Type': res.headers.get('content-type') || 'image/png',
-        'Cache-Control': 'public, max-age=86400, immutable', // ✅ 캐시 헤더
+        'Cache-Control': 'public, max-age=3600, immutable',
       },
     });
   }
