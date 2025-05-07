@@ -18,13 +18,12 @@ const ThemeToggle = () => {
   const isDarkMode = resolvedTheme === 'dark';
 
   return (
-    <div
+    <button
+      onClick={() => setTheme(isDarkMode ? 'light' : 'dark')}
+      aria-pressed={isDarkMode}
       className={`relative w-16 h-8 rounded-full flex items-center cursor-pointer transition-colors duration-300 ${
         isDarkMode ? 'bg-neutral-700' : 'bg-neutral-200'
       }`}
-      onClick={() => setTheme(isDarkMode ? 'light' : 'dark')}
-      role="button"
-      aria-pressed={isDarkMode}
     >
       <div
         className={`absolute top-1 left-1 w-5 h-5 rounded-fullshadow-md transition-all duration-300 transform ${
@@ -39,7 +38,7 @@ const ThemeToggle = () => {
           {isDarkMode ? '🌛' : '🌞'}
         </span>
       </div>
-    </div>
+    </button>
   );
 };
 

@@ -1,4 +1,6 @@
-//필터링된 포스트 목록
+// //필터링된 포스트 목록
+
+//TEST
 'use client';
 
 import React, { useState, useEffect } from 'react';
@@ -55,7 +57,6 @@ const PostList: React.FC<PostListProps> = ({
     return true;
   });
 
-  //검색어 필터링 (title, tag에서 검색)
   filteredPosts = filteredPosts.filter((post) => {
     const postTitle = post.title.toLowerCase();
     const postTags = post.tags.map((tag) => tag.name.toLowerCase());
@@ -133,7 +134,6 @@ const SkeletonList = ({ isRandomPosts = false }) => {
             >
               <Skeleton className="w-full h-full animate-pulse bg-neutral-200 dark:bg-neutral-700 rounded-t-3xl" />
             </div>
-
             {/* 텍스트 스켈레톤 */}
             <div
               className={`p-3 sm:p-3 md:p-4 lg:p-4 flex flex-col
@@ -141,7 +141,6 @@ const SkeletonList = ({ isRandomPosts = false }) => {
             >
               <Skeleton className="w-4/5 h-4 sm:h-5 md:h-6 rounded-md mb-1 sm:mb-2" />
               <Skeleton className="w-3/5 h-3 sm:h-4 md:h-5 rounded-md mb-2" />
-
               <div className="flex flex-wrap gap-1 sm:gap-2 mt-1">
                 {Array.from({ length: 3 }).map((_, idx) => (
                   <Skeleton

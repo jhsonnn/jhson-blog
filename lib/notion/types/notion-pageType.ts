@@ -37,6 +37,7 @@ export interface Post {
   // created_time: string;
   thumbnailUrl: string;
   originalThumbnailUrl: string;
+  fallbackThumbnailUrl?: string;
   status: { name: string };
 }
 
