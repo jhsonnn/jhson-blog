@@ -468,6 +468,121 @@
 //   );
 // }
 
+// 'use client';
+
+// import Image from 'next/image';
+// import { useEffect, useState } from 'react';
+
+// interface ClientImageProps {
+//   src: string;
+//   slug: string;
+//   alt: string;
+//   width?: number;
+//   height?: number;
+//   fill?: boolean;
+//   className?: string;
+//   priority?: boolean;
+// }
+
+// export default function ClientImage({
+//   src,
+//   slug,
+//   alt,
+//   width,
+//   height,
+//   fill = false,
+//   className = '',
+//   priority = false,
+// }: ClientImageProps) {
+//   const [imgSrc, setImgSrc] = useState(src);
+//   const isGif = imgSrc.toLowerCase().endsWith('.gif');
+
+//   useEffect(() => {
+//     setImgSrc(src);
+//   }, [src]);
+
+//   const handleError = async () => {
+//     if (!slug) {
+//       setImgSrc('/default_image.png');
+//       return;
+//     }
+
+//     try {
+//       const res = await fetch(`/api/image-proxy-refresh/${slug}`, { cache: 'no-store' });
+
+//       if (res.ok) {
+//         const data = await res.json();
+//         if (data?.originalThumbnailUrl) {
+//           const refreshedUrl = `/api/image-proxy?url=${encodeURIComponent(
+//             data.originalThumbnailUrl
+//           )}&slug=${encodeURIComponent(slug)}&fallback=${encodeURIComponent(
+//             data.fallbackThumbnailUrl ?? ''
+//           )}&ts=${Date.now()}`;
+
+//           // HEAD 요청으로 이미지 소스 로그
+//           const headRes = await fetch(refreshedUrl, { method: 'HEAD', cache: 'no-store' });
+//           const source = headRes.headers.get('X-Image-Source') ?? 'unknown';
+//           console.log(`[ClientImage] Loaded from: ${source}`);
+
+//           setImgSrc(refreshedUrl);
+//           return;
+//         }
+//       }
+//     } catch (e) {
+//       console.error('Presigned URL refresh failed:', e);
+//     }
+
+//     setImgSrc('/default_image.png');
+//   };
+
+//   if (isGif) {
+//     return (
+//       <img
+//         key={imgSrc}
+//         src={imgSrc}
+//         alt={alt}
+//         width={width}
+//         height={height}
+//         className={`${className} rounded-xl my-4 max-w-full`}
+//         onError={handleError}
+//       />
+//     );
+//   }
+
+//   if (fill) {
+//     return (
+//       <div className={`relative w-full h-full overflow-hidden ${className}`}>
+//         <Image
+//           key={imgSrc}
+//           src={imgSrc}
+//           alt={alt}
+//           fill
+//           priority={priority}
+//           unoptimized
+//           className="object-cover rounded-xl"
+//           onError={handleError}
+//         />
+//       </div>
+//     );
+//   }
+
+//   return (
+//     <Image
+//       key={imgSrc}
+//       src={imgSrc}
+//       alt={alt}
+//       width={width}
+//       height={height}
+//       priority={priority}
+//       unoptimized
+//       className={`${className} mt-5 mb-10 w-full max-w-2xl h-auto rounded-xl object-contain`}
+//       onError={handleError}
+//     />
+//   );
+// }
+
+//TEST5
+// components/ClientImage.tsx
 'use client';
 
 import Image from 'next/image';
@@ -484,6 +599,8 @@ interface ClientImageProps {
   priority?: boolean;
 }
 
+const imageCache = new Map<string, string>(); // slug → valid image url
+
 export default function ClientImage({
   src,
   slug,
@@ -494,12 +611,15 @@ export default function ClientImage({
   className = '',
   priority = false,
 }: ClientImageProps) {
-  const [imgSrc, setImgSrc] = useState(src);
+  const [imgSrc, setImgSrc] = useState(() => imageCache.get(slug) ?? src);
   const isGif = imgSrc.toLowerCase().endsWith('.gif');
 
   useEffect(() => {
-    setImgSrc(src);
-  }, [src]);
+    if (!imageCache.has(slug)) {
+      imageCache.set(slug, src);
+    }
+    setImgSrc(imageCache.get(slug)!);
+  }, [slug, src]);
 
   const handleError = async () => {
     if (!slug) {
@@ -509,9 +629,9 @@ export default function ClientImage({
 
     try {
       const res = await fetch(`/api/image-proxy-refresh/${slug}`, { cache: 'no-store' });
-
       if (res.ok) {
         const data = await res.json();
+
         if (data?.originalThumbnailUrl) {
           const refreshedUrl = `/api/image-proxy?url=${encodeURIComponent(
             data.originalThumbnailUrl
@@ -519,12 +639,12 @@ export default function ClientImage({
             data.fallbackThumbnailUrl ?? ''
           )}&ts=${Date.now()}`;
 
-          // HEAD 요청으로 이미지 소스 로그
           const headRes = await fetch(refreshedUrl, { method: 'HEAD', cache: 'no-store' });
           const source = headRes.headers.get('X-Image-Source') ?? 'unknown';
-          console.log(`[ClientImage] Loaded from: ${source}`);
+          console.log(`[ClientImage] Refreshed from: ${source}`);
 
           setImgSrc(refreshedUrl);
+          imageCache.set(slug, refreshedUrl); //캐시 갱신
           return;
         }
       }
@@ -533,6 +653,7 @@ export default function ClientImage({
     }
 
     setImgSrc('/default_image.png');
+    imageCache.set(slug, '/default_image.png');
   };
 
   if (isGif) {
@@ -548,34 +669,24 @@ export default function ClientImage({
     );
   }
 
-  if (fill) {
-    return (
-      <div className={`relative w-full h-full overflow-hidden ${className}`}>
-        <Image
-          key={imgSrc}
-          src={imgSrc}
-          alt={alt}
-          fill
-          priority={priority}
-          unoptimized
-          className="object-cover rounded-xl"
-          onError={handleError}
-        />
-      </div>
-    );
-  }
+  const imageProps = {
+    src: imgSrc,
+    alt,
+    width,
+    height,
+    priority,
+    unoptimized: true,
+    onError: handleError,
+    className: fill
+      ? 'object-cover rounded-xl'
+      : `${className} mt-5 mb-10 w-full max-w-2xl h-auto rounded-xl object-contain`,
+  };
 
-  return (
-    <Image
-      key={imgSrc}
-      src={imgSrc}
-      alt={alt}
-      width={width}
-      height={height}
-      priority={priority}
-      unoptimized
-      className={`${className} mt-5 mb-10 w-full max-w-2xl h-auto rounded-xl object-contain`}
-      onError={handleError}
-    />
+  return fill ? (
+    <div className={`relative w-full h-full overflow-hidden ${className}`}>
+      <Image {...imageProps} fill />
+    </div>
+  ) : (
+    <Image {...imageProps} />
   );
 }
