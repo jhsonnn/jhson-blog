@@ -435,6 +435,7 @@ export default function ClientImage({
   if (isGif) {
     return (
       <img
+        key={disableKeyUpdate ? undefined : imgSrc}
         src={imgSrc}
         alt={alt}
         width={width}
