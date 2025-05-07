@@ -1,8 +1,9 @@
 //단일 포스트 컴포넌트
+//TEST
 'use client';
 
-import Image from 'next/image';
 import Link from 'next/link';
+import ClientImage from '@/components/ClientImage';
 
 type PostProps = {
   title: string;
@@ -23,7 +24,6 @@ const Post: React.FC<PostProps> = ({
   tags,
   isRandomPosts = false,
 }) => {
-  //none 카테고리 or 태그 없는 경우 렌더링 제외
   if (category.name === 'none' || tags.length === 0) return null;
 
   return (
@@ -44,16 +44,18 @@ const Post: React.FC<PostProps> = ({
               : 'h-48 sm:h-52 md:h-64 lg:h-72'
           }`}
         >
-          <Image
+          <ClientImage
             src={thumbnailUrl}
+            slug={slug}
             alt={title}
-            layout="fill"
-            className="rounded-t-3xl object-cover"
+            width={0}
+            height={0}
+            fill
             priority
-            loading="eager"
-            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 600px"
+            className="rounded-t-3xl object-cover"
+            // disableKeyUpdate={true}
           />
-          <div className="absolute inset-0 bg-[var(--sk-fill-gray-quaternary-alpha)] opacity-0 transition-opacity duration-300 hover:opacity-30"></div>
+          <div className="absolute inset-0 bg-[var(--sk-fill-gray-quaternary-alpha)] opacity-0 transition-opacity duration-300 hover:opacity-30" />
         </div>
 
         {/* 텍스트 영역 */}
