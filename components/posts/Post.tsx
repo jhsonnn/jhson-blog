@@ -53,7 +53,7 @@ const Post: React.FC<PostProps> = ({
             fill
             priority
             className="rounded-t-3xl object-cover"
-            disableKeyUpdate={true}
+            // disableKeyUpdate={true}
           />
           <div className="absolute inset-0 bg-[var(--sk-fill-gray-quaternary-alpha)] opacity-0 transition-opacity duration-300 hover:opacity-30" />
         </div>
