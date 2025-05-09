@@ -350,7 +350,7 @@
 
 // export default NotionRenderer;
 
-// ✅ NotionRenderer.tsx (ClientImage 사용 통일, 슬러그 기반 캐시, 타입 오류 수정)
+//TEST : ClientImage 사용 통일, 슬러그 기반 캐시, 타입 오류 수정
 import React, { useMemo } from 'react';
 import { BlockWithChildren } from '@/lib/notion/types';
 import ClientImage from '@/components/ClientImage';
@@ -483,7 +483,7 @@ const renderBulletedListItem = (block: BlockWithChildren) => {
     <ul className="list-disc pl-6 my-2 text-sm sm:text-base">
       <li className={`${hasText || hasChildren ? '' : 'min-h-[1.5rem] block'}`}>
         {hasText ? (
-          block.bulleted_list_item?.rich_text.map((text, i) => text.plain_text)
+          block.bulleted_list_item?.rich_text.map((text, _i) => text.plain_text)
         ) : (
           <span className="block min-h-[1.5rem] w-full">&nbsp;</span>
         )}
