@@ -732,7 +732,6 @@
 // export default RandomPostList;
 
 //TEST : 모바일 터치스와이프 & 현재 slug 제외 모든 post 보여주도록
-
 'use client';
 
 import React, { useEffect, useState, useCallback, useRef } from 'react';
@@ -747,12 +746,16 @@ interface RandomPostListProps {
 }
 
 const RandomPostList: React.FC<RandomPostListProps> = ({ posts, currentSlug }) => {
-  const [filteredPosts, setFilteredPosts] = useState<PostType[]>([]);
-  const [visibleCount, setVisibleCount] = useState(3);
+  const [randomPosts, setRandomPosts] = useState<PostType[]>([]);
   const [currentIndex, setCurrentIndex] = useState(0);
-  const containerRef = useRef<HTMLDivElement>(null);
-  const transitionDurationTime = 500;
+  const [visibleCount, setVisibleCount] = useState(3);
   const [isTransitioning, setIsTransitioning] = useState(false);
+  const [isPaused, setIsPaused] = useState(false);
+  const [direction, setDirection] = useState<'forward' | 'backward'>('forward');
+  const touchStartX = useRef<number | null>(null);
+  const touchEndX = useRef<number | null>(null);
+
+  const transitionDurationTime = 500;
 
   const updateVisibleCount = useCallback(() => {
     const width = window.innerWidth;
@@ -768,21 +771,53 @@ const RandomPostList: React.FC<RandomPostListProps> = ({ posts, currentSlug }) =
   }, [updateVisibleCount]);
 
   useEffect(() => {
+    if (!posts.length) return;
     const filtered = posts.filter((p) => p.slug !== currentSlug);
-    setFilteredPosts(filtered);
+    setRandomPosts(filtered);
     setCurrentIndex(0);
   }, [posts, currentSlug]);
 
-  const goToIndex = (index: number) => {
-    if (isTransitioning || !filteredPosts.length) return;
+  const handleNext = () => {
+    if (isTransitioning || randomPosts.length <= visibleCount) return;
     setIsTransitioning(true);
-    const total = filteredPosts.length;
-    const newIndex = (index + total) % total;
-    setCurrentIndex(newIndex);
+
+    setCurrentIndex((prev) => {
+      if (direction === 'forward') {
+        if (prev >= randomPosts.length - visibleCount) {
+          setDirection('backward');
+          return prev - 1;
+        }
+        return prev + 1;
+      } else {
+        if (prev <= 0) {
+          setDirection('forward');
+          return prev + 1;
+        }
+        return prev - 1;
+      }
+    });
   };
 
-  const handleNext = () => goToIndex(currentIndex + 1);
-  const handlePrev = () => goToIndex(currentIndex - 1);
+  const handlePrev = () => {
+    if (isTransitioning || randomPosts.length <= visibleCount) return;
+    setIsTransitioning(true);
+
+    setCurrentIndex((prev) => {
+      if (direction === 'backward') {
+        if (prev <= 0) {
+          setDirection('forward');
+          return prev + 1;
+        }
+        return prev - 1;
+      } else {
+        if (prev >= randomPosts.length - visibleCount) {
+          setDirection('backward');
+          return prev - 1;
+        }
+        return prev + 1;
+      }
+    });
+  };
 
   useEffect(() => {
     if (isTransitioning) {
@@ -791,54 +826,48 @@ const RandomPostList: React.FC<RandomPostListProps> = ({ posts, currentSlug }) =
     }
   }, [isTransitioning]);
 
-  //터치 스와이프
   useEffect(() => {
-    const container = containerRef.current;
-    if (!container) return;
+    if (isPaused || randomPosts.length <= visibleCount) return;
+    const interval = setInterval(() => handleNext(), 3000);
+    return () => clearInterval(interval);
+  }, [isPaused, direction, randomPosts.length, visibleCount]);
 
-    let startX = 0;
-    let endX = 0;
+  const handleTouchStart = (e: React.TouchEvent) => {
+    touchStartX.current = e.changedTouches[0].clientX;
+  };
 
-    const handleTouchStart = (e: TouchEvent) => {
-      startX = e.touches[0].clientX;
-    };
-
-    const handleTouchMove = (e: TouchEvent) => {
-      endX = e.touches[0].clientX;
-    };
-
-    const handleTouchEnd = () => {
-      const diff = startX - endX;
-      if (Math.abs(diff) < 50) return;
-      if (diff > 0) handleNext();
-      else handlePrev();
-    };
-
-    container.addEventListener('touchstart', handleTouchStart);
-    container.addEventListener('touchmove', handleTouchMove);
-    container.addEventListener('touchend', handleTouchEnd);
-
-    return () => {
-      container.removeEventListener('touchstart', handleTouchStart);
-      container.removeEventListener('touchmove', handleTouchMove);
-      container.removeEventListener('touchend', handleTouchEnd);
-    };
-  }, [handleNext, handlePrev]);
+  const handleTouchEnd = (e: React.TouchEvent) => {
+    touchEndX.current = e.changedTouches[0].clientX;
+    if (touchStartX.current !== null && touchEndX.current !== null) {
+      const diff = touchStartX.current - touchEndX.current;
+      if (Math.abs(diff) > 50) {
+        if (diff > 0) handleNext();
+        else handlePrev();
+      }
+    }
+    touchStartX.current = null;
+    touchEndX.current = null;
+  };
 
   return (
-    <div className="relative mt-10">
+    <div
+      className="relative mt-10"
+      onMouseEnter={() => setIsPaused(true)}
+      onMouseLeave={() => setIsPaused(false)}
+    >
       <h2 className="text-lg lg:text-xl font-bold mb-4">다른 Posts</h2>
 
-      <div className="overflow-hidden relative" ref={containerRef}>
+      <div className="overflow-hidden relative">
         <div
-          className="flex mb-10 transition-transform"
+          className="flex mb-10 will-change-transform transition-transform [transform:translate3d(0,0,0)]"
           style={{
             transform: `translateX(-${currentIndex * (100 / visibleCount)}%)`,
             transition: isTransitioning ? `transform ${transitionDurationTime}ms ease` : 'none',
-            width: `${(filteredPosts.length * 100) / visibleCount}%`,
           }}
+          onTouchStart={handleTouchStart}
+          onTouchEnd={handleTouchEnd}
         >
-          {filteredPosts.map((post, index) => (
+          {randomPosts.map((post, index) => (
             <div
               key={`${post.id}-${index}`}
               className={`flex-shrink-0 px-2 ${
