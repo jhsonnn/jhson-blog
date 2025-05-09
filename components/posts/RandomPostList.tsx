@@ -409,7 +409,7 @@
 //TEST : 큐로 구현해서 무한 슬라이더 방식으로
 'use client';
 
-import React, { useEffect, useState, useCallback, useRef } from 'react';
+import React, { useEffect, useState, useRef, useCallback } from 'react';
 import Post from './Post';
 import { Post as PostType } from '@/lib/notion/types';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
@@ -424,12 +424,12 @@ const SLIDE_INTERVAL = 2000;
 const TRANSITION_DURATION = 400;
 
 const RandomPostList: React.FC<RandomPostListProps> = ({ posts, currentSlug }) => {
-  const containerRef = useRef<HTMLDivElement>(null);
-  const touchStartX = useRef<number | null>(null);
   const [randomPosts, setRandomPosts] = useState<PostType[]>([]);
+  const [currentIndex, setCurrentIndex] = useState(0);
   const [visibleCount, setVisibleCount] = useState(3);
-  const [isTransitioning, setIsTransitioning] = useState(false);
   const [isPaused, setIsPaused] = useState(false);
+  const [isTransitioning, setIsTransitioning] = useState(false);
+  const touchStartX = useRef<number | null>(null);
 
   const updateVisibleCount = useCallback(() => {
     const width = window.innerWidth;
@@ -447,45 +447,28 @@ const RandomPostList: React.FC<RandomPostListProps> = ({ posts, currentSlug }) =
   useEffect(() => {
     const filtered = posts.filter((p) => p.slug !== currentSlug);
     setRandomPosts(filtered);
+    setCurrentIndex(0);
   }, [posts, currentSlug]);
 
-  const [queue, setQueue] = useState<PostType[]>([]);
-
-  useEffect(() => {
-    if (randomPosts.length > 0) {
-      setQueue([...randomPosts]);
-    }
-  }, [randomPosts]);
-
-  const slideNext = () => {
-    if (isTransitioning || queue.length <= visibleCount) return;
+  const nextSlide = () => {
+    if (randomPosts.length <= visibleCount || isTransitioning) return;
     setIsTransitioning(true);
-    setQueue((prev) => {
-      const newQueue = [...prev];
-      const shifted = newQueue.shift();
-      if (shifted) newQueue.push(shifted);
-      return newQueue;
-    });
+    setCurrentIndex((prev) => (prev + 1) % randomPosts.length);
     setTimeout(() => setIsTransitioning(false), TRANSITION_DURATION);
   };
 
-  const slidePrev = () => {
-    if (isTransitioning || queue.length <= visibleCount) return;
+  const prevSlide = () => {
+    if (randomPosts.length <= visibleCount || isTransitioning) return;
     setIsTransitioning(true);
-    setQueue((prev) => {
-      const newQueue = [...prev];
-      const popped = newQueue.pop();
-      if (popped) newQueue.unshift(popped);
-      return newQueue;
-    });
+    setCurrentIndex((prev) => (prev - 1 + randomPosts.length) % randomPosts.length);
     setTimeout(() => setIsTransitioning(false), TRANSITION_DURATION);
   };
 
   useEffect(() => {
-    if (isPaused || queue.length <= visibleCount) return;
-    const interval = setInterval(() => slideNext(), SLIDE_INTERVAL);
+    if (isPaused || randomPosts.length <= visibleCount) return;
+    const interval = setInterval(nextSlide, SLIDE_INTERVAL);
     return () => clearInterval(interval);
-  }, [isPaused, queue.length, visibleCount]);
+  }, [isPaused, randomPosts.length, visibleCount, currentIndex]);
 
   const handleTouchStart = (e: React.TouchEvent) => {
     touchStartX.current = e.touches[0].clientX;
@@ -495,11 +478,16 @@ const RandomPostList: React.FC<RandomPostListProps> = ({ posts, currentSlug }) =
     if (touchStartX.current === null) return;
     const deltaX = e.changedTouches[0].clientX - touchStartX.current;
     if (Math.abs(deltaX) > 50) {
-      if (deltaX > 0) slidePrev();
-      else slideNext();
+      deltaX > 0 ? prevSlide() : nextSlide();
     }
     touchStartX.current = null;
   };
+
+  // 슬라이드 표시용 리스트 구성 (currentIndex부터 visibleCount만큼 잘라서 보여줌)
+  const visiblePosts = Array.from({ length: visibleCount }, (_, i) => {
+    const index = (currentIndex + i) % randomPosts.length;
+    return randomPosts[index];
+  });
 
   return (
     <div
@@ -512,14 +500,8 @@ const RandomPostList: React.FC<RandomPostListProps> = ({ posts, currentSlug }) =
       <h2 className="text-lg lg:text-xl font-bold mb-4">다른 Posts</h2>
 
       <div className="overflow-hidden relative">
-        <div
-          ref={containerRef}
-          className="flex mb-10 transition-transform duration-300 ease-in-out"
-          style={{
-            transform: `translateX(0)`,
-          }}
-        >
-          {queue.slice(0, visibleCount).map((post, index) => (
+        <div className="flex mb-10 transition-transform duration-300 ease-in-out">
+          {visiblePosts.map((post, index) => (
             <div
               key={`${post.id}-${index}`}
               className={`flex-shrink-0 px-2 ${
@@ -537,7 +519,7 @@ const RandomPostList: React.FC<RandomPostListProps> = ({ posts, currentSlug }) =
 
         <button
           className="absolute top-1/2 left-0 transform -translate-y-1/2 bg-neutral-200 dark:bg-neutral-600 text-neutral-50 dark:text-neutral-500 p-3 rounded-full hover:bg-neutral-400 dark:hover:bg-neutral-600 transition"
-          onClick={slidePrev}
+          onClick={prevSlide}
           aria-label="Previous"
         >
           <ChevronLeft className="w-2 h-2 md:w-3 md:h-3 lg:w-3 lg:h-3" />
@@ -545,7 +527,7 @@ const RandomPostList: React.FC<RandomPostListProps> = ({ posts, currentSlug }) =
 
         <button
           className="absolute top-1/2 right-0 transform -translate-y-1/2 bg-neutral-200 dark:bg-neutral-600 text-neutral-50 dark:text-neutral-500 p-3 rounded-full hover:bg-neutral-400 dark:hover:bg-neutral-600 transition"
-          onClick={slideNext}
+          onClick={nextSlide}
           aria-label="Next"
         >
           <ChevronRight className="w-2 h-2 md:w-3 md:h-3 lg:w-3 lg:h-3" />
