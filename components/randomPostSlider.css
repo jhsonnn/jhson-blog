@@ -1,0 +1,5 @@
+.random-slider-track {
+  transform: translate3d(0, 0, 0);
+  will-change: transform;
+  transition-delay: 10ms;
+}

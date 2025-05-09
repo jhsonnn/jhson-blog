@@ -252,6 +252,7 @@ interface ClientImageProps {
   fill?: boolean;
   className?: string;
   priority?: boolean;
+  disableKeyUpdate?: boolean;
 }
 
 const imageCache = new Map<string, string>();
@@ -265,6 +266,7 @@ export default function ClientImage({
   fill = false,
   className = '',
   priority = false,
+  disableKeyUpdate = false,
 }: ClientImageProps) {
   const [imgSrc, setImgSrc] = useState(() => imageCache.get(slug) ?? src);
   const triedRefresh = useRef(false);
@@ -275,10 +277,12 @@ export default function ClientImage({
     if (!imageCache.has(slug)) {
       imageCache.set(slug, src);
     }
-    setImgSrc(imageCache.get(slug)!);
+
+    const currentSrc = imageCache.get(slug)!;
+    setImgSrc(currentSrc);
 
     const tester = new window.Image();
-    const tsUrl = src + `?ts=${Date.now()}`;
+    const tsUrl = currentSrc + `?ts=${Date.now()}`;
     tester.src = tsUrl;
 
     const timeoutId = setTimeout(() => {
@@ -292,7 +296,7 @@ export default function ClientImage({
 
     tester.onload = () => {
       clearTimeout(timeoutId);
-      imageCache.set(slug, src);
+      imageCache.set(slug, currentSrc);
     };
 
     tester.onerror = () => {
@@ -306,11 +310,10 @@ export default function ClientImage({
     return () => clearTimeout(timeoutId);
   }, [slug, src]);
 
-  //Presigned URL 재요청 로직
   const handleError = async () => {
     if (!slug) {
       imageCache.set(slug, '/default_image.png');
-      setImgSrc('/default_image.png');
+      setImgSrc('/default_image.png?ts=' + Date.now());
       return;
     }
 
@@ -335,29 +338,23 @@ export default function ClientImage({
     }
 
     imageCache.set(slug, '/default_image.png');
-    setImgSrc('/default_image.png');
+    setImgSrc('/default_image.png?ts=' + Date.now());
   };
 
-  //GIF <img>
   if (isGif) {
     return (
       <img
-        key={imgSrc}
+        key={disableKeyUpdate ? undefined : imgSrc}
         src={imgSrc}
         alt={alt}
         width={width}
         height={height}
-        onError={() => {
-          //먼저 캐시 제거
-          imageCache.set(slug, '/default_image.png');
-          setImgSrc('/default_image.png');
-        }}
+        onError={handleError}
         className={`${className} rounded-xl my-4 max-w-full`}
       />
     );
   }
 
-  //기타 이미지 (next/image)
   const imageProps = {
     src: imgSrc,
     alt,
@@ -373,9 +370,9 @@ export default function ClientImage({
 
   return fill ? (
     <div className={`relative w-full h-full overflow-hidden ${className}`}>
-      <Image {...imageProps} fill key={imgSrc} />
+      <Image {...imageProps} fill key={disableKeyUpdate ? undefined : imgSrc} />
     </div>
   ) : (
-    <Image {...imageProps} key={imgSrc} />
+    <Image {...imageProps} key={disableKeyUpdate ? undefined : imgSrc} />
   );
 }

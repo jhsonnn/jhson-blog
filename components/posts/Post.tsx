@@ -13,6 +13,7 @@ type PostProps = {
   category: { name: string; color: string };
   tags: { name: string; color: string }[];
   isRandomPosts?: boolean;
+  disableKeyUpdate?: boolean;
 };
 
 const Post: React.FC<PostProps> = ({
@@ -23,6 +24,7 @@ const Post: React.FC<PostProps> = ({
   category,
   tags,
   isRandomPosts = false,
+  disableKeyUpdate = false,
 }) => {
   if (category.name === 'none' || tags.length === 0) return null;
 
@@ -53,7 +55,7 @@ const Post: React.FC<PostProps> = ({
             fill
             priority
             className="rounded-t-3xl object-cover"
-            // disableKeyUpdate={true}
+            disableKeyUpdate={disableKeyUpdate}
           />
           <div className="absolute inset-0 bg-[var(--sk-fill-gray-quaternary-alpha)] opacity-0 transition-opacity duration-300 hover:opacity-30" />
         </div>
