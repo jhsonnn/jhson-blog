@@ -237,7 +237,7 @@
 //   );
 // }
 
-//TEST
+//TEST : gif 리렌더링 안되는 문제로 인한 수정 코드 테스트
 'use client';
 
 import Image from 'next/image';
