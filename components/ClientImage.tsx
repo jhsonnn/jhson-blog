@@ -238,6 +238,146 @@
 // }
 
 //TEST : gif 리렌더링 안되는 문제로 인한 수정 코드 테스트
+// 'use client';
+
+// import Image from 'next/image';
+// import { useEffect, useState, useRef } from 'react';
+
+// interface ClientImageProps {
+//   src: string;
+//   slug: string;
+//   alt: string;
+//   width?: number;
+//   height?: number;
+//   fill?: boolean;
+//   className?: string;
+//   priority?: boolean;
+//   disableKeyUpdate?: boolean;
+// }
+
+// const imageCache = new Map<string, string>();
+
+// export default function ClientImage({
+//   src,
+//   slug,
+//   alt,
+//   width,
+//   height,
+//   fill = false,
+//   className = '',
+//   priority = false,
+//   disableKeyUpdate = false,
+// }: ClientImageProps) {
+//   const [imgSrc, setImgSrc] = useState(() => imageCache.get(slug) ?? src);
+//   const triedRefresh = useRef(false);
+//   const isGif = src.toLowerCase().endsWith('.gif');
+
+//   //초기 src 검사 및 수동 만료 체크
+//   useEffect(() => {
+//     if (!imageCache.has(slug)) {
+//       imageCache.set(slug, src);
+//     }
+
+//     const currentSrc = imageCache.get(slug)!;
+//     setImgSrc(currentSrc);
+
+//     const tester = new window.Image();
+//     const tsUrl = currentSrc + `?ts=${Date.now()}`;
+//     tester.src = tsUrl;
+
+//     const timeoutId = setTimeout(() => {
+//       if (!tester.complete || tester.naturalWidth === 0) {
+//         if (!triedRefresh.current) {
+//           triedRefresh.current = true;
+//           handleError();
+//         }
+//       }
+//     }, 1000);
+
+//     tester.onload = () => {
+//       clearTimeout(timeoutId);
+//       imageCache.set(slug, currentSrc);
+//     };
+
+//     tester.onerror = () => {
+//       clearTimeout(timeoutId);
+//       if (!triedRefresh.current) {
+//         triedRefresh.current = true;
+//         handleError();
+//       }
+//     };
+
+//     return () => clearTimeout(timeoutId);
+//   }, [slug, src]);
+
+//   const handleError = async () => {
+//     if (!slug) {
+//       imageCache.set(slug, '/default_image.png');
+//       setImgSrc('/default_image.png?ts=' + Date.now());
+//       return;
+//     }
+
+//     try {
+//       const res = await fetch(`/api/image-proxy-refresh/${slug}`, { cache: 'no-store' });
+//       if (res.ok) {
+//         const data = await res.json();
+//         if (data?.originalThumbnailUrl) {
+//           const refreshedUrl = `/api/image-proxy?url=${encodeURIComponent(
+//             data.originalThumbnailUrl
+//           )}&slug=${encodeURIComponent(slug)}&fallback=${encodeURIComponent(
+//             data.fallbackThumbnailUrl ?? ''
+//           )}&ts=${Date.now()}`;
+
+//           imageCache.set(slug, refreshedUrl);
+//           setImgSrc(refreshedUrl);
+//           return;
+//         }
+//       }
+//     } catch (e) {
+//       console.error('[ClientImage] Presigned URL refresh failed:', e);
+//     }
+
+//     imageCache.set(slug, '/default_image.png');
+//     setImgSrc('/default_image.png?ts=' + Date.now());
+//   };
+
+//   if (isGif) {
+//     return (
+//       <img
+//         key={disableKeyUpdate ? undefined : imgSrc}
+//         src={imgSrc}
+//         alt={alt}
+//         width={width}
+//         height={height}
+//         onError={handleError}
+//         className={`${className} rounded-xl my-4 max-w-full`}
+//       />
+//     );
+//   }
+
+//   const imageProps = {
+//     src: imgSrc,
+//     alt,
+//     width,
+//     height,
+//     priority,
+//     unoptimized: true,
+//     onError: handleError,
+//     className: fill
+//       ? 'object-cover rounded-xl'
+//       : `${className} mt-5 mb-10 w-full max-w-2xl h-auto rounded-xl object-contain`,
+//   };
+
+//   return fill ? (
+//     <div className={`relative w-full h-full overflow-hidden ${className}`}>
+//       <Image {...imageProps} fill key={disableKeyUpdate ? undefined : imgSrc} />
+//     </div>
+//   ) : (
+//     <Image {...imageProps} key={disableKeyUpdate ? undefined : imgSrc} />
+//   );
+// }
+
+//TEST
 'use client';
 
 import Image from 'next/image';
@@ -272,17 +412,13 @@ export default function ClientImage({
   const triedRefresh = useRef(false);
   const isGif = src.toLowerCase().endsWith('.gif');
 
-  //초기 src 검사 및 수동 만료 체크
   useEffect(() => {
     if (!imageCache.has(slug)) {
       imageCache.set(slug, src);
     }
 
-    const currentSrc = imageCache.get(slug)!;
-    setImgSrc(currentSrc);
-
     const tester = new window.Image();
-    const tsUrl = currentSrc + `?ts=${Date.now()}`;
+    const tsUrl = src + `?ts=${Date.now()}`;
     tester.src = tsUrl;
 
     const timeoutId = setTimeout(() => {
@@ -296,7 +432,8 @@ export default function ClientImage({
 
     tester.onload = () => {
       clearTimeout(timeoutId);
-      imageCache.set(slug, currentSrc);
+      imageCache.set(slug, src);
+      setImgSrc(src);
     };
 
     tester.onerror = () => {
@@ -311,12 +448,6 @@ export default function ClientImage({
   }, [slug, src]);
 
   const handleError = async () => {
-    if (!slug) {
-      imageCache.set(slug, '/default_image.png');
-      setImgSrc('/default_image.png?ts=' + Date.now());
-      return;
-    }
-
     try {
       const res = await fetch(`/api/image-proxy-refresh/${slug}`, { cache: 'no-store' });
       if (res.ok) {
@@ -327,7 +458,6 @@ export default function ClientImage({
           )}&slug=${encodeURIComponent(slug)}&fallback=${encodeURIComponent(
             data.fallbackThumbnailUrl ?? ''
           )}&ts=${Date.now()}`;
-
           imageCache.set(slug, refreshedUrl);
           setImgSrc(refreshedUrl);
           return;
@@ -337,14 +467,14 @@ export default function ClientImage({
       console.error('[ClientImage] Presigned URL refresh failed:', e);
     }
 
-    imageCache.set(slug, '/default_image.png');
-    setImgSrc('/default_image.png?ts=' + Date.now());
+    const fallback = '/default_image.png?ts=' + Date.now();
+    imageCache.set(slug, fallback);
+    setImgSrc(fallback);
   };
 
   if (isGif) {
     return (
       <img
-        key={disableKeyUpdate ? undefined : imgSrc}
         src={imgSrc}
         alt={alt}
         width={width}
@@ -370,9 +500,9 @@ export default function ClientImage({
 
   return fill ? (
     <div className={`relative w-full h-full overflow-hidden ${className}`}>
-      <Image {...imageProps} fill key={disableKeyUpdate ? undefined : imgSrc} />
+      <Image {...imageProps} fill />
     </div>
   ) : (
-    <Image {...imageProps} key={disableKeyUpdate ? undefined : imgSrc} />
+    <Image {...imageProps} />
   );
 }
