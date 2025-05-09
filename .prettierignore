@@ -1,0 +1,34 @@
+# Next.js build output
+.next/
+
+# Static export output
+out/
+
+# Storybook build output
+storybook-static/
+
+# Node modules
+node_modules/
+
+# Test coverage
+coverage/
+
+# Environment files
+.env
+.env.*
+*.local
+
+# Lock files (optional)
+yarn.lock
+package-lock.json
+
+# Build artifacts
+dist/
+build/
+
+# Ignore images or assets
+public/**/*.png
+public/**/*.jpg
+public/**/*.jpeg
+public/**/*.svg
+public/**/*.gif

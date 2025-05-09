@@ -1,6 +1,6 @@
 import React, { useMemo } from 'react';
 import { BlockWithChildren } from '@/lib/notion/types';
-import Image from 'next/image';
+// import Image from 'next/image';
 import ClientImage from '@/components/ClientImage';
 
 interface NotionRendererProps {
