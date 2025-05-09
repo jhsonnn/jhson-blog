@@ -342,12 +342,16 @@ export default function ClientImage({
   if (isGif) {
     return (
       <img
-        key={imgSrc} //강제 리렌더링
+        key={imgSrc}
         src={imgSrc}
         alt={alt}
         width={width}
         height={height}
-        onError={handleError}
+        onError={() => {
+          //먼저 캐시 제거
+          imageCache.set(slug, '/default_image.png');
+          setImgSrc('/default_image.png');
+        }}
         className={`${className} rounded-xl my-4 max-w-full`}
       />
     );
