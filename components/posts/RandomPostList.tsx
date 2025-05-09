@@ -732,6 +732,7 @@
 // export default RandomPostList;
 
 //TEST : 모바일 터치스와이프 & 현재 slug 제외 모든 post 보여주도록
+// components/RandomPostList.tsx
 'use client';
 
 import React, { useEffect, useState, useCallback, useRef } from 'react';
@@ -745,17 +746,16 @@ interface RandomPostListProps {
   basePath: string;
 }
 
+const SLIDE_INTERVAL = 2000;
+const TRANSITION_DURATION = 400;
+
 const RandomPostList: React.FC<RandomPostListProps> = ({ posts, currentSlug }) => {
   const [randomPosts, setRandomPosts] = useState<PostType[]>([]);
-  const [currentIndex, setCurrentIndex] = useState(0);
   const [visibleCount, setVisibleCount] = useState(3);
-  const [isTransitioning, setIsTransitioning] = useState(false);
+  const [currentIndex, setCurrentIndex] = useState(0);
   const [isPaused, setIsPaused] = useState(false);
-  const [direction, setDirection] = useState<'forward' | 'backward'>('forward');
-  const touchStartX = useRef<number | null>(null);
-  const touchEndX = useRef<number | null>(null);
 
-  const transitionDurationTime = 500;
+  const sliderRef = useRef<HTMLDivElement>(null);
 
   const updateVisibleCount = useCallback(() => {
     const width = window.innerWidth;
@@ -773,80 +773,30 @@ const RandomPostList: React.FC<RandomPostListProps> = ({ posts, currentSlug }) =
   useEffect(() => {
     if (!posts.length) return;
     const filtered = posts.filter((p) => p.slug !== currentSlug);
-    setRandomPosts(filtered);
-    setCurrentIndex(0);
+    setRandomPosts([...filtered, ...filtered]); // for looping
   }, [posts, currentSlug]);
-
-  const handleNext = () => {
-    if (isTransitioning || randomPosts.length <= visibleCount) return;
-    setIsTransitioning(true);
-
-    setCurrentIndex((prev) => {
-      if (direction === 'forward') {
-        if (prev >= randomPosts.length - visibleCount) {
-          setDirection('backward');
-          return prev - 1;
-        }
-        return prev + 1;
-      } else {
-        if (prev <= 0) {
-          setDirection('forward');
-          return prev + 1;
-        }
-        return prev - 1;
-      }
-    });
-  };
-
-  const handlePrev = () => {
-    if (isTransitioning || randomPosts.length <= visibleCount) return;
-    setIsTransitioning(true);
-
-    setCurrentIndex((prev) => {
-      if (direction === 'backward') {
-        if (prev <= 0) {
-          setDirection('forward');
-          return prev + 1;
-        }
-        return prev - 1;
-      } else {
-        if (prev >= randomPosts.length - visibleCount) {
-          setDirection('backward');
-          return prev - 1;
-        }
-        return prev + 1;
-      }
-    });
-  };
-
-  useEffect(() => {
-    if (isTransitioning) {
-      const timeout = setTimeout(() => setIsTransitioning(false), transitionDurationTime);
-      return () => clearTimeout(timeout);
-    }
-  }, [isTransitioning]);
 
   useEffect(() => {
     if (isPaused || randomPosts.length <= visibleCount) return;
-    const interval = setInterval(() => handleNext(), 3000);
+    const interval = setInterval(() => {
+      setCurrentIndex((prev) => (prev + 1) % randomPosts.length);
+    }, SLIDE_INTERVAL);
     return () => clearInterval(interval);
-  }, [isPaused, direction, randomPosts.length, visibleCount]);
+  }, [isPaused, randomPosts.length, visibleCount]);
 
-  const handleTouchStart = (e: React.TouchEvent) => {
-    touchStartX.current = e.changedTouches[0].clientX;
+  const handleManualSlide = (direction: 'prev' | 'next') => {
+    if (randomPosts.length <= visibleCount) return;
+    setCurrentIndex((prev) => {
+      if (direction === 'prev') {
+        return (prev - 1 + randomPosts.length) % randomPosts.length;
+      } else {
+        return (prev + 1) % randomPosts.length;
+      }
+    });
   };
 
-  const handleTouchEnd = (e: React.TouchEvent) => {
-    touchEndX.current = e.changedTouches[0].clientX;
-    if (touchStartX.current !== null && touchEndX.current !== null) {
-      const diff = touchStartX.current - touchEndX.current;
-      if (Math.abs(diff) > 50) {
-        if (diff > 0) handleNext();
-        else handlePrev();
-      }
-    }
-    touchStartX.current = null;
-    touchEndX.current = null;
+  const getTransform = () => {
+    return `translateX(-${(100 / visibleCount) * currentIndex}%)`;
   };
 
   return (
@@ -859,13 +809,12 @@ const RandomPostList: React.FC<RandomPostListProps> = ({ posts, currentSlug }) =
 
       <div className="overflow-hidden relative">
         <div
-          className="flex mb-10 will-change-transform transition-transform [transform:translate3d(0,0,0)]"
+          ref={sliderRef}
+          className="flex mb-10 will-change-transform transition-transform"
           style={{
-            transform: `translateX(-${currentIndex * (100 / visibleCount)}%)`,
-            transition: isTransitioning ? `transform ${transitionDurationTime}ms ease` : 'none',
+            transform: getTransform(),
+            transition: `transform ${TRANSITION_DURATION}ms ease`,
           }}
-          onTouchStart={handleTouchStart}
-          onTouchEnd={handleTouchEnd}
         >
           {randomPosts.map((post, index) => (
             <div
@@ -885,7 +834,7 @@ const RandomPostList: React.FC<RandomPostListProps> = ({ posts, currentSlug }) =
 
         <button
           className="absolute top-1/2 left-0 transform -translate-y-1/2 bg-neutral-200 dark:bg-neutral-600 text-neutral-50 dark:text-neutral-500 p-3 rounded-full hover:bg-neutral-400 dark:hover:bg-neutral-600 transition"
-          onClick={handlePrev}
+          onClick={() => handleManualSlide('prev')}
           aria-label="Previous"
         >
           <ChevronLeft className="w-2 h-2 md:w-3 md:h-3 lg:w-3 lg:h-3" />
@@ -893,7 +842,7 @@ const RandomPostList: React.FC<RandomPostListProps> = ({ posts, currentSlug }) =
 
         <button
           className="absolute top-1/2 right-0 transform -translate-y-1/2 bg-neutral-200 dark:bg-neutral-600 text-neutral-50 dark:text-neutral-500 p-3 rounded-full hover:bg-neutral-400 dark:hover:bg-neutral-600 transition"
-          onClick={handleNext}
+          onClick={() => handleManualSlide('next')}
           aria-label="Next"
         >
           <ChevronRight className="w-2 h-2 md:w-3 md:h-3 lg:w-3 lg:h-3" />
