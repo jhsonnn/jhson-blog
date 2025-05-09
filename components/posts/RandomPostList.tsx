@@ -294,7 +294,6 @@ import React, { useEffect, useState, useCallback } from 'react';
 import Post from './Post';
 import { Post as PostType } from '@/lib/notion/types';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
-import './randomPostSlider.css';
 
 interface RandomPostListProps {
   posts: PostType[];
