@@ -688,7 +688,7 @@ export default function ClientImage({
     const tsUrl = src + `?ts=${Date.now()}`;
     tester.src = tsUrl;
 
-    //타임아웃 약간 여유 있게
+    //타임아웃
     const timeoutId = setTimeout(() => {
       if (!tester.complete || tester.naturalWidth === 0) {
         console.warn('[ClientImage] 초기 로딩 실패', slug);
@@ -697,7 +697,7 @@ export default function ClientImage({
           handleError();
         }
       }
-    }, 1500);
+    }, 5000);
 
     tester.onload = () => {
       clearTimeout(timeoutId);
