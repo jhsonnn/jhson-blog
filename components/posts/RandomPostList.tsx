@@ -689,7 +689,7 @@ const RandomPostList: React.FC<RandomPostListProps> = ({ posts, currentSlug }) =
         <div
           className="flex mb-10 will-change-transform transition-transform [transform:translate3d(0,0,0)]"
           style={{
-            transform: `translateX(-$${currentIndex * (100 / visibleCount)}%)`,
+            transform: `translateX(-${currentIndex * (100 / visibleCount)}%)`,
             transition: isTransitioning ? `transform ${transitionDurationTime}ms ease` : 'none',
           }}
         >

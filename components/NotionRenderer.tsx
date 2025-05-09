@@ -229,63 +229,63 @@
 //   );
 // };
 
-// // const renderImage = (block: BlockWithChildren, pageType?: string) => {
-// //   if (!block.image) {
-// //     console.warn('Image block is missing the image property:', block);
-// //     return null;
-// //   }
+// const renderImage = (block: BlockWithChildren, pageType?: string) => {
+//   if (!block.image) {
+//     console.warn('Image block is missing the image property:', block);
+//     return null;
+//   }
 
-// //   let originalImageUrl: string | null = null;
+//   let originalImageUrl: string | null = null;
 
-// //   if (block.image.type === 'file' && block.image.file) {
-// //     originalImageUrl = block.image.file.url;
-// //   } else if (block.image.type === 'external' && block.image.external) {
-// //     originalImageUrl = block.image.external.url;
-// //   }
+//   if (block.image.type === 'file' && block.image.file) {
+//     originalImageUrl = block.image.file.url;
+//   } else if (block.image.type === 'external' && block.image.external) {
+//     originalImageUrl = block.image.external.url;
+//   }
 
-// //   if (!originalImageUrl) {
-// //     console.warn('Image block is missing a valid URL:', block.image);
-// //     return null;
-// //   }
+//   if (!originalImageUrl) {
+//     console.warn('Image block is missing a valid URL:', block.image);
+//     return null;
+//   }
 
-// //   const proxiedImageUrl = `/api/image-proxy?url=${encodeURIComponent(originalImageUrl)}`;
-// //   const decodedUrl = decodeURIComponent(proxiedImageUrl.split('url=')[1] || '');
-// //   const isGif = decodedUrl.toLowerCase().endsWith('.gif');
-// //   const altText = block.image.caption?.[0]?.plain_text || 'Notion Image';
+//   const proxiedImageUrl = `/api/image-proxy?url=${encodeURIComponent(originalImageUrl)}`;
+//   const decodedUrl = decodeURIComponent(proxiedImageUrl.split('url=')[1] || '');
+//   const isGif = decodedUrl.toLowerCase().endsWith('.gif');
+//   const altText = block.image.caption?.[0]?.plain_text || 'Notion Image';
 
-// //   return (
-// //     <div className="my-3 max-w-full min-h-[200px] rounded-xl w-auto">
-// //       {isGif ? (
-// //         <img
-// //           src={proxiedImageUrl}
-// //           alt={altText}
-// //           className={
-// //             pageType === 'resume'
-// //               ? 'rounded-xl w-[200px] h-[200px] object-cover'
-// //               : 'rounded-xl w-[80%] max-w-[700px] min-w-[160px] h-auto object-cover'
-// //           }
-// //         />
-// //       ) : (
-// //         <Image
-// //           key={block.id}
-// //           src={proxiedImageUrl}
-// //           alt={altText}
-// //           width={pageType === 'resume' ? 200 : 700}
-// //           height={pageType === 'resume' ? 200 : 550}
-// //           className={
-// //             pageType === 'resume'
-// //               ? 'rounded-xl object-cover w-[200px] h-[200px]'
-// //               : 'rounded-xl object-cover w-[70%] max-w-[700px] min-w-[160px] h-auto'
-// //           }
-// //           loading="lazy"
-// //           placeholder="blur"
-// //           blurDataURL="/default_image.png"
-// //           unoptimized
-// //         />
-// //       )}
-// //     </div>
-// //   );
-// // };
+//   return (
+//     <div className="my-3 max-w-full min-h-[200px] rounded-xl w-auto">
+//       {isGif ? (
+//         <img
+//           src={proxiedImageUrl}
+//           alt={altText}
+//           className={
+//             pageType === 'resume'
+//               ? 'rounded-xl w-[200px] h-[200px] object-cover'
+//               : 'rounded-xl w-[80%] max-w-[700px] min-w-[160px] h-auto object-cover'
+//           }
+//         />
+//       ) : (
+//         <Image
+//           key={block.id}
+//           src={proxiedImageUrl}
+//           alt={altText}
+//           width={pageType === 'resume' ? 200 : 700}
+//           height={pageType === 'resume' ? 200 : 550}
+//           className={
+//             pageType === 'resume'
+//               ? 'rounded-xl object-cover w-[200px] h-[200px]'
+//               : 'rounded-xl object-cover w-[70%] max-w-[700px] min-w-[160px] h-auto'
+//           }
+//           loading="lazy"
+//           placeholder="blur"
+//           blurDataURL="/default_image.png"
+//           unoptimized
+//         />
+//       )}
+//     </div>
+//   );
+// };
 
 // //TEST : ClientImage로 사용
 // const renderImage = (block: BlockWithChildren, pageType?: string) => {
@@ -350,7 +350,7 @@
 
 // export default NotionRenderer;
 
-//TEST : ClientImage 사용 통일, 슬러그 기반 캐시, 타입 오류 수정
+//TEST
 import React, { useMemo } from 'react';
 import { BlockWithChildren } from '@/lib/notion/types';
 import ClientImage from '@/components/ClientImage';
@@ -492,22 +492,68 @@ const renderBulletedListItem = (block: BlockWithChildren) => {
   );
 };
 
+// const renderImage = (block: BlockWithChildren, pageType?: string) => {
+//   if (!block.image) return null;
+
+//   let originalUrl: string | null = null;
+//   if (block.image.type === 'file' && block.image.file?.url) originalUrl = block.image.file.url;
+//   else if (block.image.type === 'external' && block.image.external?.url)
+//     originalUrl = block.image.external.url;
+//   if (!originalUrl) return null;
+
+//   const notionFallbackUrl = originalUrl.startsWith('https://prod-files-secure.s3.')
+//     ? originalUrl.replace('https://prod-files-secure.s3.', 'https://www.notion.so/image/')
+//     : originalUrl;
+
+//   const proxiedUrl = `/api/image-proxy?url=${encodeURIComponent(originalUrl)}&fallback=${encodeURIComponent(notionFallbackUrl)}`;
+
+//   const altText = block.image.caption?.[0]?.plain_text || 'Notion Image';
+
+//   return (
+//     <div className="my-3 max-w-full min-h-[200px] rounded-xl w-auto">
+//       <ClientImage
+//         src={proxiedUrl}
+//         slug={`${block.id}-${originalUrl}`}
+//         alt={altText}
+//         width={pageType === 'resume' ? 200 : 700}
+//         height={pageType === 'resume' ? 200 : 550}
+//         fill={false}
+//         className={
+//           pageType === 'resume'
+//             ? 'rounded-xl object-cover w-[200px] h-[200px]'
+//             : 'rounded-xl object-cover w-[70%] max-w-[700px] min-w-[160px] h-auto'
+//         }
+//       />
+//     </div>
+//   );
+// };
+
+//TEST
 const renderImage = (block: BlockWithChildren, pageType?: string) => {
   if (!block.image) return null;
 
   let originalUrl: string | null = null;
-  if (block.image.type === 'file' && block.image.file?.url) originalUrl = block.image.file.url;
-  else if (block.image.type === 'external' && block.image.external?.url)
+  if (block.image.type === 'file' && block.image.file?.url) {
+    originalUrl = block.image.file.url;
+  } else if (block.image.type === 'external' && block.image.external?.url) {
     originalUrl = block.image.external.url;
+  }
   if (!originalUrl) return null;
 
   const notionFallbackUrl = originalUrl.startsWith('https://prod-files-secure.s3.')
     ? originalUrl.replace('https://prod-files-secure.s3.', 'https://www.notion.so/image/')
     : originalUrl;
 
-  const proxiedUrl = `/api/image-proxy?url=${encodeURIComponent(originalUrl)}&fallback=${encodeURIComponent(notionFallbackUrl)}`;
+  const proxiedUrl = `/api/image-proxy?url=${encodeURIComponent(originalUrl)}&fallback=${encodeURIComponent(
+    notionFallbackUrl
+  )}`;
 
   const altText = block.image.caption?.[0]?.plain_text || 'Notion Image';
+
+  const baseClass =
+    pageType === 'resume'
+      ? 'rounded-xl object-cover max-w-[200px] max-h-[200px]'
+      : 'rounded-xl object-cover w-[70%] max-w-[700px] min-w-[160px] h-auto';
 
   return (
     <div className="my-3 max-w-full min-h-[200px] rounded-xl w-auto">
@@ -518,11 +564,7 @@ const renderImage = (block: BlockWithChildren, pageType?: string) => {
         width={pageType === 'resume' ? 200 : 700}
         height={pageType === 'resume' ? 200 : 550}
         fill={false}
-        className={
-          pageType === 'resume'
-            ? 'rounded-xl object-cover w-[200px] h-[200px]'
-            : 'rounded-xl object-cover w-[70%] max-w-[700px] min-w-[160px] h-auto'
-        }
+        className={baseClass}
       />
     </div>
   );
