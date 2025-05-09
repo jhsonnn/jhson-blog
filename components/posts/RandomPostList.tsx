@@ -384,7 +384,7 @@ const RandomPostList: React.FC<RandomPostListProps> = ({ posts, currentSlug }) =
 
       <div className="overflow-hidden relative">
         <div
-          className="random-slider-track flex mb-10"
+          className="flex mb-10 will-change-transform [transform:translate3d(0,0,0)] [transition-delay:10ms]"
           style={{
             transform: `translateX(-${
               (currentIndex - Math.floor(visibleCount / 2)) * (100 / visibleCount)
