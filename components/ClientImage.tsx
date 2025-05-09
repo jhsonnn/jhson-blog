@@ -643,6 +643,7 @@
 // }
 
 //TEST
+// components/ClientImage.tsx
 'use client';
 
 import Image from 'next/image';
@@ -675,23 +676,19 @@ export default function ClientImage({
 }: ClientImageProps) {
   const [imgSrc, setImgSrc] = useState(() => imageCache.get(slug) ?? src);
   const triedRefresh = useRef(false);
-
-  //imgSrc 기준으로 gif 여부 판단
-  const isGif = imgSrc.toLowerCase().includes('.gif');
+  const [hasFailedOnce, setHasFailedOnce] = useState(false);
+  const isGif = src.toLowerCase().endsWith('.gif');
 
   useEffect(() => {
-    if (!imageCache.has(slug)) {
-      imageCache.set(slug, src);
-    }
+    if (imageCache.has(slug)) return;
 
     const tester = new window.Image();
-    const tsUrl = src + `?ts=${Date.now()}`;
-    tester.src = tsUrl;
+    const testUrl = imgSrc + `?ts=${Date.now()}`;
+    tester.src = testUrl;
 
-    //타임아웃
     const timeoutId = setTimeout(() => {
       if (!tester.complete || tester.naturalWidth === 0) {
-        console.warn('[ClientImage] 초기 로딩 실패', slug);
+        console.warn('[ClientImage] timeout 발생, handleError 호출', slug);
         if (!triedRefresh.current) {
           triedRefresh.current = true;
           handleError();
@@ -701,13 +698,14 @@ export default function ClientImage({
 
     tester.onload = () => {
       clearTimeout(timeoutId);
-      imageCache.set(slug, src);
-      setImgSrc(src);
+      console.info('[ClientImage] 이미지 로드 성공', slug);
+      imageCache.set(slug, imgSrc);
+      setImgSrc(imgSrc);
     };
 
     tester.onerror = () => {
       clearTimeout(timeoutId);
-      console.warn('[ClientImage] onerror 발생', slug);
+      console.warn('[ClientImage] 이미지 로드 실패, handleError 호출', slug);
       if (!triedRefresh.current) {
         triedRefresh.current = true;
         handleError();
@@ -715,9 +713,12 @@ export default function ClientImage({
     };
 
     return () => clearTimeout(timeoutId);
-  }, [slug, src]);
+  }, [slug]); // 의존성에서 src 제거
 
   const handleError = async () => {
+    if (hasFailedOnce) return;
+    setHasFailedOnce(true);
+
     try {
       const res = await fetch(`/api/image-proxy-refresh/${slug}`, { cache: 'no-store' });
       if (res.ok) {
@@ -728,6 +729,7 @@ export default function ClientImage({
           )}&slug=${encodeURIComponent(slug)}&fallback=${encodeURIComponent(
             data.fallbackThumbnailUrl ?? ''
           )}&ts=${Date.now()}`;
+
           console.info('[ClientImage] 새 URL 적용', slug);
           imageCache.set(slug, refreshedUrl);
           setImgSrc(refreshedUrl);
