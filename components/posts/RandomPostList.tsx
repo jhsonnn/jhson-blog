@@ -426,7 +426,7 @@
 
 // export default RandomPostList;
 
-//TEST
+//TEST : 방향 전환 슬라이더로 변환 테스트
 'use client';
 
 import React, { useEffect, useState, useCallback } from 'react';
@@ -442,10 +442,11 @@ interface RandomPostListProps {
 
 const RandomPostList: React.FC<RandomPostListProps> = ({ posts, currentSlug }) => {
   const [randomPosts, setRandomPosts] = useState<PostType[]>([]);
-  const [currentIndex, setCurrentIndex] = useState(1);
+  const [currentIndex, setCurrentIndex] = useState(0);
   const [visibleCount, setVisibleCount] = useState(3);
   const [isTransitioning, setIsTransitioning] = useState(false);
   const [isPaused, setIsPaused] = useState(false);
+  const [direction, setDirection] = useState<'forward' | 'backward'>('forward');
 
   const transitionDurationTime = 500;
 
@@ -465,43 +466,57 @@ const RandomPostList: React.FC<RandomPostListProps> = ({ posts, currentSlug }) =
   useEffect(() => {
     if (posts.length === 0) return;
     const filteredPosts = posts.filter((post) => post.slug !== currentSlug);
-
-    if (filteredPosts.length < 3) {
-      setRandomPosts([...posts]);
-    } else {
-      setRandomPosts([
-        filteredPosts[filteredPosts.length - 1],
-        ...filteredPosts.sort(() => Math.random() - 0.5),
-        filteredPosts[0],
-      ]);
-    }
+    setRandomPosts(filteredPosts);
   }, [posts, currentSlug]);
 
   const handleNext = () => {
-    if (isTransitioning) return;
+    if (isTransitioning || randomPosts.length === 0) return;
     setIsTransitioning(true);
-    setCurrentIndex((prev) => prev + 1);
+
+    setCurrentIndex((prev) => {
+      if (direction === 'forward') {
+        if (prev >= randomPosts.length - visibleCount) {
+          setDirection('backward');
+          return prev - 1;
+        }
+        return prev + 1;
+      } else {
+        if (prev <= 0) {
+          setDirection('forward');
+          return prev + 1;
+        }
+        return prev - 1;
+      }
+    });
   };
 
   const handlePrev = () => {
-    if (isTransitioning) return;
+    if (isTransitioning || randomPosts.length === 0) return;
     setIsTransitioning(true);
-    setCurrentIndex((prev) => prev - 1);
+
+    setCurrentIndex((prev) => {
+      if (direction === 'backward') {
+        if (prev <= 0) {
+          setDirection('forward');
+          return prev + 1;
+        }
+        return prev - 1;
+      } else {
+        if (prev >= randomPosts.length - visibleCount) {
+          setDirection('backward');
+          return prev - 1;
+        }
+        return prev + 1;
+      }
+    });
   };
 
   useEffect(() => {
     if (isTransitioning) {
-      const timeout = setTimeout(() => {
-        setIsTransitioning(false);
-        if (currentIndex === 0) {
-          setCurrentIndex(randomPosts.length - 2);
-        } else if (currentIndex === randomPosts.length - 1) {
-          setCurrentIndex(1);
-        }
-      }, transitionDurationTime);
+      const timeout = setTimeout(() => setIsTransitioning(false), transitionDurationTime);
       return () => clearTimeout(timeout);
     }
-  }, [currentIndex, isTransitioning, randomPosts.length]);
+  }, [isTransitioning]);
 
   useEffect(() => {
     if (isPaused) return;
@@ -509,7 +524,7 @@ const RandomPostList: React.FC<RandomPostListProps> = ({ posts, currentSlug }) =
       handleNext();
     }, 3000);
     return () => clearInterval(interval);
-  }, [isPaused]);
+  }, [isPaused, direction, randomPosts.length, visibleCount]);
 
   return (
     <div
@@ -521,11 +536,9 @@ const RandomPostList: React.FC<RandomPostListProps> = ({ posts, currentSlug }) =
 
       <div className="overflow-hidden relative">
         <div
-          className="flex mb-10 will-change-transform transition-transform [transform:translate3d(0,0,0)] [transition-delay:10ms]"
+          className="flex mb-10 will-change-transform transition-transform [transform:translate3d(0,0,0)]"
           style={{
-            transform: `translateX(-$${
-              (currentIndex - Math.floor(visibleCount / 2)) * (100 / visibleCount)
-            }%)`,
+            transform: `translateX(-$${currentIndex * (100 / visibleCount)}%)`,
             transition: isTransitioning ? `transform ${transitionDurationTime}ms ease` : 'none',
           }}
         >
