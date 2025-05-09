@@ -377,7 +377,7 @@
 //   );
 // }
 
-//TEST
+//TEST : 슬라이더 좌우 전환 테스트
 'use client';
 
 import Image from 'next/image';
@@ -475,6 +475,7 @@ export default function ClientImage({
   if (isGif) {
     return (
       <img
+        key={disableKeyUpdate ? undefined : imgSrc}
         src={imgSrc}
         alt={alt}
         width={width}
@@ -500,9 +501,9 @@ export default function ClientImage({
 
   return fill ? (
     <div className={`relative w-full h-full overflow-hidden ${className}`}>
-      <Image {...imageProps} fill />
+      <Image {...imageProps} fill key={disableKeyUpdate ? undefined : imgSrc} />
     </div>
   ) : (
-    <Image {...imageProps} />
+    <Image {...imageProps} key={disableKeyUpdate ? undefined : imgSrc} />
   );
 }
