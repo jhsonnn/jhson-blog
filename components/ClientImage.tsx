@@ -377,7 +377,138 @@
 //   );
 // }
 
-//TEST : 슬라이더 좌우 전환 테스트
+// //TEST : 슬라이더 좌우 전환 테스트 => 실패
+// 'use client';
+
+// import Image from 'next/image';
+// import { useEffect, useState, useRef } from 'react';
+
+// interface ClientImageProps {
+//   src: string;
+//   slug: string;
+//   alt: string;
+//   width?: number;
+//   height?: number;
+//   fill?: boolean;
+//   className?: string;
+//   priority?: boolean;
+//   disableKeyUpdate?: boolean;
+// }
+
+// const imageCache = new Map<string, string>();
+
+// export default function ClientImage({
+//   src,
+//   slug,
+//   alt,
+//   width,
+//   height,
+//   fill = false,
+//   className = '',
+//   priority = false,
+//   disableKeyUpdate = false,
+// }: ClientImageProps) {
+//   const [imgSrc, setImgSrc] = useState(() => imageCache.get(slug) ?? src);
+//   const triedRefresh = useRef(false);
+//   const isGif = src.toLowerCase().endsWith('.gif');
+
+//   useEffect(() => {
+//     if (!imageCache.has(slug)) {
+//       imageCache.set(slug, src);
+//     }
+
+//     const tester = new window.Image();
+//     const tsUrl = src + `?ts=${Date.now()}`;
+//     tester.src = tsUrl;
+
+//     const timeoutId = setTimeout(() => {
+//       if (!tester.complete || tester.naturalWidth === 0) {
+//         if (!triedRefresh.current) {
+//           triedRefresh.current = true;
+//           handleError();
+//         }
+//       }
+//     }, 1000);
+
+//     tester.onload = () => {
+//       clearTimeout(timeoutId);
+//       imageCache.set(slug, src);
+//       setImgSrc(src);
+//     };
+
+//     tester.onerror = () => {
+//       clearTimeout(timeoutId);
+//       if (!triedRefresh.current) {
+//         triedRefresh.current = true;
+//         handleError();
+//       }
+//     };
+
+//     return () => clearTimeout(timeoutId);
+//   }, [slug, src]);
+
+//   const handleError = async () => {
+//     try {
+//       const res = await fetch(`/api/image-proxy-refresh/${slug}`, { cache: 'no-store' });
+//       if (res.ok) {
+//         const data = await res.json();
+//         if (data?.originalThumbnailUrl) {
+//           const refreshedUrl = `/api/image-proxy?url=${encodeURIComponent(
+//             data.originalThumbnailUrl
+//           )}&slug=${encodeURIComponent(slug)}&fallback=${encodeURIComponent(
+//             data.fallbackThumbnailUrl ?? ''
+//           )}&ts=${Date.now()}`;
+//           imageCache.set(slug, refreshedUrl);
+//           setImgSrc(refreshedUrl);
+//           return;
+//         }
+//       }
+//     } catch (e) {
+//       console.error('[ClientImage] Presigned URL refresh failed:', e);
+//     }
+
+//     const fallback = '/default_image.png?ts=' + Date.now();
+//     imageCache.set(slug, fallback);
+//     setImgSrc(fallback);
+//   };
+
+//   if (isGif) {
+//     return (
+//       <img
+//         key={disableKeyUpdate ? undefined : imgSrc}
+//         src={imgSrc}
+//         alt={alt}
+//         width={width}
+//         height={height}
+//         onError={handleError}
+//         className={`${className} rounded-xl my-4 max-w-full`}
+//       />
+//     );
+//   }
+
+//   const imageProps = {
+//     src: imgSrc,
+//     alt,
+//     width,
+//     height,
+//     priority,
+//     unoptimized: true,
+//     onError: handleError,
+//     className: fill
+//       ? 'object-cover rounded-xl'
+//       : `${className} mt-5 mb-10 w-full max-w-2xl h-auto rounded-xl object-contain`,
+//   };
+
+//   return fill ? (
+//     <div className={`relative w-full h-full overflow-hidden ${className}`}>
+//       <Image {...imageProps} fill key={disableKeyUpdate ? undefined : imgSrc} />
+//     </div>
+//   ) : (
+//     <Image {...imageProps} key={disableKeyUpdate ? undefined : imgSrc} />
+//   );
+// }
+
+//TEST : 강화된 오류 대응 및 content-type 체크
 'use client';
 
 import Image from 'next/image';
@@ -423,6 +554,7 @@ export default function ClientImage({
 
     const timeoutId = setTimeout(() => {
       if (!tester.complete || tester.naturalWidth === 0) {
+        console.warn('[ClientImage] 초기 로딩 실패', slug);
         if (!triedRefresh.current) {
           triedRefresh.current = true;
           handleError();
@@ -438,6 +570,7 @@ export default function ClientImage({
 
     tester.onerror = () => {
       clearTimeout(timeoutId);
+      console.warn('[ClientImage] onerror 발생', slug);
       if (!triedRefresh.current) {
         triedRefresh.current = true;
         handleError();
@@ -458,13 +591,14 @@ export default function ClientImage({
           )}&slug=${encodeURIComponent(slug)}&fallback=${encodeURIComponent(
             data.fallbackThumbnailUrl ?? ''
           )}&ts=${Date.now()}`;
+          console.info('[ClientImage] 새 URL 적용', slug);
           imageCache.set(slug, refreshedUrl);
           setImgSrc(refreshedUrl);
           return;
         }
       }
     } catch (e) {
-      console.error('[ClientImage] Presigned URL refresh failed:', e);
+      console.error('[ClientImage] Presigned refresh 실패', slug, e);
     }
 
     const fallback = '/default_image.png?ts=' + Date.now();
