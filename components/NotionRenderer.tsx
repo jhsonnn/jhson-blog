@@ -529,6 +529,47 @@ const renderBulletedListItem = (block: BlockWithChildren) => {
 // };
 
 //TEST
+// const renderImage = (block: BlockWithChildren, pageType?: string) => {
+//   if (!block.image) return null;
+
+//   let originalUrl: string | null = null;
+//   if (block.image.type === 'file' && block.image.file?.url) {
+//     originalUrl = block.image.file.url;
+//   } else if (block.image.type === 'external' && block.image.external?.url) {
+//     originalUrl = block.image.external.url;
+//   }
+//   if (!originalUrl) return null;
+
+//   const notionFallbackUrl = originalUrl.startsWith('https://prod-files-secure.s3.')
+//     ? originalUrl.replace('https://prod-files-secure.s3.', 'https://www.notion.so/image/')
+//     : originalUrl;
+
+//   const proxiedUrl = `/api/image-proxy?url=${encodeURIComponent(originalUrl)}&fallback=${encodeURIComponent(
+//     notionFallbackUrl
+//   )}`;
+
+//   const altText = block.image.caption?.[0]?.plain_text || 'Notion Image';
+
+//   const baseClass =
+//     pageType === 'resume'
+//       ? 'rounded-xl object-cover max-w-[200px] max-h-[200px]'
+//       : 'rounded-xl object-cover w-[70%] max-w-[700px] min-w-[160px] h-auto';
+
+//   return (
+//     <div className="my-3 max-w-full min-h-[200px] rounded-xl w-auto">
+//       <ClientImage
+//         src={proxiedUrl}
+//         slug={`${block.id}-${originalUrl}`}
+//         alt={altText}
+//         width={pageType === 'resume' ? 200 : 700}
+//         height={pageType === 'resume' ? 200 : 550}
+//         fill={false}
+//         className={baseClass}
+//       />
+//     </div>
+//   );
+// };
+
 const renderImage = (block: BlockWithChildren, pageType?: string) => {
   if (!block.image) return null;
 
@@ -544,9 +585,9 @@ const renderImage = (block: BlockWithChildren, pageType?: string) => {
     ? originalUrl.replace('https://prod-files-secure.s3.', 'https://www.notion.so/image/')
     : originalUrl;
 
-  const proxiedUrl = `/api/image-proxy?url=${encodeURIComponent(originalUrl)}&fallback=${encodeURIComponent(
-    notionFallbackUrl
-  )}`;
+  const proxiedUrl = `/api/image-proxy?url=${encodeURIComponent(originalUrl)}&slug=${encodeURIComponent(
+    block.id
+  )}&fallback=${encodeURIComponent(notionFallbackUrl)}`;
 
   const altText = block.image.caption?.[0]?.plain_text || 'Notion Image';
 
@@ -559,7 +600,7 @@ const renderImage = (block: BlockWithChildren, pageType?: string) => {
     <div className="my-3 max-w-full min-h-[200px] rounded-xl w-auto">
       <ClientImage
         src={proxiedUrl}
-        slug={`${block.id}-${originalUrl}`}
+        slug={block.id}
         alt={altText}
         width={pageType === 'resume' ? 200 : 700}
         height={pageType === 'resume' ? 200 : 550}
