@@ -246,16 +246,18 @@ export default async function ContentPage({ params }: PageProps) {
 
             <div className="flex flex-wrap gap-2 mb-6">
               {Array.isArray(pageData.tags) &&
-                pageData.tags.map((tag) => (
-                  <span
-                    key={tag.name}
-                    className={`px-2 py-1 text-xs rounded-full ${
-                      notionColorMap[tag.color] || notionColorMap.default
-                    }`}
-                  >
-                    {tag.name}
-                  </span>
-                ))}
+                pageData.tags
+                  .filter((tag) => tag && tag.name) //tag가 존재하고 name이 있는 경우만
+                  .map((tag) => (
+                    <span
+                      key={tag.name}
+                      className={`px-2 py-1 text-xs rounded-full ${
+                        notionColorMap[tag.color] || notionColorMap.default
+                      }`}
+                    >
+                      {tag.name}
+                    </span>
+                  ))}
             </div>
 
             {pageData.thumbnailUrl && (
