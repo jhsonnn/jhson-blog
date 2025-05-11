@@ -116,99 +116,6 @@
 // export default Post;
 
 // //TEST
-// 'use client';
-
-// import Link from 'next/link';
-// import ClientImage from '@/components/ClientImage';
-// import React from 'react';
-
-// type PostProps = {
-//   title: string;
-//   slug: string;
-//   date?: string;
-//   thumbnailUrl: string;
-//   category: { name: string; color: string };
-//   tags: { name: string; color: string }[];
-//   isRandomPosts?: boolean;
-//   disableKeyUpdate?: boolean;
-// };
-
-// const Post: React.FC<PostProps> = React.memo(
-//   ({
-//     title,
-//     slug,
-//     date,
-//     thumbnailUrl,
-//     category,
-//     tags,
-//     isRandomPosts = false,
-//     disableKeyUpdate = false,
-//   }: PostProps) => {
-//     if (category.name === 'none' || tags.length === 0) return null;
-
-//     return (
-//       <Link href={`/${category.name}/${slug}`} passHref>
-//         <div
-//           className={`relative min-w-full max-w-xl mx-auto bg-neutral-100 dark:bg-neutral-700 rounded-3xl shadow-lg overflow-hidden transition-transform duration-300 hover:scale-[1.01] hover:shadow-xl flex flex-col
-//         ${
-//           isRandomPosts
-//             ? 'h-56 sm:h-60 md:h-60 lg:h-[260px]'
-//             : 'h-72 sm:h-80 md:h-[380px] lg:h-[420px]'
-//         }`}
-//         >
-//           <div
-//             className={`relative w-full flex-shrink-0 ${
-//               isRandomPosts
-//                 ? 'h-[130px] sm:h-[140px] md:h-[140px] lg:h-[150px]'
-//                 : 'h-48 sm:h-52 md:h-64 lg:h-72'
-//             }`}
-//           >
-//             <ClientImage
-//               src={thumbnailUrl}
-//               slug={slug}
-//               alt={title}
-//               width={0}
-//               height={0}
-//               fill
-//               priority
-//               className="rounded-t-3xl object-cover"
-//               disableKeyUpdate={disableKeyUpdate}
-//             />
-//           </div>
-
-//           <div
-//             className={`p-3 sm:p-3 md:p-4 lg:p-4 flex flex-col ${
-//               isRandomPosts ? 'h-[80px] sm:h-[80px] md:h-[80px] lg:h-[90px]' : 'h-auto'
-//             }`}
-//           >
-//             <h2
-//               className={`font-semibold transition-colors duration-300 hover:text-[var(--sk-focus-color)] ${
-//                 isRandomPosts
-//                   ? 'text-sm sm:text-sm md:text-sm lg:text-base mb-0.5'
-//                   : 'text-sm sm:text-base md:text-lg lg:text-xl mb-0.5 sm:mb-2'
-//               }`}
-//             >
-//               {title}
-//             </h2>
-//             <p
-//               className={`text-[var(--sk-glyph-gray-secondary)] transition-colors duration-300 ${
-//                 isRandomPosts ? 'text-xs sm:text-xs md:text-xs' : 'text-xs sm:text-sm md:text-sm'
-//               }`}
-//             >
-//               {date ?? 'Unknown Date'}
-//             </p>
-//           </div>
-//         </div>
-//       </Link>
-//     );
-//   }
-// );
-
-// export default Post;
-
-//TEST
-// components/posts/Post.tsx
-
 'use client';
 
 import Link from 'next/link';
@@ -219,9 +126,9 @@ type PostProps = {
   title: string;
   slug: string;
   date?: string;
-  thumbnailUrl?: string;
-  category?: { name: string; color: string };
-  tags?: { name: string; color: string }[];
+  thumbnailUrl: string;
+  category: { name: string; color: string };
+  tags: { name: string; color: string }[];
   isRandomPosts?: boolean;
   disableKeyUpdate?: boolean;
 };
@@ -231,19 +138,16 @@ const Post: React.FC<PostProps> = React.memo(
     title,
     slug,
     date,
-    thumbnailUrl = '/default_image.png',
-    category = { name: 'default', color: 'default' },
-    tags = [],
+    thumbnailUrl,
+    category,
+    tags,
     isRandomPosts = false,
     disableKeyUpdate = false,
   }: PostProps) => {
-    // 필수 조건 방어: title, slug, id가 없으면 렌더링 안 함
-    if (!title || !slug || category.name === 'none' || tags.length === 0) return null;
-
-    const href = `/${category.name}/${slug}`;
+    if (category.name === 'none' || tags.length === 0) return null;
 
     return (
-      <Link href={href} passHref>
+      <Link href={`/${category.name}/${slug}`} passHref>
         <div
           className={`relative min-w-full max-w-xl mx-auto bg-neutral-100 dark:bg-neutral-700 rounded-3xl shadow-lg overflow-hidden transition-transform duration-300 hover:scale-[1.01] hover:shadow-xl flex flex-col
         ${
