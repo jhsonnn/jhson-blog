@@ -212,9 +212,13 @@ export default async function ContentPage({ params }: PageProps) {
     }
 
     const rawBlocks = await blocksResponse.json();
-    const blocks = await transformBlocks(rawBlocks);
+    const blocks = Array.isArray(rawBlocks)
+      ? (await transformBlocks(rawBlocks)).filter((block) => block?.id)
+      : [];
 
-    let filteredPosts = allPosts.posts.filter((post) => post.slug !== slug && !!post.id);
+    let filteredPosts = allPosts.posts.filter(
+      (post) => post.slug !== slug && !!post.id && !!post.title && !!post.slug
+    );
     if (filteredPosts.length < 3) {
       filteredPosts = allPosts.posts.slice(0, 3);
     }
@@ -226,7 +230,7 @@ export default async function ContentPage({ params }: PageProps) {
             <div className="flex items-center gap-2 mb-4">
               <span
                 className={`px-3 py-1 rounded-full text-sm font-semibold ${
-                  notionColorMap[pageData.category.color] || notionColorMap.default
+                  notionColorMap[pageData.category.color ?? 'default'] || notionColorMap.default
                 }`}
               >
                 {pageData.category.name}
@@ -247,12 +251,12 @@ export default async function ContentPage({ params }: PageProps) {
             <div className="flex flex-wrap gap-2 mb-6">
               {Array.isArray(pageData.tags) &&
                 pageData.tags
-                  .filter((tag) => tag && tag.name) //tag가 존재하고 name이 있는 경우만
+                  .filter((tag) => tag?.name)
                   .map((tag) => (
                     <span
                       key={tag.name}
                       className={`px-2 py-1 text-xs rounded-full ${
-                        notionColorMap[tag.color] || notionColorMap.default
+                        notionColorMap[tag.color ?? 'default'] || notionColorMap.default
                       }`}
                     >
                       {tag.name}
@@ -272,7 +276,7 @@ export default async function ContentPage({ params }: PageProps) {
           </div>
 
           <NotionRenderer
-            blocks={Array.isArray(blocks) ? blocks : []}
+            blocks={blocks}
             videoUrl={videoUrl}
             pageType={category.toLowerCase() === 'resume' ? 'resume' : undefined}
           />
