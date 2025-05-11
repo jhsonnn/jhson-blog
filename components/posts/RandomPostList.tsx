@@ -283,17 +283,17 @@ interface RandomPostListProps {
   basePath: string;
 }
 
-const SLIDE_INTERVAL = 2000;
+const SLIDE_INTERVAL = 3000;
 const TRANSITION_DURATION = 400;
 
 const RandomPostList: React.FC<RandomPostListProps> = ({ posts, currentSlug }) => {
-  const containerRef = useRef<HTMLDivElement>(null);
   const touchStartX = useRef<number | null>(null);
-  const [randomPosts, setRandomPosts] = useState<PostType[]>([]);
-  const [currentIndex, setCurrentIndex] = useState(0);
+  const containerRef = useRef<HTMLDivElement>(null);
+  const [displayPosts, setDisplayPosts] = useState<PostType[]>([]);
+  const [currentIndex, setCurrentIndex] = useState(1); // index 1부터 시작 (앞에 dummy 있음)
   const [visibleCount, setVisibleCount] = useState(3);
-  const [isTransitioning, setIsTransitioning] = useState(false);
   const [isPaused, setIsPaused] = useState(false);
+  const [isTransitioning, setIsTransitioning] = useState(true);
 
   const updateVisibleCount = useCallback(() => {
     const width = window.innerWidth;
@@ -309,31 +309,56 @@ const RandomPostList: React.FC<RandomPostListProps> = ({ posts, currentSlug }) =
   }, [updateVisibleCount]);
 
   useEffect(() => {
-    const filtered = posts.filter((p) => p.slug !== currentSlug);
-    setRandomPosts([...filtered, ...filtered]); //무한 루프 위한 복제
+    const filtered = posts.filter((p) => p.slug !== currentSlug && !!p.id);
+    if (filtered.length === 0) return;
+
+    // 복제 슬라이드 포함
+    const extended = [
+      filtered[filtered.length - 1], // 마지막 → 첫 시작 dummy
+      ...filtered,
+      filtered[0], // 첫 → 마지막 dummy
+    ];
+    setDisplayPosts(extended);
+    setCurrentIndex(1); // 진짜 첫 번째에서 시작
   }, [posts, currentSlug]);
 
-  const slideTo = (index: number) => {
-    setIsTransitioning(true);
+  const slideTo = (index: number, withTransition = true) => {
+    setIsTransitioning(withTransition);
     setCurrentIndex(index);
-    setTimeout(() => setIsTransitioning(false), TRANSITION_DURATION);
   };
 
   const handleNext = () => {
-    if (isTransitioning) return;
-    slideTo((currentIndex + 1) % randomPosts.length);
+    if (!isTransitioning) return;
+    slideTo(currentIndex + 1);
   };
 
   const handlePrev = () => {
-    if (isTransitioning) return;
-    slideTo((currentIndex - 1 + randomPosts.length) % randomPosts.length);
+    if (!isTransitioning) return;
+    slideTo(currentIndex - 1);
   };
 
   useEffect(() => {
-    if (isPaused || randomPosts.length <= visibleCount) return;
-    const interval = setInterval(() => handleNext(), SLIDE_INTERVAL);
+    if (isPaused || displayPosts.length <= visibleCount + 2) return;
+
+    const interval = setInterval(() => {
+      slideTo(currentIndex + 1);
+    }, SLIDE_INTERVAL);
     return () => clearInterval(interval);
-  }, [isPaused, randomPosts.length, visibleCount, currentIndex]);
+  }, [isPaused, currentIndex, visibleCount, displayPosts.length]);
+
+  // 무한 루프 처리
+  useEffect(() => {
+    if (!isTransitioning) return;
+
+    const handleLoop = setTimeout(() => {
+      if (currentIndex === displayPosts.length - 1) {
+        slideTo(1, false); // 마지막 dummy → 진짜 첫
+      } else if (currentIndex === 0) {
+        slideTo(displayPosts.length - 2, false); // 첫 dummy → 진짜 마지막
+      }
+    }, TRANSITION_DURATION + 10);
+    return () => clearTimeout(handleLoop);
+  }, [currentIndex, displayPosts.length, isTransitioning]);
 
   const handleTouchStart = (e: React.TouchEvent) => {
     touchStartX.current = e.touches[0].clientX;
@@ -343,8 +368,7 @@ const RandomPostList: React.FC<RandomPostListProps> = ({ posts, currentSlug }) =
     if (touchStartX.current === null) return;
     const deltaX = e.changedTouches[0].clientX - touchStartX.current;
     if (Math.abs(deltaX) > 50) {
-      if (deltaX > 0) handlePrev();
-      else handleNext();
+      deltaX > 0 ? handlePrev() : handleNext();
     }
     touchStartX.current = null;
   };
@@ -362,13 +386,13 @@ const RandomPostList: React.FC<RandomPostListProps> = ({ posts, currentSlug }) =
       <div className="overflow-hidden relative">
         <div
           ref={containerRef}
-          className="flex mb-10 transition-transform duration-300 ease-in-out"
+          className="flex mb-10 transition-transform ease-in-out"
           style={{
             transform: `translateX(-${currentIndex * (100 / visibleCount)}%)`,
             transition: isTransitioning ? `transform ${TRANSITION_DURATION}ms ease` : 'none',
           }}
         >
-          {/* {randomPosts.map((post, index) => (
+          {displayPosts.map((post, index) => (
             <div
               key={`${post.id}-${index}`}
               className={`flex-shrink-0 px-2 ${
@@ -381,24 +405,7 @@ const RandomPostList: React.FC<RandomPostListProps> = ({ posts, currentSlug }) =
             >
               <Post {...post} isRandomPosts disableKeyUpdate />
             </div>
-          ))} */}
-
-          {randomPosts
-            .filter((post) => !!post && !!post.id)
-            .map((post, index) => (
-              <div
-                key={`${post.id}-${index}`}
-                className={`flex-shrink-0 px-2 ${
-                  visibleCount === 1
-                    ? 'w-full h-[13rem] sm:h-[14rem] md:h-[16rem]'
-                    : visibleCount === 2
-                      ? 'w-1/2 h-[240px]'
-                      : 'w-1/3 h-[260px]'
-                }`}
-              >
-                <Post {...post} isRandomPosts disableKeyUpdate />
-              </div>
-            ))}
+          ))}
         </div>
 
         <button
