@@ -406,7 +406,10 @@
 
 // export default RandomPostList;
 
-//TEST : 큐로 구현해서 무한 슬라이더 방식으로
+//TEST : 무한 슬라이더 방식으로
+
+// components/posts/RandomPostList.tsx
+
 'use client';
 
 import React, { useEffect, useState, useRef, useCallback } from 'react';
@@ -420,11 +423,11 @@ interface RandomPostListProps {
   basePath: string;
 }
 
-const SLIDE_INTERVAL = 2000;
+const SLIDE_INTERVAL = 3000;
 const TRANSITION_DURATION = 400;
 
 const RandomPostList: React.FC<RandomPostListProps> = ({ posts, currentSlug }) => {
-  const [randomPosts, setRandomPosts] = useState<PostType[]>([]);
+  const [filteredPosts, setFilteredPosts] = useState<PostType[]>([]);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [visibleCount, setVisibleCount] = useState(3);
   const [isPaused, setIsPaused] = useState(false);
@@ -445,30 +448,30 @@ const RandomPostList: React.FC<RandomPostListProps> = ({ posts, currentSlug }) =
   }, [updateVisibleCount]);
 
   useEffect(() => {
-    const filtered = posts.filter((p) => p.slug !== currentSlug);
-    setRandomPosts(filtered);
+    const safe = posts.filter((p) => p && p.id && p.slug && p.title && p.slug !== currentSlug);
+    setFilteredPosts(safe);
     setCurrentIndex(0);
   }, [posts, currentSlug]);
 
   const nextSlide = () => {
-    if (randomPosts.length <= visibleCount || isTransitioning) return;
+    if (filteredPosts.length <= visibleCount || isTransitioning) return;
     setIsTransitioning(true);
-    setCurrentIndex((prev) => (prev + 1) % randomPosts.length);
+    setCurrentIndex((prev) => (prev + 1) % filteredPosts.length);
     setTimeout(() => setIsTransitioning(false), TRANSITION_DURATION);
   };
 
   const prevSlide = () => {
-    if (randomPosts.length <= visibleCount || isTransitioning) return;
+    if (filteredPosts.length <= visibleCount || isTransitioning) return;
     setIsTransitioning(true);
-    setCurrentIndex((prev) => (prev - 1 + randomPosts.length) % randomPosts.length);
+    setCurrentIndex((prev) => (prev - 1 + filteredPosts.length) % filteredPosts.length);
     setTimeout(() => setIsTransitioning(false), TRANSITION_DURATION);
   };
 
   useEffect(() => {
-    if (isPaused || randomPosts.length <= visibleCount) return;
+    if (isPaused || filteredPosts.length <= visibleCount) return;
     const interval = setInterval(nextSlide, SLIDE_INTERVAL);
     return () => clearInterval(interval);
-  }, [isPaused, randomPosts.length, visibleCount, currentIndex]);
+  }, [isPaused, filteredPosts.length, visibleCount, currentIndex]);
 
   const handleTouchStart = (e: React.TouchEvent) => {
     touchStartX.current = e.touches[0].clientX;
@@ -483,10 +486,9 @@ const RandomPostList: React.FC<RandomPostListProps> = ({ posts, currentSlug }) =
     touchStartX.current = null;
   };
 
-  // 슬라이드 표시용 리스트 구성 (currentIndex부터 visibleCount만큼 잘라서 보여줌)
   const visiblePosts = Array.from({ length: visibleCount }, (_, i) => {
-    const index = (currentIndex + i) % randomPosts.length;
-    return randomPosts[index];
+    const index = (currentIndex + i) % filteredPosts.length;
+    return filteredPosts[index];
   });
 
   return (

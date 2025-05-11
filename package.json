@@ -9,7 +9,7 @@
     "dev:local": "cross-env NODE_ENV=development next dev",
     "build:prod": "cross-env NODE_ENV=production next build",
     "start:prod": "cross-env NODE_ENV=production next start",
-    "lint": "eslint . --ext .js,.jsx,.ts,.tsx",
+    "lint": "eslint .",
     "test": "jest",
     "storybook": "storybook dev -p 6006",
     "build-storybook": "storybook build"
