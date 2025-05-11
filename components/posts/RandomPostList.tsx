@@ -270,148 +270,9 @@
 
 // export default RandomPostList;
 
-// 'use client';
-
-// import React, { useEffect, useState, useCallback, useRef } from 'react';
-// import Post from './Post';
-// import { Post as PostType } from '@/lib/notion/types';
-// import { ChevronLeft, ChevronRight } from 'lucide-react';
-
-// interface RandomPostListProps {
-//   posts: PostType[];
-//   currentSlug: string;
-//   basePath: string;
-// }
-
-// const SLIDE_INTERVAL = 2000;
-// const TRANSITION_DURATION = 400;
-
-// const RandomPostList: React.FC<RandomPostListProps> = ({ posts, currentSlug }) => {
-//   const containerRef = useRef<HTMLDivElement>(null);
-//   const touchStartX = useRef<number | null>(null);
-//   const [randomPosts, setRandomPosts] = useState<PostType[]>([]);
-//   const [currentIndex, setCurrentIndex] = useState(0);
-//   const [visibleCount, setVisibleCount] = useState(3);
-//   const [isTransitioning, setIsTransitioning] = useState(false);
-//   const [isPaused, setIsPaused] = useState(false);
-
-//   const updateVisibleCount = useCallback(() => {
-//     const width = window.innerWidth;
-//     if (width < 640) setVisibleCount(1);
-//     else if (width < 1024) setVisibleCount(2);
-//     else setVisibleCount(3);
-//   }, []);
-
-//   useEffect(() => {
-//     updateVisibleCount();
-//     window.addEventListener('resize', updateVisibleCount);
-//     return () => window.removeEventListener('resize', updateVisibleCount);
-//   }, [updateVisibleCount]);
-
-//   useEffect(() => {
-//     const filtered = posts.filter((p) => p.slug !== currentSlug);
-//     setRandomPosts([...filtered, ...filtered]); //무한 루프 위한 복제
-//   }, [posts, currentSlug]);
-
-//   const slideTo = (index: number) => {
-//     setIsTransitioning(true);
-//     setCurrentIndex(index);
-//     setTimeout(() => setIsTransitioning(false), TRANSITION_DURATION);
-//   };
-
-//   const handleNext = () => {
-//     if (isTransitioning) return;
-//     slideTo((currentIndex + 1) % randomPosts.length);
-//   };
-
-//   const handlePrev = () => {
-//     if (isTransitioning) return;
-//     slideTo((currentIndex - 1 + randomPosts.length) % randomPosts.length);
-//   };
-
-//   useEffect(() => {
-//     if (isPaused || randomPosts.length <= visibleCount) return;
-//     const interval = setInterval(() => handleNext(), SLIDE_INTERVAL);
-//     return () => clearInterval(interval);
-//   }, [isPaused, randomPosts.length, visibleCount, currentIndex]);
-
-//   const handleTouchStart = (e: React.TouchEvent) => {
-//     touchStartX.current = e.touches[0].clientX;
-//   };
-
-//   const handleTouchEnd = (e: React.TouchEvent) => {
-//     if (touchStartX.current === null) return;
-//     const deltaX = e.changedTouches[0].clientX - touchStartX.current;
-//     if (Math.abs(deltaX) > 50) {
-//       if (deltaX > 0) handlePrev();
-//       else handleNext();
-//     }
-//     touchStartX.current = null;
-//   };
-
-//   return (
-//     <div
-//       className="relative mt-10"
-//       onMouseEnter={() => setIsPaused(true)}
-//       onMouseLeave={() => setIsPaused(false)}
-//       onTouchStart={handleTouchStart}
-//       onTouchEnd={handleTouchEnd}
-//     >
-//       <h2 className="text-lg lg:text-xl font-bold mb-4">다른 Posts</h2>
-
-//       <div className="overflow-hidden relative">
-//         <div
-//           ref={containerRef}
-//           className="flex mb-10 transition-transform duration-300 ease-in-out"
-//           style={{
-//             transform: `translateX(-${currentIndex * (100 / visibleCount)}%)`,
-//             transition: isTransitioning ? `transform ${TRANSITION_DURATION}ms ease` : 'none',
-//           }}
-//         >
-//           {randomPosts.map((post, index) => (
-//             <div
-//               key={`${post.id}-${index}`}
-//               className={`flex-shrink-0 px-2 ${
-//                 visibleCount === 1
-//                   ? 'w-full h-[13rem] sm:h-[14rem] md:h-[16rem]'
-//                   : visibleCount === 2
-//                     ? 'w-1/2 h-[240px]'
-//                     : 'w-1/3 h-[260px]'
-//               }`}
-//             >
-//               <Post {...post} isRandomPosts disableKeyUpdate />
-//             </div>
-//           ))}
-//         </div>
-
-//         <button
-//           className="absolute top-1/2 left-0 transform -translate-y-1/2 bg-neutral-200 dark:bg-neutral-600 text-neutral-50 dark:text-neutral-500 p-3 rounded-full hover:bg-neutral-400 dark:hover:bg-neutral-600 transition"
-//           onClick={handlePrev}
-//           aria-label="Previous"
-//         >
-//           <ChevronLeft className="w-2 h-2 md:w-3 md:h-3 lg:w-3 lg:h-3" />
-//         </button>
-
-//         <button
-//           className="absolute top-1/2 right-0 transform -translate-y-1/2 bg-neutral-200 dark:bg-neutral-600 text-neutral-50 dark:text-neutral-500 p-3 rounded-full hover:bg-neutral-400 dark:hover:bg-neutral-600 transition"
-//           onClick={handleNext}
-//           aria-label="Next"
-//         >
-//           <ChevronRight className="w-2 h-2 md:w-3 md:h-3 lg:w-3 lg:h-3" />
-//         </button>
-//       </div>
-//     </div>
-//   );
-// };
-
-// export default RandomPostList;
-
-//TEST : 무한 슬라이더 방식으로
-// components/posts/RandomPostList.tsx
-
 'use client';
 
-import React, { useEffect, useState, useRef, useCallback } from 'react';
+import React, { useEffect, useState, useCallback, useRef } from 'react';
 import Post from './Post';
 import { Post as PostType } from '@/lib/notion/types';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
@@ -422,16 +283,17 @@ interface RandomPostListProps {
   basePath: string;
 }
 
-const SLIDE_INTERVAL = 3000;
+const SLIDE_INTERVAL = 2000;
 const TRANSITION_DURATION = 400;
 
 const RandomPostList: React.FC<RandomPostListProps> = ({ posts, currentSlug }) => {
-  const [filteredPosts, setFilteredPosts] = useState<PostType[]>([]);
+  const containerRef = useRef<HTMLDivElement>(null);
+  const touchStartX = useRef<number | null>(null);
+  const [randomPosts, setRandomPosts] = useState<PostType[]>([]);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [visibleCount, setVisibleCount] = useState(3);
-  const [isPaused, setIsPaused] = useState(false);
   const [isTransitioning, setIsTransitioning] = useState(false);
-  const touchStartX = useRef<number | null>(null);
+  const [isPaused, setIsPaused] = useState(false);
 
   const updateVisibleCount = useCallback(() => {
     const width = window.innerWidth;
@@ -447,30 +309,31 @@ const RandomPostList: React.FC<RandomPostListProps> = ({ posts, currentSlug }) =
   }, [updateVisibleCount]);
 
   useEffect(() => {
-    const safe = posts.filter((p) => p && p.id && p.slug && p.title && p.slug !== currentSlug);
-    setFilteredPosts([...safe, ...safe]);
-    setCurrentIndex(0);
+    const filtered = posts.filter((p) => p.slug !== currentSlug);
+    setRandomPosts([...filtered, ...filtered]); //무한 루프 위한 복제
   }, [posts, currentSlug]);
 
-  const nextSlide = () => {
-    if (filteredPosts.length <= visibleCount || isTransitioning) return;
+  const slideTo = (index: number) => {
     setIsTransitioning(true);
-    setCurrentIndex((prev) => (prev + 1) % filteredPosts.length);
+    setCurrentIndex(index);
     setTimeout(() => setIsTransitioning(false), TRANSITION_DURATION);
   };
 
-  const prevSlide = () => {
-    if (filteredPosts.length <= visibleCount || isTransitioning) return;
-    setIsTransitioning(true);
-    setCurrentIndex((prev) => (prev - 1 + filteredPosts.length) % filteredPosts.length);
-    setTimeout(() => setIsTransitioning(false), TRANSITION_DURATION);
+  const handleNext = () => {
+    if (isTransitioning) return;
+    slideTo((currentIndex + 1) % randomPosts.length);
+  };
+
+  const handlePrev = () => {
+    if (isTransitioning) return;
+    slideTo((currentIndex - 1 + randomPosts.length) % randomPosts.length);
   };
 
   useEffect(() => {
-    if (isPaused || filteredPosts.length <= visibleCount) return;
-    const interval = setInterval(nextSlide, SLIDE_INTERVAL);
+    if (isPaused || randomPosts.length <= visibleCount) return;
+    const interval = setInterval(() => handleNext(), SLIDE_INTERVAL);
     return () => clearInterval(interval);
-  }, [isPaused, filteredPosts.length, visibleCount, currentIndex]);
+  }, [isPaused, randomPosts.length, visibleCount, currentIndex]);
 
   const handleTouchStart = (e: React.TouchEvent) => {
     touchStartX.current = e.touches[0].clientX;
@@ -480,15 +343,11 @@ const RandomPostList: React.FC<RandomPostListProps> = ({ posts, currentSlug }) =
     if (touchStartX.current === null) return;
     const deltaX = e.changedTouches[0].clientX - touchStartX.current;
     if (Math.abs(deltaX) > 50) {
-      deltaX > 0 ? prevSlide() : nextSlide();
+      if (deltaX > 0) handlePrev();
+      else handleNext();
     }
     touchStartX.current = null;
   };
-
-  const visiblePosts = Array.from({ length: visibleCount }, (_, i) => {
-    const index = (currentIndex + i) % filteredPosts.length;
-    return filteredPosts[index];
-  });
 
   return (
     <div
@@ -501,8 +360,15 @@ const RandomPostList: React.FC<RandomPostListProps> = ({ posts, currentSlug }) =
       <h2 className="text-lg lg:text-xl font-bold mb-4">다른 Posts</h2>
 
       <div className="overflow-hidden relative">
-        <div className="flex mb-10 transition-transform duration-300 ease-in-out">
-          {visiblePosts.map((post, index) => (
+        <div
+          ref={containerRef}
+          className="flex mb-10 transition-transform duration-300 ease-in-out"
+          style={{
+            transform: `translateX(-${currentIndex * (100 / visibleCount)}%)`,
+            transition: isTransitioning ? `transform ${TRANSITION_DURATION}ms ease` : 'none',
+          }}
+        >
+          {/* {randomPosts.map((post, index) => (
             <div
               key={`${post.id}-${index}`}
               className={`flex-shrink-0 px-2 ${
@@ -515,12 +381,29 @@ const RandomPostList: React.FC<RandomPostListProps> = ({ posts, currentSlug }) =
             >
               <Post {...post} isRandomPosts disableKeyUpdate />
             </div>
-          ))}
+          ))} */}
+
+          {randomPosts
+            .filter((post) => !!post && !!post.id)
+            .map((post, index) => (
+              <div
+                key={`${post.id}-${index}`}
+                className={`flex-shrink-0 px-2 ${
+                  visibleCount === 1
+                    ? 'w-full h-[13rem] sm:h-[14rem] md:h-[16rem]'
+                    : visibleCount === 2
+                      ? 'w-1/2 h-[240px]'
+                      : 'w-1/3 h-[260px]'
+                }`}
+              >
+                <Post {...post} isRandomPosts disableKeyUpdate />
+              </div>
+            ))}
         </div>
 
         <button
           className="absolute top-1/2 left-0 transform -translate-y-1/2 bg-neutral-200 dark:bg-neutral-600 text-neutral-50 dark:text-neutral-500 p-3 rounded-full hover:bg-neutral-400 dark:hover:bg-neutral-600 transition"
-          onClick={prevSlide}
+          onClick={handlePrev}
           aria-label="Previous"
         >
           <ChevronLeft className="w-2 h-2 md:w-3 md:h-3 lg:w-3 lg:h-3" />
@@ -528,7 +411,7 @@ const RandomPostList: React.FC<RandomPostListProps> = ({ posts, currentSlug }) =
 
         <button
           className="absolute top-1/2 right-0 transform -translate-y-1/2 bg-neutral-200 dark:bg-neutral-600 text-neutral-50 dark:text-neutral-500 p-3 rounded-full hover:bg-neutral-400 dark:hover:bg-neutral-600 transition"
-          onClick={nextSlide}
+          onClick={handleNext}
           aria-label="Next"
         >
           <ChevronRight className="w-2 h-2 md:w-3 md:h-3 lg:w-3 lg:h-3" />
