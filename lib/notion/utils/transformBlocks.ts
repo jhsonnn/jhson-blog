@@ -74,9 +74,6 @@
 
 
 
-
-// lib/notion/utils/transformBlocks.ts
-
 import { BlockObjectResponse } from '@notionhq/client/build/src/api-endpoints';
 import { BlockWithChildren, NotionBlockType } from '../types';
 import { fetchChildren } from './fetchChildren';
@@ -84,11 +81,13 @@ import { fetchChildren } from './fetchChildren';
 export async function transformBlocks(blocks: BlockObjectResponse[]): Promise<BlockWithChildren[]> {
   if (!Array.isArray(blocks)) return [];
 
+  //유효하지 않은 block 제거 (id가 없거나 객체가 아님)
   const safeBlocks = blocks.filter(
     (block): block is BlockObjectResponse =>
       !!block && typeof block === 'object' && 'id' in block && typeof block.id === 'string'
   );
 
+  //id 기준 중복 제거
   const uniqueBlocks = Array.from(new Map(safeBlocks.map((block) => [block.id, block])).values());
 
   return Promise.all(
