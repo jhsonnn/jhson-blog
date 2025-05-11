@@ -1,0 +1,18 @@
+# Next.js build output
+.next/
+
+# Test coverage reports
+coverage/
+
+# Compiled Storybook static files
+storybook-static/
+
+# Node modules
+node_modules/
+
+# Build output (optional if you export static site)
+out/
+
+# Environment files (env files aren't linted)
+*.env
+*.env.local

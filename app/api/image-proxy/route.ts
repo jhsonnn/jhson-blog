@@ -1,13 +1,150 @@
+// import { NextRequest, NextResponse } from 'next/server';
+
+// async function tryFetchImage(url: string): Promise<Response | null> {
+//   try {
+//     const res = await fetch(url);
+//     if (res.ok) return res;
+//   } catch (e) {
+//     console.error('Image fetch failed:', e);
+//   }
+//   return null;
+// }
+
+// export async function GET(req: NextRequest) {
+//   const { searchParams } = new URL(req.url);
+//   const url = searchParams.get('url');
+//   const fallback = searchParams.get('fallback');
+
+//   if (!url) return NextResponse.redirect('/default_image.png');
+
+//   //1차 시도: presigned URL
+//   const res = await tryFetchImage(url);
+//   if (res) {
+//     console.log("1차 시도");
+//     const buffer = await res.arrayBuffer();
+//     return new Response(buffer, {
+//       headers: {
+//         'Content-Type': res.headers.get('content-type') || 'image/png',
+//         'Cache-Control': 'public, max-age=3600, immutable',
+//       },
+//     });
+//   }
+
+//   //2차 시도: Notion proxy fallback
+//   if (fallback) {
+//     console.log("2차 시도");
+//     const fallbackRes = await tryFetchImage(fallback);
+//     if (fallbackRes) {
+//       console.log("2-2차 시도");
+//       const buffer = await fallbackRes.arrayBuffer();
+//       return new Response(buffer, {
+//         headers: {
+//           'Content-Type': fallbackRes.headers.get('content-type') || 'image/png',
+//           'Cache-Control': 'public, max-age=86400, immutable',
+//         },
+//       });
+//     }
+//   }
+
+//   //최종 실패
+//   return NextResponse.redirect('/default_image.png');
+// }
+
+
+
+// import { NextRequest, NextResponse } from 'next/server';
+
+// async function tryFetchImage(url: string, label: string): Promise<Response | null> {
+//   try {
+//     const res = await fetch(url);
+//     if (res.ok) return res;
+
+//     console.warn(`[image-proxy] ${label} 응답 실패 - status: ${res.status}, url: ${url}`);
+//   } catch (e) {
+//     console.error(`[image-proxy] ${label} fetch 예외 발생 - url: ${url}`, e);
+//   }
+//   return null;
+// }
+
+// export async function GET(req: NextRequest) {
+//   const { searchParams } = new URL(req.url);
+//   const url = searchParams.get('url');
+//   const fallback = searchParams.get('fallback');
+
+//   if (!url) {
+//     console.error('[image-proxy] url 누락');
+//     return NextResponse.redirect('/default_image.png');
+//   }
+
+//   // 1차 시도: presigned URL
+//   const res = await tryFetchImage(url, 'presigned');
+//   if (res) {
+//     const buffer = await res.arrayBuffer();
+//     return new Response(buffer, {
+//       headers: {
+//         'Content-Type': res.headers.get('content-type') || 'image/png',
+//         'Cache-Control': 'public, max-age=3600, immutable',
+//       },
+//     });
+//   }
+
+//   // 2차 시도: Notion proxy fallback
+//   if (fallback) {
+//     const fallbackRes = await tryFetchImage(fallback, 'fallback');
+//     if (fallbackRes) {
+//       const buffer = await fallbackRes.arrayBuffer();
+//       return new Response(buffer, {
+//         headers: {
+//           'Content-Type': fallbackRes.headers.get('content-type') || 'image/png',
+//           'Cache-Control': 'public, max-age=86400, immutable',
+//         },
+//       });
+//     }
+//   }
+
+//   console.warn('[image-proxy] 모든 시도 실패, 기본 이미지로 대체');
+//   return NextResponse.redirect('/default_image.png');
+// }
+
+
+
 import { NextRequest, NextResponse } from 'next/server';
 
-async function tryFetchImage(url: string): Promise<Response | null> {
+async function tryFetchImage(url: string, label: string): Promise<Response | null> {
   try {
     const res = await fetch(url);
-    if (res.ok) return res;
+    const contentType = res.headers.get('content-type') || '';
+
+    if (!res.ok) {
+      console.warn(`[image-proxy] ${label} 응답 실패 - status: ${res.status}, url: ${url}`);
+      return null;
+    }
+
+    if (!contentType.startsWith('image/')) {
+      console.warn(`[image-proxy] ${label} Content-Type 이상함: ${contentType}, url: ${url}`);
+      return null;
+    }
+
+    const buffer = await res.arrayBuffer();
+
+    // 너무 작은 크기의 응답은 presigned URL 오류 페이지일 가능성
+    if (buffer.byteLength < 1000) {
+      console.warn(
+        `[image-proxy] ${label} 응답 바이트 수 비정상 (byteLength=${buffer.byteLength}), url: ${url}`
+      );
+      return null;
+    }
+
+    return new Response(buffer, {
+      headers: {
+        'Content-Type': contentType,
+        'Cache-Control': 'public, max-age=3600, immutable',
+      },
+    });
   } catch (e) {
-    console.error('Image fetch failed:', e);
+    console.error(`[image-proxy] ${label} fetch 예외 발생 - url: ${url}`, e);
+    return null;
   }
-  return null;
 }
 
 export async function GET(req: NextRequest) {
@@ -15,37 +152,22 @@ export async function GET(req: NextRequest) {
   const url = searchParams.get('url');
   const fallback = searchParams.get('fallback');
 
-  if (!url) return NextResponse.redirect('/default_image.png');
-
-  //1차 시도: presigned URL
-  const res = await tryFetchImage(url);
-  if (res) {
-    console.log("1차 시도");
-    const buffer = await res.arrayBuffer();
-    return new Response(buffer, {
-      headers: {
-        'Content-Type': res.headers.get('content-type') || 'image/png',
-        'Cache-Control': 'public, max-age=3600, immutable',
-      },
-    });
+  if (!url) {
+    console.error('[image-proxy] url 누락');
+    return NextResponse.redirect('/default_image.png');
   }
 
-  //2차 시도: Notion proxy fallback
+  // 1차 시도: presigned URL
+  const presignedRes = await tryFetchImage(url, 'presigned');
+  if (presignedRes) return presignedRes;
+
+  // 2차 시도: Notion proxy fallback
   if (fallback) {
-    console.log("2차 시도");
-    const fallbackRes = await tryFetchImage(fallback);
-    if (fallbackRes) {
-      console.log("2-2차 시도");
-      const buffer = await fallbackRes.arrayBuffer();
-      return new Response(buffer, {
-        headers: {
-          'Content-Type': fallbackRes.headers.get('content-type') || 'image/png',
-          'Cache-Control': 'public, max-age=86400, immutable', // ✅ 캐시 헤더
-        },
-      });
-    }
+    const fallbackRes = await tryFetchImage(fallback, 'fallback');
+    if (fallbackRes) return fallbackRes;
   }
 
-  //최종 실패
+  // 최종 실패
+  console.warn('[image-proxy] 모든 시도 실패, 기본 이미지로 대체');
   return NextResponse.redirect('/default_image.png');
 }

@@ -111,6 +111,676 @@
 //   );
 // }
 
+// 'use client';
+
+// import Image from 'next/image';
+// import { useEffect, useState, useRef } from 'react';
+
+// interface ClientImageProps {
+//   src: string;
+//   slug: string;
+//   alt: string;
+//   width?: number;
+//   height?: number;
+//   fill?: boolean;
+//   className?: string;
+//   priority?: boolean;
+// }
+
+// const imageCache = new Map<string, string>();
+
+// export default function ClientImage({
+//   src,
+//   slug,
+//   alt,
+//   width,
+//   height,
+//   fill = false,
+//   className = '',
+//   priority = false,
+// }: ClientImageProps) {
+//   const [imgSrc, setImgSrc] = useState(() => imageCache.get(slug) ?? src);
+//   const isGif = src.toLowerCase().endsWith('.gif');
+
+//   const triedRefresh = useRef(false); //재호출 방지용
+
+//   useEffect(() => {
+//     if (!imageCache.has(slug)) {
+//       imageCache.set(slug, src);
+//     }
+//     setImgSrc(imageCache.get(slug)!);
+
+//     if (isGif) {
+//       const tester = new window.Image();
+//       tester.src = src + `?ts=${Date.now()}`;
+//       tester.onload = () => {
+//         imageCache.set(slug, src);
+//       };
+//       tester.onerror = () => {
+//         if (!triedRefresh.current) {
+//           triedRefresh.current = true;
+//           handleError();
+//         }
+//       };
+//     }
+//   }, [slug, src]);
+
+//   const handleError = async () => {
+//     if (!slug) {
+//       setImgSrc('/default_image.png');
+//       imageCache.set(slug, '/default_image.png');
+//       return;
+//     }
+
+//     try {
+//       const res = await fetch(`/api/image-proxy-refresh/${slug}`, { cache: 'no-store' });
+//       if (res.ok) {
+//         const data = await res.json();
+//         if (data?.originalThumbnailUrl) {
+//           const refreshedUrl = `/api/image-proxy?url=${encodeURIComponent(
+//             data.originalThumbnailUrl
+//           )}&slug=${encodeURIComponent(slug)}&fallback=${encodeURIComponent(
+//             data.fallbackThumbnailUrl ?? ''
+//           )}&ts=${Date.now()}`;
+
+//           imageCache.set(slug, refreshedUrl);
+//           setImgSrc(refreshedUrl);
+//           return;
+//         }
+//       }
+//     } catch (e) {
+//       console.error('Presigned URL refresh failed:', e);
+//     }
+
+//     setImgSrc('/default_image.png');
+//     imageCache.set(slug, '/default_image.png');
+//   };
+
+//   //GIF 렌더링
+//   if (isGif) {
+//     return (
+//       <img
+//         key={imgSrc}
+//         src={imgSrc}
+//         alt={alt}
+//         width={width}
+//         height={height}
+//         onError={() => {
+//           console.log(`[GIF Error] ${imgSrc}`);
+//           handleError();
+//         }}
+//         className={`${className} rounded-xl my-4 max-w-full`}
+//       />
+//     );
+//   }
+
+//   //이미지 (next/image)
+//   const imageProps = {
+//     src: imgSrc,
+//     alt,
+//     width,
+//     height,
+//     priority,
+//     unoptimized: true,
+//     onError: handleError,
+//     className: fill
+//       ? 'object-cover rounded-xl'
+//       : `${className} mt-5 mb-10 w-full max-w-2xl h-auto rounded-xl object-contain`,
+//   };
+
+//   return fill ? (
+//     <div className={`relative w-full h-full overflow-hidden ${className}`}>
+//       <Image {...imageProps} fill />
+//     </div>
+//   ) : (
+//     <Image {...imageProps} />
+//   );
+// }
+
+//TEST : gif 리렌더링 안되는 문제로 인한 수정 코드 테스트
+// 'use client';
+
+// import Image from 'next/image';
+// import { useEffect, useState, useRef } from 'react';
+
+// interface ClientImageProps {
+//   src: string;
+//   slug: string;
+//   alt: string;
+//   width?: number;
+//   height?: number;
+//   fill?: boolean;
+//   className?: string;
+//   priority?: boolean;
+//   disableKeyUpdate?: boolean;
+// }
+
+// const imageCache = new Map<string, string>();
+
+// export default function ClientImage({
+//   src,
+//   slug,
+//   alt,
+//   width,
+//   height,
+//   fill = false,
+//   className = '',
+//   priority = false,
+//   disableKeyUpdate = false,
+// }: ClientImageProps) {
+//   const [imgSrc, setImgSrc] = useState(() => imageCache.get(slug) ?? src);
+//   const triedRefresh = useRef(false);
+//   const isGif = src.toLowerCase().endsWith('.gif');
+
+//   //초기 src 검사 및 수동 만료 체크
+//   useEffect(() => {
+//     if (!imageCache.has(slug)) {
+//       imageCache.set(slug, src);
+//     }
+
+//     const currentSrc = imageCache.get(slug)!;
+//     setImgSrc(currentSrc);
+
+//     const tester = new window.Image();
+//     const tsUrl = currentSrc + `?ts=${Date.now()}`;
+//     tester.src = tsUrl;
+
+//     const timeoutId = setTimeout(() => {
+//       if (!tester.complete || tester.naturalWidth === 0) {
+//         if (!triedRefresh.current) {
+//           triedRefresh.current = true;
+//           handleError();
+//         }
+//       }
+//     }, 1000);
+
+//     tester.onload = () => {
+//       clearTimeout(timeoutId);
+//       imageCache.set(slug, currentSrc);
+//     };
+
+//     tester.onerror = () => {
+//       clearTimeout(timeoutId);
+//       if (!triedRefresh.current) {
+//         triedRefresh.current = true;
+//         handleError();
+//       }
+//     };
+
+//     return () => clearTimeout(timeoutId);
+//   }, [slug, src]);
+
+//   const handleError = async () => {
+//     if (!slug) {
+//       imageCache.set(slug, '/default_image.png');
+//       setImgSrc('/default_image.png?ts=' + Date.now());
+//       return;
+//     }
+
+//     try {
+//       const res = await fetch(`/api/image-proxy-refresh/${slug}`, { cache: 'no-store' });
+//       if (res.ok) {
+//         const data = await res.json();
+//         if (data?.originalThumbnailUrl) {
+//           const refreshedUrl = `/api/image-proxy?url=${encodeURIComponent(
+//             data.originalThumbnailUrl
+//           )}&slug=${encodeURIComponent(slug)}&fallback=${encodeURIComponent(
+//             data.fallbackThumbnailUrl ?? ''
+//           )}&ts=${Date.now()}`;
+
+//           imageCache.set(slug, refreshedUrl);
+//           setImgSrc(refreshedUrl);
+//           return;
+//         }
+//       }
+//     } catch (e) {
+//       console.error('[ClientImage] Presigned URL refresh failed:', e);
+//     }
+
+//     imageCache.set(slug, '/default_image.png');
+//     setImgSrc('/default_image.png?ts=' + Date.now());
+//   };
+
+//   if (isGif) {
+//     return (
+//       <img
+//         key={disableKeyUpdate ? undefined : imgSrc}
+//         src={imgSrc}
+//         alt={alt}
+//         width={width}
+//         height={height}
+//         onError={handleError}
+//         className={`${className} rounded-xl my-4 max-w-full`}
+//       />
+//     );
+//   }
+
+//   const imageProps = {
+//     src: imgSrc,
+//     alt,
+//     width,
+//     height,
+//     priority,
+//     unoptimized: true,
+//     onError: handleError,
+//     className: fill
+//       ? 'object-cover rounded-xl'
+//       : `${className} mt-5 mb-10 w-full max-w-2xl h-auto rounded-xl object-contain`,
+//   };
+
+//   return fill ? (
+//     <div className={`relative w-full h-full overflow-hidden ${className}`}>
+//       <Image {...imageProps} fill key={disableKeyUpdate ? undefined : imgSrc} />
+//     </div>
+//   ) : (
+//     <Image {...imageProps} key={disableKeyUpdate ? undefined : imgSrc} />
+//   );
+// }
+
+// //TEST : 슬라이더 좌우 전환 테스트 => 실패
+// 'use client';
+
+// import Image from 'next/image';
+// import { useEffect, useState, useRef } from 'react';
+
+// interface ClientImageProps {
+//   src: string;
+//   slug: string;
+//   alt: string;
+//   width?: number;
+//   height?: number;
+//   fill?: boolean;
+//   className?: string;
+//   priority?: boolean;
+//   disableKeyUpdate?: boolean;
+// }
+
+// const imageCache = new Map<string, string>();
+
+// export default function ClientImage({
+//   src,
+//   slug,
+//   alt,
+//   width,
+//   height,
+//   fill = false,
+//   className = '',
+//   priority = false,
+//   disableKeyUpdate = false,
+// }: ClientImageProps) {
+//   const [imgSrc, setImgSrc] = useState(() => imageCache.get(slug) ?? src);
+//   const triedRefresh = useRef(false);
+//   const isGif = src.toLowerCase().endsWith('.gif');
+
+//   useEffect(() => {
+//     if (!imageCache.has(slug)) {
+//       imageCache.set(slug, src);
+//     }
+
+//     const tester = new window.Image();
+//     const tsUrl = src + `?ts=${Date.now()}`;
+//     tester.src = tsUrl;
+
+//     const timeoutId = setTimeout(() => {
+//       if (!tester.complete || tester.naturalWidth === 0) {
+//         if (!triedRefresh.current) {
+//           triedRefresh.current = true;
+//           handleError();
+//         }
+//       }
+//     }, 1000);
+
+//     tester.onload = () => {
+//       clearTimeout(timeoutId);
+//       imageCache.set(slug, src);
+//       setImgSrc(src);
+//     };
+
+//     tester.onerror = () => {
+//       clearTimeout(timeoutId);
+//       if (!triedRefresh.current) {
+//         triedRefresh.current = true;
+//         handleError();
+//       }
+//     };
+
+//     return () => clearTimeout(timeoutId);
+//   }, [slug, src]);
+
+//   const handleError = async () => {
+//     try {
+//       const res = await fetch(`/api/image-proxy-refresh/${slug}`, { cache: 'no-store' });
+//       if (res.ok) {
+//         const data = await res.json();
+//         if (data?.originalThumbnailUrl) {
+//           const refreshedUrl = `/api/image-proxy?url=${encodeURIComponent(
+//             data.originalThumbnailUrl
+//           )}&slug=${encodeURIComponent(slug)}&fallback=${encodeURIComponent(
+//             data.fallbackThumbnailUrl ?? ''
+//           )}&ts=${Date.now()}`;
+//           imageCache.set(slug, refreshedUrl);
+//           setImgSrc(refreshedUrl);
+//           return;
+//         }
+//       }
+//     } catch (e) {
+//       console.error('[ClientImage] Presigned URL refresh failed:', e);
+//     }
+
+//     const fallback = '/default_image.png?ts=' + Date.now();
+//     imageCache.set(slug, fallback);
+//     setImgSrc(fallback);
+//   };
+
+//   if (isGif) {
+//     return (
+//       <img
+//         key={disableKeyUpdate ? undefined : imgSrc}
+//         src={imgSrc}
+//         alt={alt}
+//         width={width}
+//         height={height}
+//         onError={handleError}
+//         className={`${className} rounded-xl my-4 max-w-full`}
+//       />
+//     );
+//   }
+
+//   const imageProps = {
+//     src: imgSrc,
+//     alt,
+//     width,
+//     height,
+//     priority,
+//     unoptimized: true,
+//     onError: handleError,
+//     className: fill
+//       ? 'object-cover rounded-xl'
+//       : `${className} mt-5 mb-10 w-full max-w-2xl h-auto rounded-xl object-contain`,
+//   };
+
+//   return fill ? (
+//     <div className={`relative w-full h-full overflow-hidden ${className}`}>
+//       <Image {...imageProps} fill key={disableKeyUpdate ? undefined : imgSrc} />
+//     </div>
+//   ) : (
+//     <Image {...imageProps} key={disableKeyUpdate ? undefined : imgSrc} />
+//   );
+// }
+
+// //TEST : 강화된 오류 대응 및 content-type 체크
+// 'use client';
+
+// import Image from 'next/image';
+// import { useEffect, useState, useRef } from 'react';
+
+// interface ClientImageProps {
+//   src: string;
+//   slug: string;
+//   alt: string;
+//   width?: number;
+//   height?: number;
+//   fill?: boolean;
+//   className?: string;
+//   priority?: boolean;
+//   disableKeyUpdate?: boolean;
+// }
+
+// const imageCache = new Map<string, string>();
+
+// export default function ClientImage({
+//   src,
+//   slug,
+//   alt,
+//   width,
+//   height,
+//   fill = false,
+//   className = '',
+//   priority = false,
+//   disableKeyUpdate = false,
+// }: ClientImageProps) {
+//   const [imgSrc, setImgSrc] = useState(() => imageCache.get(slug) ?? src);
+//   const triedRefresh = useRef(false);
+//   const isGif = imgSrc.toLowerCase().includes('.gif');
+
+//   useEffect(() => {
+//     if (!imageCache.has(slug)) {
+//       imageCache.set(slug, src);
+//     }
+
+//     const tester = new window.Image();
+//     const tsUrl = src + `?ts=${Date.now()}`;
+//     tester.src = tsUrl;
+
+//     const timeoutId = setTimeout(() => {
+//       if (!tester.complete || tester.naturalWidth === 0) {
+//         console.warn('[ClientImage] 초기 로딩 실패', slug);
+//         if (!triedRefresh.current) {
+//           triedRefresh.current = true;
+//           handleError();
+//         }
+//       }
+//     }, 1500);
+
+//     tester.onload = () => {
+//       clearTimeout(timeoutId);
+//       imageCache.set(slug, src);
+//       setImgSrc(src);
+//     };
+
+//     tester.onerror = () => {
+//       clearTimeout(timeoutId);
+//       console.warn('[ClientImage] onerror 발생', slug);
+//       if (!triedRefresh.current) {
+//         triedRefresh.current = true;
+//         handleError();
+//       }
+//     };
+
+//     return () => clearTimeout(timeoutId);
+//   }, [slug, src]);
+
+//   const handleError = async () => {
+//     try {
+//       const res = await fetch(`/api/image-proxy-refresh/${slug}`, { cache: 'no-store' });
+//       if (res.ok) {
+//         const data = await res.json();
+//         if (data?.originalThumbnailUrl) {
+//           const refreshedUrl = `/api/image-proxy?url=${encodeURIComponent(
+//             data.originalThumbnailUrl
+//           )}&slug=${encodeURIComponent(slug)}&fallback=${encodeURIComponent(
+//             data.fallbackThumbnailUrl ?? ''
+//           )}&ts=${Date.now()}`;
+//           console.info('[ClientImage] 새 URL 적용', slug);
+//           imageCache.set(slug, refreshedUrl);
+//           setImgSrc(refreshedUrl);
+//           return;
+//         }
+//       }
+//     } catch (e) {
+//       console.error('[ClientImage] Presigned refresh 실패', slug, e);
+//     }
+
+//     const fallback = '/default_image.png?ts=' + Date.now();
+//     imageCache.set(slug, fallback);
+//     setImgSrc(fallback);
+//   };
+
+//   if (isGif) {
+//     return (
+//       <img
+//         key={disableKeyUpdate ? undefined : imgSrc}
+//         src={imgSrc}
+//         alt={alt}
+//         width={width}
+//         height={height}
+//         onError={handleError}
+//         className={`${className} rounded-xl my-4 max-w-full`}
+//       />
+//     );
+//   }
+
+//   const imageProps = {
+//     src: imgSrc,
+//     alt,
+//     width,
+//     height,
+//     priority,
+//     unoptimized: true,
+//     onError: handleError,
+//     className: fill
+//       ? 'object-cover rounded-xl'
+//       : `${className} mt-5 mb-10 w-full max-w-2xl h-auto rounded-xl object-contain`,
+//   };
+
+//   return fill ? (
+//     <div className={`relative w-full h-full overflow-hidden ${className}`}>
+//       <Image {...imageProps} fill key={disableKeyUpdate ? undefined : imgSrc} />
+//     </div>
+//   ) : (
+//     <Image {...imageProps} key={disableKeyUpdate ? undefined : imgSrc} />
+//   );
+// }
+
+//TEST
+// 'use client';
+
+// import Image from 'next/image';
+// import { useEffect, useState, useRef } from 'react';
+
+// interface ClientImageProps {
+//   src: string;
+//   slug: string;
+//   alt: string;
+//   width?: number;
+//   height?: number;
+//   fill?: boolean;
+//   className?: string;
+//   priority?: boolean;
+//   disableKeyUpdate?: boolean;
+// }
+
+// const imageCache = new Map<string, string>();
+
+// export default function ClientImage({
+//   src,
+//   slug,
+//   alt,
+//   width,
+//   height,
+//   fill = false,
+//   className = '',
+//   priority = false,
+//   disableKeyUpdate = false,
+// }: ClientImageProps) {
+//   const [imgSrc, setImgSrc] = useState(() => imageCache.get(slug) ?? src);
+//   const triedRefresh = useRef(false);
+//   const [hasFailedOnce, setHasFailedOnce] = useState(false);
+//   const isGif = src.toLowerCase().endsWith('.gif');
+
+//   useEffect(() => {
+//     if (imageCache.has(slug)) return;
+
+//     const tester = new window.Image();
+//     const testUrl = imgSrc + `?ts=${Date.now()}`;
+//     tester.src = testUrl;
+
+//     const timeoutId = setTimeout(() => {
+//       if (!tester.complete || tester.naturalWidth === 0) {
+//         console.warn('[ClientImage] timeout 발생, handleError 호출', slug);
+//         if (!triedRefresh.current) {
+//           triedRefresh.current = true;
+//           handleError();
+//         }
+//       }
+//     }, 5000);
+
+//     tester.onload = () => {
+//       clearTimeout(timeoutId);
+//       console.info('[ClientImage] 이미지 로드 성공', slug);
+//       imageCache.set(slug, imgSrc);
+//       setImgSrc(imgSrc);
+//     };
+
+//     tester.onerror = () => {
+//       clearTimeout(timeoutId);
+//       console.warn('[ClientImage] 이미지 로드 실패, handleError 호출', slug);
+//       if (!triedRefresh.current) {
+//         triedRefresh.current = true;
+//         handleError();
+//       }
+//     };
+
+//     return () => clearTimeout(timeoutId);
+//   }, [slug]); // 의존성에서 src 제거
+
+//   const handleError = async () => {
+//     if (hasFailedOnce) return;
+//     setHasFailedOnce(true);
+
+//     try {
+//       const res = await fetch(`/api/image-proxy-refresh/${slug}`, { cache: 'no-store' });
+//       if (res.ok) {
+//         const data = await res.json();
+//         if (data?.originalThumbnailUrl) {
+//           const refreshedUrl = `/api/image-proxy?url=${encodeURIComponent(
+//             data.originalThumbnailUrl
+//           )}&slug=${encodeURIComponent(slug)}&fallback=${encodeURIComponent(
+//             data.fallbackThumbnailUrl ?? ''
+//           )}&ts=${Date.now()}`;
+
+//           console.info('[ClientImage] 새 URL 적용', slug);
+//           imageCache.set(slug, refreshedUrl);
+//           setImgSrc(refreshedUrl);
+//           return;
+//         }
+//       }
+//     } catch (e) {
+//       console.error('[ClientImage] Presigned refresh 실패', slug, e);
+//     }
+
+//     const fallback = '/default_image.png?ts=' + Date.now();
+//     imageCache.set(slug, fallback);
+//     setImgSrc(fallback);
+//   };
+
+//   if (isGif) {
+//     return (
+//       <img
+//         key={disableKeyUpdate ? undefined : imgSrc}
+//         src={imgSrc}
+//         alt={alt}
+//         width={width}
+//         height={height}
+//         onError={handleError}
+//         className={`${className} rounded-xl my-4 max-w-full`}
+//       />
+//     );
+//   }
+
+//   const imageProps = {
+//     src: imgSrc,
+//     alt,
+//     width,
+//     height,
+//     priority,
+//     unoptimized: true,
+//     onError: handleError,
+//     className: fill
+//       ? 'object-cover rounded-xl'
+//       : `${className} mt-5 mb-10 w-full max-w-2xl h-auto rounded-xl object-contain`,
+//   };
+
+//   return fill ? (
+//     <div className={`relative w-full h-full overflow-hidden ${className}`}>
+//       <Image {...imageProps} fill key={disableKeyUpdate ? undefined : imgSrc} />
+//     </div>
+//   ) : (
+//     <Image {...imageProps} key={disableKeyUpdate ? undefined : imgSrc} />
+//   );
+// }
+
+//TEST
 'use client';
 
 import Image from 'next/image';
@@ -125,6 +795,7 @@ interface ClientImageProps {
   fill?: boolean;
   className?: string;
   priority?: boolean;
+  disableKeyUpdate?: boolean;
 }
 
 const imageCache = new Map<string, string>();
@@ -138,83 +809,101 @@ export default function ClientImage({
   fill = false,
   className = '',
   priority = false,
+  disableKeyUpdate = false,
 }: ClientImageProps) {
-  const [imgSrc, setImgSrc] = useState(() => imageCache.get(slug) ?? src);
-  const isGif = src.toLowerCase().endsWith('.gif');
+  // 필수값이 없을 경우 fallback 즉시
+  const validSrc = src || '/default_image.png';
+  const validAlt = alt || 'image';
+  const validSlug = slug || '_default';
 
-  const triedRefresh = useRef(false); //재호출 방지용
+  const [imgSrc, setImgSrc] = useState(() => imageCache.get(validSlug) ?? validSrc);
+  const triedRefresh = useRef(false);
+  const [hasFailedOnce, setHasFailedOnce] = useState(false);
+  const isGif = validSrc.toLowerCase().endsWith('.gif');
 
   useEffect(() => {
-    if (!imageCache.has(slug)) {
-      imageCache.set(slug, src);
-    }
-    setImgSrc(imageCache.get(slug)!);
+    if (imageCache.has(validSlug)) return;
 
-    if (isGif) {
-      const tester = new window.Image();
-      tester.src = src + `?ts=${Date.now()}`;
-      tester.onload = () => {
-        imageCache.set(slug, src);
-      };
-      tester.onerror = () => {
+    const tester = new window.Image();
+    const testUrl = imgSrc + `?ts=${Date.now()}`;
+    tester.src = testUrl;
+
+    const timeoutId = setTimeout(() => {
+      if (!tester.complete || tester.naturalWidth === 0) {
+        console.warn('[ClientImage] timeout 발생, handleError 호출', validSlug);
         if (!triedRefresh.current) {
           triedRefresh.current = true;
           handleError();
         }
-      };
-    }
-  }, [slug, src]);
+      }
+    }, 5000);
+
+    tester.onload = () => {
+      clearTimeout(timeoutId);
+      console.info('[ClientImage] 이미지 로드 성공', validSlug);
+      imageCache.set(validSlug, imgSrc);
+      setImgSrc(imgSrc);
+    };
+
+    tester.onerror = () => {
+      clearTimeout(timeoutId);
+      console.warn('[ClientImage] 이미지 로드 실패, handleError 호출', validSlug);
+      if (!triedRefresh.current) {
+        triedRefresh.current = true;
+        handleError();
+      }
+    };
+
+    return () => clearTimeout(timeoutId);
+  }, [validSlug]); // src 제거
 
   const handleError = async () => {
-    if (!slug) {
-      setImgSrc('/default_image.png');
-      imageCache.set(slug, '/default_image.png');
-      return;
-    }
+    if (hasFailedOnce) return;
+    setHasFailedOnce(true);
 
     try {
-      const res = await fetch(`/api/image-proxy-refresh/${slug}`, { cache: 'no-store' });
+      const res = await fetch(`/api/image-proxy-refresh/${validSlug}`, { cache: 'no-store' });
       if (res.ok) {
         const data = await res.json();
         if (data?.originalThumbnailUrl) {
           const refreshedUrl = `/api/image-proxy?url=${encodeURIComponent(
             data.originalThumbnailUrl
-          )}&slug=${encodeURIComponent(slug)}&fallback=${encodeURIComponent(
+          )}&slug=${encodeURIComponent(validSlug)}&fallback=${encodeURIComponent(
             data.fallbackThumbnailUrl ?? ''
           )}&ts=${Date.now()}`;
 
-          imageCache.set(slug, refreshedUrl);
+          console.info('[ClientImage] 새 URL 적용', validSlug);
+          imageCache.set(validSlug, refreshedUrl);
           setImgSrc(refreshedUrl);
           return;
         }
       }
     } catch (e) {
-      console.error('Presigned URL refresh failed:', e);
+      console.error('[ClientImage] Presigned refresh 실패', validSlug, e);
     }
 
-    setImgSrc('/default_image.png');
-    imageCache.set(slug, '/default_image.png');
+    const fallback = '/default_image.png?ts=' + Date.now();
+    imageCache.set(validSlug, fallback);
+    setImgSrc(fallback);
   };
 
-  //GIF 렌더링
   if (isGif) {
     return (
       <img
-        key={imgSrc}
+        key={disableKeyUpdate ? undefined : imgSrc}
         src={imgSrc}
-        alt={alt}
+        alt={validAlt}
         width={width}
         height={height}
-        className={`${className} rounded-xl my-4 max-w-full`}
         onError={handleError}
+        className={`${className} rounded-xl my-4 max-w-full`}
       />
     );
   }
 
-  //이미지 (next/image)
   const imageProps = {
     src: imgSrc,
-    alt,
+    alt: validAlt,
     width,
     height,
     priority,
@@ -227,9 +916,9 @@ export default function ClientImage({
 
   return fill ? (
     <div className={`relative w-full h-full overflow-hidden ${className}`}>
-      <Image {...imageProps} fill />
+      <Image {...imageProps} fill key={disableKeyUpdate ? undefined : imgSrc} />
     </div>
   ) : (
-    <Image {...imageProps} />
+    <Image {...imageProps} key={disableKeyUpdate ? undefined : imgSrc} />
   );
 }
