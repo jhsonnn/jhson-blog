@@ -407,13 +407,14 @@
 // export default RandomPostList;
 
 //TEST : 무한 슬라이더 방식으로
+// components/posts/RandomPostList.tsx
+
 'use client';
 
 import React, { useEffect, useState, useRef, useCallback } from 'react';
 import Post from './Post';
 import { Post as PostType } from '@/lib/notion/types';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
-import ClientImage from '@/components/ClientImage';
 
 interface RandomPostListProps {
   posts: PostType[];
@@ -447,7 +448,7 @@ const RandomPostList: React.FC<RandomPostListProps> = ({ posts, currentSlug }) =
 
   useEffect(() => {
     const safe = posts.filter((p) => p && p.id && p.slug && p.title && p.slug !== currentSlug);
-    setFilteredPosts(safe);
+    setFilteredPosts([...safe, ...safe]);
     setCurrentIndex(0);
   }, [posts, currentSlug]);
 
@@ -512,16 +513,6 @@ const RandomPostList: React.FC<RandomPostListProps> = ({ posts, currentSlug }) =
                     : 'w-1/3 h-[260px]'
               }`}
             >
-              <div className="h-full">
-                <ClientImage
-                  src={post.thumbnailUrl}
-                  slug={post.slug}
-                  alt={post.title}
-                  fill
-                  className="rounded-t-3xl object-cover w-full h-full"
-                  disableKeyUpdate
-                />
-              </div>
               <Post {...post} isRandomPosts disableKeyUpdate />
             </div>
           ))}
