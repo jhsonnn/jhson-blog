@@ -197,13 +197,13 @@ const renderImage = (block: BlockWithChildren, pageType?: string, pageSlug?: str
 
 const renderDivider = () => <hr className="my-4 border-gray-300" />;
 
-const renderColumnList = (block: BlockWithChildren, pageType?: string, pageSlug?: string) => {
+const renderColumnList = (block: BlockWithChildren, pageType?: string) => {
   if (!block.children?.length) return null;
   return (
     <div className="flex flex-col sm:flex-row items-start gap-6 my-4 w-full">
       {block.children.map((col) => (
         <div key={col.id} className="w-full sm:w-1/2 flex-shrink-0 flex-grow">
-          {renderBlock(col, pageType, pageSlug)}
+          {renderBlock(col, pageType)}
         </div>
       ))}
     </div>
