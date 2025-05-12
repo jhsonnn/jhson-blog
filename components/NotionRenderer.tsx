@@ -61,20 +61,71 @@ const renderBlock = (block: BlockWithChildren, pageType?: string) => {
   }
 };
 
+// const renderParagraph = (block: BlockWithChildren) => {
+//   const richTextArray = block.paragraph?.rich_text ?? [];
+//   const hasText = richTextArray.some((text) => text.plain_text.trim() !== '');
+
+//   return (
+//     <p className={`whitespace-pre-wrap leading-relaxed${hasText ? '' : ' min-h-[1rem]'}`}>
+//       {hasText ? (
+//         richTextArray.map((text, index) => {
+//           let content = text.plain_text;
+//           if (content.startsWith(' ')) {
+//             const spaceCount = content.match(/^\s+/)?.[0].length || 0;
+//             content = '\u00A0'.repeat(spaceCount) + content.trimStart();
+//           }
+//           const lines = content.split('\n').map((line, i) => (
+//             <React.Fragment key={i}>
+//               {i > 0 && <span className="block h-[1rem]">&nbsp;</span>}
+//               {line || <span className="inline-block min-h-[1rem]">&nbsp;</span>}
+//             </React.Fragment>
+//           ));
+
+//           return text.href ? (
+//             <a
+//               key={index}
+//               href={text.href}
+//               target="_blank"
+//               rel="noopener noreferrer"
+//               className="text-blue-600 dark:text-blue-400 underline"
+//             >
+//               {text.annotations.bold ? <strong>{lines}</strong> : lines}
+//             </a>
+//           ) : text.annotations.bold ? (
+//             <strong key={index}>{lines}</strong>
+//           ) : (
+//             <React.Fragment key={index}>{lines}</React.Fragment>
+//           );
+//         })
+//       ) : (
+//         //빈 paragraph 줄바꿈 되도록
+//         <span className="inline-block min-h-[0.5rem] w-full">&nbsp;</span>
+//       )}
+//     </p>
+//   );
+// };
+
 const renderParagraph = (block: BlockWithChildren) => {
   const richTextArray = block.paragraph?.rich_text ?? [];
-  const hasText = richTextArray.some((text) => text.plain_text.trim() !== '');
+
+  const hasText =
+    richTextArray.length > 0 && richTextArray.some((text) => text.plain_text.trim() !== '');
 
   return (
     <p className={`whitespace-pre-wrap leading-relaxed${hasText ? '' : ' min-h-[1rem]'}`}>
       {hasText ? (
         richTextArray.map((text, index) => {
           let content = text.plain_text;
+
+          //문장 앞 공백 `&nbsp;`로 변환
           if (content.startsWith(' ')) {
-            const spaceCount = content.match(/^\s+/)?.[0].length || 0;
-            content = '\u00A0'.repeat(spaceCount) + content.trimStart();
+            const leadingSpaces = content.match(/^(\s+)/)?.[0] || '';
+            const nonSpaceContent = content.trimStart();
+            content = '\u00A0'.repeat(leadingSpaces.length) + nonSpaceContent;
           }
-          const lines = content.split('\n').map((line, i) => (
+
+          //줄바꿈이면 <span>으로 줄바꿈되도록 처리
+          const formattedContent = content.split('\n').map((line, i) => (
             <React.Fragment key={i}>
               {i > 0 && <span className="block h-[1rem]">&nbsp;</span>}
               {line || <span className="inline-block min-h-[1rem]">&nbsp;</span>}
@@ -89,15 +140,16 @@ const renderParagraph = (block: BlockWithChildren) => {
               rel="noopener noreferrer"
               className="text-blue-600 dark:text-blue-400 underline"
             >
-              {text.annotations.bold ? <strong>{lines}</strong> : lines}
+              {text.annotations.bold ? <strong>{formattedContent}</strong> : formattedContent}
             </a>
           ) : text.annotations.bold ? (
-            <strong key={index}>{lines}</strong>
+            <strong key={index}>{formattedContent}</strong>
           ) : (
-            <React.Fragment key={index}>{lines}</React.Fragment>
+            <React.Fragment key={index}>{formattedContent}</React.Fragment>
           );
         })
       ) : (
+        //빈 paragraph 줄바꿈 되도록
         <span className="inline-block min-h-[0.5rem] w-full">&nbsp;</span>
       )}
     </p>
@@ -123,22 +175,103 @@ const renderHeading2 = (block: BlockWithChildren) => (
 // );
 
 const renderHeading3 = (block: BlockWithChildren) => (
-  <h3 className="text-lg lg:text-xl font-bold my-2">
-    {block.heading_3?.rich_text?.map((t) => t.plain_text).join(' ')}
+  <h3 className="sm:text-base text-lg lg:text-xl font-bold my-2">
+    {block.heading_3?.rich_text?.map((text, index) => {
+      return text.href ? (
+        <a
+          key={index}
+          href={text.href}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="text-blue-600 dark:text-blue-400 underline inline-block pointer-events-auto"
+        >
+          {text.annotations.bold ? <strong>{text.plain_text}</strong> : text.plain_text}
+        </a>
+      ) : text.annotations.bold ? (
+        <strong key={index}>{text.plain_text}</strong>
+      ) : (
+        <React.Fragment key={index}>{text.plain_text}</React.Fragment>
+      );
+    })}
   </h3>
 );
 
-const renderBulletedListItem = (block: BlockWithChildren) => {
+const renderBulletedListItem = (block: BlockWithChildren, isSubItem = false) => {
   const hasText =
-    block.bulleted_list_item?.rich_text?.some((t) => t.plain_text.trim() !== '') ?? false;
-  const hasChildren = block.children?.length ?? 0 > 0;
+    block.bulleted_list_item?.rich_text?.length &&
+    block.bulleted_list_item.rich_text.some((text) => text.plain_text.trim() !== '');
+
+  const hasChildren = block.children && block.children.length > 0;
+
   return (
-    <ul className="list-disc pl-6 my-2 text-sm sm:text-base">
+    <ul className={`${isSubItem ? 'list-[circle]' : 'list-disc'} pl-6 my-2 text-sm sm:text-base`}>
+      {/* 빈 줄 유지하여 공백 유지 */}
       <li className={`${hasText || hasChildren ? '' : 'min-h-[1.5rem] block'}`}>
         {hasText ? (
-          block.bulleted_list_item?.rich_text.map((text, _i) => text.plain_text)
+          block.bulleted_list_item?.rich_text?.map((text, index) => {
+            const content = text.plain_text.split('\n').map((line, i) => (
+              <React.Fragment key={i}>
+                {i > 0 && <br />}
+                {line || <span className="inline-block min-h-[1.5rem] w-full">&nbsp;</span>}
+              </React.Fragment>
+            ));
+
+            return text.href ? (
+              <a
+                key={index}
+                href={text.href}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-blue-700 dark:text-blue-400 hover:underline"
+              >
+                {text.annotations.bold ? <strong>{content}</strong> : content}
+              </a>
+            ) : text.annotations.bold ? (
+              <strong key={index}>{content}</strong>
+            ) : (
+              <React.Fragment key={index}>{content}</React.Fragment>
+            );
+          })
         ) : (
           <span className="block min-h-[1.5rem] w-full">&nbsp;</span>
+        )}
+
+        {/* children 렌더링 */}
+        {hasChildren && (
+          <ul>
+            {block.children?.map((childBlock) =>
+              childBlock.type === 'bulleted_list_item' ? (
+                <li key={childBlock.id}>{renderBulletedListItem(childBlock, true)}</li>
+              ) : (
+                <p key={childBlock.id} className="pl-6">
+                  {childBlock.paragraph?.rich_text?.map((text, index) => {
+                    const content = text.plain_text.split('\n').map((line, i) => (
+                      <React.Fragment key={i}>
+                        {i > 0 && <br />}
+                        {line || <span className="inline-block min-h-[1.5rem] w-full">&nbsp;</span>}
+                      </React.Fragment>
+                    ));
+
+                    return text.href ? (
+                      <a
+                        key={index}
+                        href={text.href}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-blue-700 dark:text-blue-400 hover:underline"
+                      >
+                        {text.annotations.bold ? <strong>{content}</strong> : content}
+                      </a>
+                    ) : text.annotations.bold ? (
+                      <strong key={index}>{content}</strong>
+                    ) : (
+                      <React.Fragment key={index}>{content}</React.Fragment>
+                    );
+                  })}
+                </p>
+              )
+            )}
+          </ul>
         )}
       </li>
     </ul>
@@ -176,9 +309,6 @@ const renderImage = (block: BlockWithChildren, pageType?: string) => {
       <ClientImage
         src={proxiedUrl}
         slug={block.id}
-        // slug={`${block.id}-${originalUrl}`}
-        // slug={pageSlug || '_default'}
-        // slug={`${pageSlug}-${block.id}`}
         alt={altText}
         width={pageType === 'resume' ? 200 : 700}
         height={pageType === 'resume' ? 200 : 550}
