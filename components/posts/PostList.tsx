@@ -1,6 +1,4 @@
-// //필터링된 포스트 목록
-
-//TEST
+//필터링된 포스트 목록
 'use client';
 
 import React, { useState, useEffect } from 'react';
