@@ -176,6 +176,7 @@ const renderImage = (block: BlockWithChildren, pageType?: string, pageSlug?: str
       <ClientImage
         src={proxiedUrl}
         // slug={block.id}
+        // slug={`${block.id}-${originalUrl}`}
         slug={pageSlug || '_default'}
         alt={altText}
         width={pageType === 'resume' ? 200 : 700}
