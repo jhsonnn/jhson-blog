@@ -177,7 +177,8 @@ const renderImage = (block: BlockWithChildren, pageType?: string, pageSlug?: str
         src={proxiedUrl}
         // slug={block.id}
         // slug={`${block.id}-${originalUrl}`}
-        slug={pageSlug || '_default'}
+        // slug={pageSlug || '_default'}
+        slug={`${pageSlug}-${block.id}`}
         alt={altText}
         width={pageType === 'resume' ? 200 : 700}
         height={pageType === 'resume' ? 200 : 550}
