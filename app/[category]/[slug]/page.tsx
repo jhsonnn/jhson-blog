@@ -443,7 +443,6 @@ export default async function ContentPage({ params }: PageProps) {
             blocks={Array.isArray(blocks) ? blocks : []}
             videoUrl={videoUrl}
             pageType={category.toLowerCase() === 'resume' ? 'resume' : undefined}
-            pageSlug={slug}
           />
         </div>
 

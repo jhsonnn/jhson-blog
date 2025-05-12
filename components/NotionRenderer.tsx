@@ -6,15 +6,9 @@ interface NotionRendererProps {
   blocks: BlockWithChildren[];
   videoUrl?: string | null;
   pageType?: string;
-  pageSlug: string;
 }
 
-const NotionRenderer: React.FC<NotionRendererProps> = ({
-  blocks,
-  videoUrl,
-  pageType,
-  pageSlug,
-}) => {
+const NotionRenderer: React.FC<NotionRendererProps> = ({ blocks, videoUrl, pageType }) => {
   const uniqueBlocks = useMemo(
     () => Array.from(new Map(blocks.map((block) => [block.id, block])).values()),
     [blocks]
@@ -28,7 +22,7 @@ const NotionRenderer: React.FC<NotionRendererProps> = ({
     <div className="notion-container">
       {uniqueBlocks.map((block) => (
         <div key={block.id} className="notion-block">
-          {renderBlock(block, pageType, pageSlug)}
+          {renderBlock(block, pageType)}
         </div>
       ))}
       {videoUrl && videoUrl.trim() !== '' && (
@@ -42,7 +36,7 @@ const NotionRenderer: React.FC<NotionRendererProps> = ({
   );
 };
 
-const renderBlock = (block: BlockWithChildren, pageType?: string, pageSlug?: string) => {
+const renderBlock = (block: BlockWithChildren, pageType?: string) => {
   switch (block.type) {
     case 'paragraph':
       return renderParagraph(block);
@@ -61,7 +55,7 @@ const renderBlock = (block: BlockWithChildren, pageType?: string, pageSlug?: str
     case 'column':
       return renderColumn(block, pageType);
     case 'image':
-      return renderImage(block, pageType, pageSlug);
+      return renderImage(block, pageType);
     default:
       return <div className="unsupported-block">Unsupported block type</div>;
   }
@@ -145,7 +139,7 @@ const renderBulletedListItem = (block: BlockWithChildren) => {
   );
 };
 
-const renderImage = (block: BlockWithChildren, pageType?: string, pageSlug?: string) => {
+const renderImage = (block: BlockWithChildren, pageType?: string) => {
   if (!block.image) return null;
 
   let originalUrl: string | null = null;
