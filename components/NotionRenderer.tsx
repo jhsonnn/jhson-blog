@@ -359,9 +359,15 @@ interface NotionRendererProps {
   blocks: BlockWithChildren[];
   videoUrl?: string | null;
   pageType?: string;
+  pageSlug: string;
 }
 
-const NotionRenderer: React.FC<NotionRendererProps> = ({ blocks, videoUrl, pageType }) => {
+const NotionRenderer: React.FC<NotionRendererProps> = ({
+  blocks,
+  videoUrl,
+  pageType,
+  pageSlug,
+}) => {
   const uniqueBlocks = useMemo(
     () => Array.from(new Map(blocks.map((block) => [block.id, block])).values()),
     [blocks]
@@ -375,7 +381,7 @@ const NotionRenderer: React.FC<NotionRendererProps> = ({ blocks, videoUrl, pageT
     <div className="notion-container">
       {uniqueBlocks.map((block) => (
         <div key={block.id} className="notion-block">
-          {renderBlock(block, pageType)}
+          {renderBlock(block, pageType, pageSlug)}
         </div>
       ))}
       {videoUrl && videoUrl.trim() !== '' && (
@@ -389,7 +395,7 @@ const NotionRenderer: React.FC<NotionRendererProps> = ({ blocks, videoUrl, pageT
   );
 };
 
-const renderBlock = (block: BlockWithChildren, pageType?: string) => {
+const renderBlock = (block: BlockWithChildren, pageType?: string, pageSlug?: string) => {
   switch (block.type) {
     case 'paragraph':
       return renderParagraph(block);
@@ -408,7 +414,7 @@ const renderBlock = (block: BlockWithChildren, pageType?: string) => {
     case 'column':
       return renderColumn(block, pageType);
     case 'image':
-      return renderImage(block, pageType);
+      return renderImage(block, pageType, pageSlug);
     default:
       return <div className="unsupported-block">Unsupported block type</div>;
   }
@@ -570,7 +576,7 @@ const renderBulletedListItem = (block: BlockWithChildren) => {
 //   );
 // };
 
-const renderImage = (block: BlockWithChildren, pageType?: string) => {
+const renderImage = (block: BlockWithChildren, pageType?: string, pageSlug?: string) => {
   if (!block.image) return null;
 
   let originalUrl: string | null = null;
@@ -600,7 +606,8 @@ const renderImage = (block: BlockWithChildren, pageType?: string) => {
     <div className="my-3 max-w-full min-h-[200px] rounded-xl w-auto">
       <ClientImage
         src={proxiedUrl}
-        slug={block.id}
+        // slug={block.id}
+        slug={pageSlug || '_default'}
         alt={altText}
         width={pageType === 'resume' ? 200 : 700}
         height={pageType === 'resume' ? 200 : 550}
@@ -613,13 +620,13 @@ const renderImage = (block: BlockWithChildren, pageType?: string) => {
 
 const renderDivider = () => <hr className="my-4 border-gray-300" />;
 
-const renderColumnList = (block: BlockWithChildren, pageType?: string) => {
+const renderColumnList = (block: BlockWithChildren, pageType?: string, pageSlug?: string) => {
   if (!block.children?.length) return null;
   return (
     <div className="flex flex-col sm:flex-row items-start gap-6 my-4 w-full">
       {block.children.map((col) => (
         <div key={col.id} className="w-full sm:w-1/2 flex-shrink-0 flex-grow">
-          {renderBlock(col, pageType)}
+          {renderBlock(col, pageType, pageSlug)}
         </div>
       ))}
     </div>
