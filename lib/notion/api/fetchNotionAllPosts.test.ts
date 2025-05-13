@@ -11,6 +11,7 @@ const mockPosts = [
     tags: ['tag1'],
     date: '2023-01-01',
     thumbnailUrl: '/thumbnail.png',
+    originalThumbnailUrl: '/thumbnail1.png',
     status: { name: 'public' },
   },
 ];

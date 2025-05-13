@@ -27,6 +27,7 @@ const Post: React.FC<PostProps> = React.memo(
     isRandomPosts = false,
     disableKeyUpdate = false,
   }: PostProps) => {
+    //none 카테고리 or 태그 없는 경우 렌더링 제외
     if (category.name === 'none' || tags.length === 0) return null;
 
     return (
@@ -39,6 +40,7 @@ const Post: React.FC<PostProps> = React.memo(
             : 'h-72 sm:h-80 md:h-[380px] lg:h-[420px]'
         }`}
         >
+          {/* 이미지 영역 */}
           <div
             className={`relative w-full flex-shrink-0 ${
               isRandomPosts
@@ -57,8 +59,10 @@ const Post: React.FC<PostProps> = React.memo(
               className="rounded-t-3xl object-cover"
               disableKeyUpdate={disableKeyUpdate}
             />
+            <div className="absolute inset-0 bg-[var(--sk-fill-gray-quaternary-alpha)] opacity-0 transition-opacity duration-300 hover:opacity-30"></div>
           </div>
 
+          {/* 텍스트 영역 */}
           <div
             className={`p-3 sm:p-3 md:p-4 lg:p-4 flex flex-col ${
               isRandomPosts ? 'h-[80px] sm:h-[80px] md:h-[80px] lg:h-[90px]' : 'h-auto'
@@ -80,6 +84,31 @@ const Post: React.FC<PostProps> = React.memo(
             >
               {date ?? 'Unknown Date'}
             </p>
+            <div className="flex flex-wrap gap-1 sm:gap-2 mt-1">
+              <span
+                className={`bg-[var(--sk-fill-tertiary)] text-[var(--sk-glyph-gray-secondary)] font-medium px-2 py-1 rounded-full bg-neutral-200 dark:bg-neutral-800 dark:text-neutral-400 border border-neutral-200 dark:border-neutral-800
+              ${
+                isRandomPosts
+                  ? 'text-[10px] sm:text-[10px] md:text-[10px] px-1 py-0.5'
+                  : 'text-[10px] sm:text-xs'
+              }`}
+              >
+                {category.name}
+              </span>
+              {tags.map((tag) => (
+                <span
+                  key={tag.name}
+                  className={`bg-[var(--sk-fill-tertiary)] text-[var(--sk-glyph-gray-secondary)] font-medium px-2 py-1 rounded-full bg-neutral-200 dark:bg-neutral-800 dark:text-neutral-400 border border-neutral-200 dark:border-neutral-800
+                  ${
+                    isRandomPosts
+                      ? 'text-[10px] sm:text-[10px] md:text-[10px] px-1 py-0.5'
+                      : 'text-[10px] sm:text-xs px-2 py-1'
+                  }`}
+                >
+                  {tag.name}
+                </span>
+              ))}
+            </div>
           </div>
         </div>
       </Link>
