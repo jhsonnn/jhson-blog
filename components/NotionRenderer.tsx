@@ -1,5 +1,5 @@
 import React, { useMemo } from 'react';
-import { BlockWithChildren } from '@/lib/notion/types';
+import { BlockWithChildren, isWebmVideo } from '@/lib/notion/types';
 import ClientImage from '@/components/ClientImage';
 
 interface NotionRendererProps {
@@ -56,54 +56,13 @@ const renderBlock = (block: BlockWithChildren, pageType?: string) => {
       return renderColumn(block, pageType);
     case 'image':
       return renderImage(block, pageType);
+    case 'video':
+      return isWebmVideo(block) ? renderWebm(block) : renderVideo(block);
     default:
+      console.warn('[NotionRenderer] Unsupported block type:', block.type, block);
       return <div className="unsupported-block">Unsupported block type</div>;
   }
 };
-
-// const renderParagraph = (block: BlockWithChildren) => {
-//   const richTextArray = block.paragraph?.rich_text ?? [];
-//   const hasText = richTextArray.some((text) => text.plain_text.trim() !== '');
-
-//   return (
-//     <p className={`whitespace-pre-wrap leading-relaxed${hasText ? '' : ' min-h-[1rem]'}`}>
-//       {hasText ? (
-//         richTextArray.map((text, index) => {
-//           let content = text.plain_text;
-//           if (content.startsWith(' ')) {
-//             const spaceCount = content.match(/^\s+/)?.[0].length || 0;
-//             content = '\u00A0'.repeat(spaceCount) + content.trimStart();
-//           }
-//           const lines = content.split('\n').map((line, i) => (
-//             <React.Fragment key={i}>
-//               {i > 0 && <span className="block h-[1rem]">&nbsp;</span>}
-//               {line || <span className="inline-block min-h-[1rem]">&nbsp;</span>}
-//             </React.Fragment>
-//           ));
-
-//           return text.href ? (
-//             <a
-//               key={index}
-//               href={text.href}
-//               target="_blank"
-//               rel="noopener noreferrer"
-//               className="text-blue-600 dark:text-blue-400 underline"
-//             >
-//               {text.annotations.bold ? <strong>{lines}</strong> : lines}
-//             </a>
-//           ) : text.annotations.bold ? (
-//             <strong key={index}>{lines}</strong>
-//           ) : (
-//             <React.Fragment key={index}>{lines}</React.Fragment>
-//           );
-//         })
-//       ) : (
-//         //빈 paragraph 줄바꿈 되도록
-//         <span className="inline-block min-h-[0.5rem] w-full">&nbsp;</span>
-//       )}
-//     </p>
-//   );
-// };
 
 const renderParagraph = (block: BlockWithChildren) => {
   const richTextArray = block.paragraph?.rich_text ?? [];
@@ -315,6 +274,51 @@ const renderImage = (block: BlockWithChildren, pageType?: string) => {
         fill={false}
         className={baseClass}
       />
+    </div>
+  );
+};
+
+const renderVideo = (block: BlockWithChildren) => {
+  if (!block.video) return null;
+
+  const videoUrl = block.video.type === 'file' ? block.video.file?.url : block.video.external?.url;
+
+  const caption = block?.['caption']?.[0]?.plain_text ?? '비디오';
+
+  if (!videoUrl) return null;
+
+  return (
+    <div className="my-4 w-full max-w-screen-md">
+      <video controls autoPlay loop muted playsInline className="w-full rounded-xl">
+        <source src={videoUrl} type="video/webm" />
+        {caption}
+      </video>
+    </div>
+  );
+};
+
+const renderWebm = (block: BlockWithChildren) => {
+  const videoUrl =
+    block.video?.type === 'file' ? block.video?.file?.url : block.video?.external?.url;
+
+  const altText = block.caption?.[0]?.plain_text ?? 'GIF 스타일 비디오';
+
+  if (!videoUrl) return null;
+
+  return (
+    <div className="my-6 w-full max-w-[700px] mx-auto">
+      <video
+        autoPlay
+        loop
+        muted
+        playsInline
+        className="rounded-xl w-full h-auto object-cover"
+        aria-label={altText}
+        title={altText}
+      >
+        <source src={videoUrl} type="video/webm" />
+        {altText}
+      </video>
     </div>
   );
 };
