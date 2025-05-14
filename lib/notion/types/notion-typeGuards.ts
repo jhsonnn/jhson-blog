@@ -70,6 +70,13 @@ export function isVideoBlock(
   return block.type === 'video' && !!block.video;
 }
 
+export function isWebmVideo(block: BlockWithChildren): boolean {
+  if (!block.video) return false;
+  const url =
+    block.video.type === 'file' ? block.video.file?.url : block.video.external?.url;
+  return !!url && url.toLowerCase().endsWith('.webm');
+}
+
 export function isPageObjectResponse(value: unknown): value is NotionPageObjectResponse {
   return (
     typeof value === 'object' &&
@@ -80,12 +87,6 @@ export function isPageObjectResponse(value: unknown): value is NotionPageObjectR
     'parent' in value
   );
 }
-
-// export function isBlockObjectResponse(
-//   block: PartialBlockObjectResponse | BlockObjectResponse
-// ): block is BlockObjectResponse {
-//   return "has_children" in block;
-// }
 
 export function isBlockObjectResponse(
   block: PartialBlockObjectResponse | BlockObjectResponse
@@ -109,10 +110,6 @@ export function isCategoryProperty(result: NotionPageObjectResponse): boolean {
   return isSelectProperty(categoryProperty) && !!categoryProperty.select?.name;
 }
 
-// export function isFileProperty(file: FileValue): file is FileObject {
-//   return file.type === "file";
-// }
-
 export function isFileProperty(file: FileValue): file is FileObject {
   return (
     typeof file === 'object' &&
@@ -122,10 +119,6 @@ export function isFileProperty(file: FileValue): file is FileObject {
     typeof file.file.url === 'string'
   );
 }
-
-// export function isExternalProperty(file: FileValue): file is ExternalObject {
-//   return file.type === "external";
-// }
 
 export function isExternalProperty(file: FileValue): file is ExternalObject {
   return (
