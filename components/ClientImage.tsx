@@ -111,19 +111,6 @@ export default function ClientImage({
     setImgSrc(fallback);
   };
 
-  // if (isWebm) {
-  //   return (
-  //     <img
-  //       key={disableKeyUpdate ? undefined : imgSrc}
-  //       src={imgSrc}
-  //       alt={validAlt}
-  //       width={width}
-  //       height={height}
-  //       loading="lazy"
-  //       onError={handleError}
-  //       className={`${className} rounded-xl my-4 max-w-full`}
-  //     />
-  //   );
   if (isWebm) {
     if (hasFailedOnce) {
       return (
@@ -143,6 +130,7 @@ export default function ClientImage({
         loop
         muted
         playsInline
+        controls={false}
         onError={handleError}
         className={`${className} rounded-xl my-4 max-w-full h-auto`}
         aria-label={validAlt}
