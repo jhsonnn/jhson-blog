@@ -63,7 +63,7 @@ export default async function ContentPage({ params }: PageProps) {
 
     const blocksResponse = await fetch(
       `${process.env.NEXT_PUBLIC_BASE_URL}/api/block/${pageData.id}`,
-      { next: { revalidate: 60 } }
+      { next: { revalidate: 1800 } }
     );
 
     if (!blocksResponse.ok) {
