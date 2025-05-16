@@ -4,6 +4,6 @@ module.exports = {
     siteUrl: 'https://jhsonnn.info',
     generateRobotsTxt: true,
     changefreq: 'daily',
-    priority: 0.7,
+    priority: 1.0,
   };
   
