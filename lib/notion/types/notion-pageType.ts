@@ -39,6 +39,7 @@ export interface Post {
   originalThumbnailUrl: string;
   fallbackThumbnailUrl?: string;
   status: { name: string };
+  summary?: string;
 }
 
 // export interface ApiResponse {

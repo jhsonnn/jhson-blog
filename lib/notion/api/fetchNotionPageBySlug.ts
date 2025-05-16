@@ -84,5 +84,10 @@ export async function fetchNotionPageBySlug(slug: string): Promise<Post | null> 
           ? post.properties.status.select.name
           : 'private',
     },
+    summary:
+      post.properties.summary?.type === 'rich_text' &&
+      post.properties.summary.rich_text.length > 0
+        ? post.properties.summary.rich_text[0].plain_text
+        : '',
   };
 }

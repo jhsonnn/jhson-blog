@@ -71,7 +71,12 @@ export async function fetchNotionAllPosts() {
               ? post.properties.status.status.name
               : 'private',
         },
-      };
+        summary:
+          post.properties.summary?.type === 'rich_text' &&
+          post.properties.summary.rich_text.length > 0
+            ? post.properties.summary.rich_text[0].plain_text
+            : '',
+        };
     });
 
     posts = [...posts, ...newPosts];
