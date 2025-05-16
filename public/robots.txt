@@ -1,9 +1,0 @@
-# *
-User-agent: *
-Allow: /
-
-# Host
-Host: https://jhsonnn.info
-
-# Sitemaps
-Sitemap: https://jhsonnn.info/sitemap.xml
