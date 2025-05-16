@@ -6,6 +6,7 @@ import { fetchVideoUrl } from '@/lib/notion/utils/fetchVideoUrl';
 import { transformBlocks } from '@/lib/notion/utils/transformBlocks';
 import ClientImage from '@/components/ClientImage';
 import Loading from './loading';
+import { Metadata } from 'next';
 
 const NotionRenderer = dynamic(() => import('@/components/NotionRenderer'), {
   loading: () => <Loading />,
@@ -30,6 +31,41 @@ const notionColorMap: { [key: string]: string } = {
   pink: 'bg-pink-200 text-pink-500',
   red: 'bg-red-200 text-red-500',
 };
+
+export async function generateMetadata({
+  params,
+}: {
+  params: { slug: string; category: string };
+}): Promise<Metadata> {
+  const post = await fetchNotionPageBySlug(params.slug);
+
+  if (!post) {
+    return {
+      title: '페이지를 찾을 수 없습니다',
+      description: '존재하지 않는 포스트입니다.',
+    };
+  }
+
+  const description = post.summary?.trim() || `${post.title} | 프론트엔드 개발 관련 포스트`;
+
+  return {
+    title: post.title,
+    description,
+    openGraph: {
+      title: post.title,
+      description,
+      url: `https://jhsonnn.info/${params.category}/${params.slug}`,
+      images: [
+        {
+          url: post.thumbnailUrl ?? '/default_image.jpg',
+          width: 1200,
+          height: 630,
+          alt: post.title,
+        },
+      ],
+    },
+  };
+}
 
 export async function generateStaticParams() {
   const { posts } = await fetchNotionAllPosts();
