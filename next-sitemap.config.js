@@ -1,10 +1,11 @@
 /** @type {import('next-sitemap').IConfig} */
 
 module.exports = {
-    siteUrl: 'https://jhsonnn.info',
-    generateRobotsTxt: true,
-    changefreq: 'daily',
-    sitemapSize: 5000,
+  siteUrl: 'https://jhsonnn.info',
+  generateRobotsTxt: true,
+  changefreq: 'daily',
+  sitemapSize: 5000,
+  exclude: ['/api/*'],
 
   //동적 페이지
   transform: async (config, path) => {
