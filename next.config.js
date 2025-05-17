@@ -8,11 +8,6 @@ const nextConfig = {
         hostname: 'prod-files-secure.s3.us-west-2.amazonaws.com',
         pathname: '/**',
       },
-      {
-        protocol: 'https',
-        hostname: 'prod-files-secure.s3.us-west-2.amazonaws.com',
-        pathname: '**',
-      },
     ],
   },
   env: {
@@ -26,12 +21,12 @@ const nextConfig = {
     REDIS_PORT: process.env.REDIS_PORT,
   },
   webpack: (config, { isServer }) => {
-    // 서버에서 Webpack 실행 여부를 확인
+    //서버에서 Webpack 실행 여부 확인
     if (isServer) {
       console.log('Webpack is running on the server...');
     }
 
-    // Framer Motion 및 Emotion 관련 alias 추가
+    //Framer Motion 및 Emotion 관련 alias
     config.resolve.alias = {
       ...config.resolve.alias,
       'react-lazy-images': false,
@@ -40,7 +35,7 @@ const nextConfig = {
       '@emotion/is-prop-valid': require.resolve('@emotion/is-prop-valid'),
     };
 
-    // Fallback 설정
+    //Fallback 설정
     config.resolve.fallback = {
       ...config.resolve.fallback,
       'react-lazy-images': false,
@@ -48,6 +43,8 @@ const nextConfig = {
 
     return config;
   },
+
+  //API proxy 설정(API 요청 proxy하여 보안 및 CORS 문제 방지)
   async rewrites() {
     return [
       {
@@ -56,6 +53,34 @@ const nextConfig = {
       },
     ];
   },
+
+  //canonical 설정 추가
+  async headers() {
+    return [
+      {
+        source: '/:path*',
+        headers: [
+          {
+            key: 'Link',
+            value: '<https://jhsonnn.info>; rel="canonical"',
+          },
+        ],
+      },
+    ];
+  },
+
+  async redirects() {
+    return [
+      {
+        source: '/(.*)',
+        has: [{ type: 'host', value: 'www.jhsonnn.info' }],
+        destination: 'https://jhsonnn.info/:path*',
+        permanent: true,
+      },
+    ];
+  }
+  
+  
 };
 
 module.exports = nextConfig;
