@@ -77,7 +77,7 @@ export default function ClientImage({
     if (hasFailedOnce) return;
     setHasFailedOnce(true);
 
-    const isBlockId = validSlug.includes('-'); // UUID block id는 '-' 포함
+    const isBlockId = validSlug.includes('-'); //UUID block id는 '-' 포함
 
     try {
       const res = await fetch(
@@ -149,7 +149,7 @@ export default function ClientImage({
     unoptimized: true,
     onError: handleError,
     className: fill
-      ? 'object-cover rounded-xl'
+      ? `${className} object-cover`
       : `${className} mt-5 mb-10 w-full max-w-2xl h-auto rounded-xl object-contain`,
   };
 
