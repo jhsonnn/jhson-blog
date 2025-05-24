@@ -10,6 +10,7 @@ const fetchTags = async (): Promise<string[]> => {
   return response.ok ? await response.json() : [];
 };
 
+//초기 상태 설정, hydration 등의 효과를 별도 처리하는 컴포넌트
 const ReduxInitializer = () => {
   const dispatch = useDispatch();
   const tags = useSelector((state: RootState) => state.layout.tags);
