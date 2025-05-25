@@ -126,7 +126,7 @@ export default async function ContentPage({ params }: PageProps) {
           typeof post.thumbnailUrl === 'string' &&
           post.slug !== slug
       )
-      .slice(0, 5); // 최대 5개까지 표시
+      .slice(0, 5); //최대 5개까지 표시
 
     return (
       <>
