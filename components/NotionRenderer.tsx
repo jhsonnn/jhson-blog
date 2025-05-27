@@ -1,6 +1,7 @@
 import React, { useMemo } from 'react';
 import { BlockWithChildren, isWebmVideo } from '@/lib/notion/types';
 import ClientImage from '@/components/ClientImage';
+import ClientVideo from './ClientVideo';
 
 interface NotionRendererProps {
   blocks: BlockWithChildren[];
@@ -291,28 +292,48 @@ const renderVideo = (block: BlockWithChildren) => {
   );
 };
 
+// const renderWebm = (block: BlockWithChildren) => {
+//   const videoUrl =
+//     block.video?.type === 'file' ? block.video?.file?.url : block.video?.external?.url;
+
+//   const altText = block.caption?.[0]?.plain_text ?? 'GIF style video';
+
+//   if (!videoUrl) return null;
+
+//   return (
+//     <div className="my-6 w-full max-w-[700px] mx-auto">
+//       <video
+//         autoPlay
+//         loop
+//         muted
+//         playsInline
+//         className="rounded-xl w-full h-auto object-cover"
+//         aria-label={altText}
+//         title={altText}
+//       >
+//         <source src={videoUrl} type="video/webm" />
+//         {altText}
+//       </video>
+//     </div>
+//   );
+// };
+
 const renderWebm = (block: BlockWithChildren) => {
   const videoUrl =
     block.video?.type === 'file' ? block.video?.file?.url : block.video?.external?.url;
 
-  const altText = block.caption?.[0]?.plain_text ?? 'GIF 스타일 비디오';
+  const altText = block.caption?.[0]?.plain_text ?? 'video';
 
   if (!videoUrl) return null;
 
   return (
     <div className="my-6 w-full max-w-[700px] mx-auto">
-      <video
-        autoPlay
-        loop
-        muted
-        playsInline
+      <ClientVideo
+        src={videoUrl}
+        blockId={block.id}
+        alt={altText}
         className="rounded-xl w-full h-auto object-cover"
-        aria-label={altText}
-        title={altText}
-      >
-        <source src={videoUrl} type="video/webm" />
-        {altText}
-      </video>
+      />
     </div>
   );
 };
