@@ -63,8 +63,8 @@ interface ClientVideoProps {
 }
 
 export default function ClientVideo({ src, blockId, alt, className = '' }: ClientVideoProps) {
-  const [videoSrc, setVideoSrc] = useState(src);
-  const [refreshKey, setRefreshKey] = useState(0); //강제 리마운트용 key
+  const [videoSrc, setVideoSrc] = useState(() => src + `?ts=${Date.now()}`);
+  const [refreshKey, setRefreshKey] = useState(0);
   const triedRefresh = useRef(false);
 
   const handleError = async () => {
@@ -75,24 +75,25 @@ export default function ClientVideo({ src, blockId, alt, className = '' }: Clien
       const res = await fetch(`/api/image-proxy-refresh-block/${blockId}`);
       if (res.ok) {
         const data = await res.json();
-        setVideoSrc(
-          data.originalThumbnailUrl || data.fallbackThumbnailUrl || '/default_video.webm'
-        );
-        setRefreshKey((prev) => prev + 1); //key 업데이트 -> React 강제 리렌더링
+        const refreshedUrl =
+          (data.originalThumbnailUrl || data.fallbackThumbnailUrl || '/default_video.webm') +
+          `?ts=${Date.now()}`;
+        setVideoSrc(refreshedUrl);
+        setRefreshKey((prev) => prev + 1);
       } else {
-        setVideoSrc('/default_video.webm');
+        setVideoSrc('/default_video.webm?ts=' + Date.now());
         setRefreshKey((prev) => prev + 1);
       }
     } catch (err) {
       console.error('[ClientVideo] Failed to refresh video:', err);
-      setVideoSrc('/default_video.webm');
+      setVideoSrc('/default_video.webm?ts=' + Date.now());
       setRefreshKey((prev) => prev + 1);
     }
   };
 
   return (
     <video
-      key={refreshKey}
+      key={`${refreshKey}-${videoSrc}`}
       autoPlay
       loop
       muted
