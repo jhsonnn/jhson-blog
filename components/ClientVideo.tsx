@@ -167,19 +167,20 @@ export default function ClientVideo({ src, blockId, alt, className = '' }: Clien
   };
 
   return (
-    <video
-      key={`${refreshKey}-${videoSrc}`}
-      autoPlay
-      loop
-      muted
-      playsInline
-      className={className}
-      aria-label={alt}
-      title={alt}
-      onError={handleError}
-    >
-      <source src={videoSrc} type="video/webm" />
-      {alt}
-    </video>
+    <div key={`${refreshKey}-${videoSrc}`}>
+      <video
+        autoPlay
+        loop
+        muted
+        playsInline
+        className={className}
+        aria-label={alt}
+        title={alt}
+        onError={handleError}
+      >
+        <source key={`${refreshKey}-${videoSrc}`} src={videoSrc} type="video/webm" />
+        {alt}
+      </video>
+    </div>
   );
 }
