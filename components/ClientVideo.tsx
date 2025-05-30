@@ -112,7 +112,7 @@
 //TEST : refetch 요청 3번까지 하도록 수정
 'use client';
 
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 
 interface ClientVideoProps {
   src: string;
@@ -131,8 +131,25 @@ export default function ClientVideo({ src, blockId, alt, className = '' }: Clien
   const [retryCount, setRetryCount] = useState(0);
   const maxRetries = 3;
 
+  useEffect(() => {
+    const checkVideoUrl = async () => {
+      try {
+        const res = await fetch(videoSrc, { method: 'HEAD' });
+        if (!res.ok) {
+          throw new Error(`Status ${res.status}`);
+        }
+        console.log(`[ClientVideo] HEAD check success for ${blockId}`);
+      } catch (err) {
+        console.warn(`[ClientVideo] HEAD check failed for ${blockId}:`, err);
+        handleError();
+      }
+    };
+
+    checkVideoUrl();
+  }, [videoSrc]);
+
   const handleError = async () => {
-    console.warn(`[ClientVideo] onError triggered for ${blockId}, retryCount: ${retryCount}`);
+    console.warn(`[ClientVideo] handleError triggered for ${blockId}, retryCount: ${retryCount}`);
 
     if (retryCount >= maxRetries) {
       console.error(`[ClientVideo] Max retries (${maxRetries}) reached for ${blockId}. Giving up.`);
@@ -168,16 +185,7 @@ export default function ClientVideo({ src, blockId, alt, className = '' }: Clien
 
   return (
     <div key={`${refreshKey}-${videoSrc}`}>
-      <video
-        autoPlay
-        loop
-        muted
-        playsInline
-        className={className}
-        aria-label={alt}
-        title={alt}
-        onError={handleError}
-      >
+      <video autoPlay loop muted playsInline className={className} aria-label={alt} title={alt}>
         <source key={`${refreshKey}-${videoSrc}`} src={videoSrc} type="video/webm" />
         {alt}
       </video>
