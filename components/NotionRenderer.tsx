@@ -55,7 +55,19 @@ const renderBlock = (block: BlockWithChildren, pageType?: string) => {
       return renderColumnList(block, pageType);
     case 'column':
       return renderColumn(block, pageType);
+    // case 'image':
+    //   return renderImage(block, pageType);
     case 'image':
+      const fileUrl = block.image?.file?.url || '';
+      const externalUrl = block.image?.external?.url || '';
+
+      if (
+        fileUrl.split('?')[0].toLowerCase().endsWith('.gif') ||
+        externalUrl.split('?')[0].toLowerCase().endsWith('.gif')
+      ) {
+        return renderGif(block, pageType);
+      }
+
       return renderImage(block, pageType);
     case 'video':
       return isWebmVideo(block) ? renderWebm(block) : renderVideo(block);
@@ -232,47 +244,6 @@ const renderBulletedListItem = (block: BlockWithChildren, isSubItem = false) => 
   );
 };
 
-// const renderImage = (block: BlockWithChildren, pageType?: string) => {
-//   if (!block.image) return null;
-
-//   let originalUrl: string | null = null;
-//   if (block.image.type === 'file' && block.image.file?.url) {
-//     originalUrl = block.image.file.url;
-//   } else if (block.image.type === 'external' && block.image.external?.url) {
-//     originalUrl = block.image.external.url;
-//   }
-//   if (!originalUrl) return null;
-
-//   const notionFallbackUrl = originalUrl.startsWith('https://prod-files-secure.s3.')
-//     ? originalUrl.replace('https://prod-files-secure.s3.', 'https://www.notion.so/image/')
-//     : originalUrl;
-
-//   const proxiedUrl = `/api/image-proxy?url=${encodeURIComponent(originalUrl)}&slug=${encodeURIComponent(
-//     block.id
-//   )}&fallback=${encodeURIComponent(notionFallbackUrl)}`;
-
-//   const altText = block.image.caption?.[0]?.plain_text || 'Notion Image';
-
-//   const baseClass =
-//     pageType === 'resume'
-//       ? 'rounded-xl object-cover max-w-[200px] max-h-[200px]'
-//       : 'rounded-xl object-cover w-[70%] max-w-[700px] min-w-[160px] h-auto';
-
-//   return (
-//     <div className="my-3 max-w-full min-h-[200px] rounded-xl w-auto">
-//       <ClientImage
-//         src={proxiedUrl}
-//         slug={block.id}
-//         alt={altText}
-//         width={pageType === 'resume' ? 200 : 700}
-//         height={pageType === 'resume' ? 200 : 550}
-//         fill={false}
-//         className={baseClass}
-//       />
-//     </div>
-//   );
-// };
-
 const renderImage = (block: BlockWithChildren, pageType?: string) => {
   if (!block.image) return null;
 
@@ -283,8 +254,6 @@ const renderImage = (block: BlockWithChildren, pageType?: string) => {
     originalUrl = block.image.external.url;
   }
   if (!originalUrl) return null;
-
-  const isGif = originalUrl.toLowerCase().endsWith('.gif');
 
   const notionFallbackUrl = originalUrl.startsWith('https://prod-files-secure.s3.')
     ? originalUrl.replace('https://prod-files-secure.s3.', 'https://www.notion.so/image/')
@@ -307,8 +276,92 @@ const renderImage = (block: BlockWithChildren, pageType?: string) => {
         src={proxiedUrl}
         slug={block.id}
         alt={altText}
-        width={isGif ? undefined : pageType === 'resume' ? 200 : 700}
-        height={isGif ? undefined : pageType === 'resume' ? 200 : 550}
+        width={pageType === 'resume' ? 200 : 700}
+        height={pageType === 'resume' ? 200 : 550}
+        fill={false}
+        className={baseClass}
+      />
+    </div>
+  );
+};
+
+// const renderImage = (block: BlockWithChildren, pageType?: string) => {
+//   if (!block.image) return null;
+
+//   let originalUrl: string | null = null;
+//   if (block.image.type === 'file' && block.image.file?.url) {
+//     originalUrl = block.image.file.url;
+//   } else if (block.image.type === 'external' && block.image.external?.url) {
+//     originalUrl = block.image.external.url;
+//   }
+//   if (!originalUrl) return null;
+
+//   const isGif = originalUrl.toLowerCase().endsWith('.gif');
+
+//   const notionFallbackUrl = originalUrl.startsWith('https://prod-files-secure.s3.')
+//     ? originalUrl.replace('https://prod-files-secure.s3.', 'https://www.notion.so/image/')
+//     : originalUrl;
+
+//   const proxiedUrl = `/api/image-proxy?url=${encodeURIComponent(originalUrl)}&slug=${encodeURIComponent(
+//     block.id
+//   )}&fallback=${encodeURIComponent(notionFallbackUrl)}`;
+
+//   const altText = block.image.caption?.[0]?.plain_text || 'Notion Image';
+
+//   const baseClass =
+//     pageType === 'resume'
+//       ? 'rounded-xl object-cover max-w-[200px] max-h-[200px]'
+//       : 'rounded-xl object-cover w-[70%] max-w-[700px] min-w-[160px] h-auto';
+
+//   return (
+//     <div className="my-3 max-w-full min-h-[200px] rounded-xl w-auto">
+//       <ClientImage
+//         src={proxiedUrl}
+//         slug={block.id}
+//         alt={altText}
+//         width={isGif ? undefined : pageType === 'resume' ? 200 : 700}
+//         height={isGif ? undefined : pageType === 'resume' ? 200 : 550}
+//         fill={false}
+//         className={baseClass}
+//       />
+//     </div>
+//   );
+// };
+
+const renderGif = (block: BlockWithChildren, pageType?: string) => {
+  if (!block.image) return null;
+
+  let originalUrl: string | null = null;
+  if (block.image.type === 'file' && block.image.file?.url) {
+    originalUrl = block.image.file.url;
+  } else if (block.image.type === 'external' && block.image.external?.url) {
+    originalUrl = block.image.external.url;
+  }
+  if (!originalUrl) return null;
+
+  const notionFallbackUrl = originalUrl.startsWith('https://prod-files-secure.s3.')
+    ? originalUrl.replace('https://prod-files-secure.s3.', 'https://www.notion.so/image/')
+    : originalUrl;
+
+  const proxiedUrl = `/api/image-proxy?url=${encodeURIComponent(originalUrl)}&slug=${encodeURIComponent(
+    block.id
+  )}&fallback=${encodeURIComponent(notionFallbackUrl)}`;
+
+  const altText = block.image.caption?.[0]?.plain_text || 'Notion GIF';
+
+  const baseClass =
+    pageType === 'resume'
+      ? 'rounded-xl object-contain max-w-[200px] max-h-[200px]'
+      : 'rounded-xl object-contain w-[70%] max-w-[700px] min-w-[160px] h-auto';
+
+  return (
+    <div className="my-3 max-w-full min-h-[200px] rounded-xl w-auto">
+      <ClientImage
+        src={proxiedUrl}
+        slug={block.id}
+        alt={altText}
+        width={pageType === 'resume' ? 200 : 700}
+        height={pageType === 'resume' ? 200 : 550}
         fill={false}
         className={baseClass}
       />
