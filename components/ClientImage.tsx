@@ -113,48 +113,6 @@ export default function ClientImage({
     setImgSrc(fallback);
   };
 
-  // if (isWebm) {
-  //   if (hasFailedOnce) {
-  //     return (
-  //       <div className="bg-gray-100 text-center text-sm text-gray-600 py-6 rounded-xl">
-  //         {validAlt}
-  //       </div>
-  //     );
-  //   }
-
-  //   return (
-  //     <video
-  //       key={disableKeyUpdate ? undefined : imgSrc}
-  //       src={imgSrc}
-  //       width={width}
-  //       height={height}
-  //       autoPlay
-  //       loop
-  //       muted
-  //       playsInline
-  //       controls={false}
-  //       onError={handleError}
-  //       className={`${className} rounded-xl my-4 max-w-full h-auto`}
-  //       aria-label={validAlt}
-  //     >
-  //       {validAlt}
-  //     </video>
-  //   );
-  // }
-
-  // const imageProps = {
-  //   src: imgSrc,
-  //   alt: validAlt,
-  //   width,
-  //   height,
-  //   priority,
-  //   unoptimized: true,
-  //   onError: handleError,
-  //   className: fill
-  //     ? `${className} object-cover`
-  //     : `${className} mt-5 mb-10 w-full max-w-2xl h-auto rounded-xl object-contain`,
-  // };
-
   const imageProps = {
     src: imgSrc,
     alt: validAlt,
